@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:Lagos.gpx">
+   </FileRef>
+   <FileRef
+      location = "group:/Users/oloruntoba/Kitchen/creditville/ios/Creditville.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Creditville.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:CreditVille.xcodeproj">
+   </FileRef>
+</Workspace>

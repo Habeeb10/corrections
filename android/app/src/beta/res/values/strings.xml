@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resources>
+    <string name="app_name">C Money Beta</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">UH1R8CVRjeQWNXBJCuZOjnJIixTNitQwEX-HX</string>
+    <string name="freshchat_file_provider_authority">com.creditville.provider.beta</string>
+</resources>

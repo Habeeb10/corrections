@@ -1,0 +1,23 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "web",
+            "site": "https://creditvillegroup.com"
+        }
+    },
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.creditville",
+            "sha256_cert_fingerprints": [
+                "SHA256: 59:A7:37:98:40:C9:8A:98:E7:2D:55:A9:E0:66:1E:36:FB:BC:24:26:21:ED:F2:CC:F6:1A:1B:DE:EC:80:0F:0C"
+            ]
+        }
+    }
+]

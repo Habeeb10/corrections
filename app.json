@@ -1,0 +1,17 @@
+{
+  "name": "TouchGold",
+  "displayName": "TouchGold",
+  "expo": {
+    "name": "TouchGold",
+    "slug": "touchgold",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "src/assets/**/*"
+    ],
+    
+      "plugins": ["expo-image-picker", {
+        "photosPermission": "The app accesses your photos"
+      }]
+    
+  }
+}
