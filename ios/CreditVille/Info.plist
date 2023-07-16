@@ -82,11 +82,11 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>This app uses Face ID to confirm your identity</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app captures your location as part of the loan application process</string>
+	<string>Turning on location services allows us to enhance your loan application process</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app captures your location as part of the loan application process</string>
+	<string>Turning on location services allows us to enhance your loan application process</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app captures your location as part of the loan application process</string>
+	<string>Turning on location services allows us to enhance your loan application process</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app uses Camera to capture data for profile picture and documents upload</string>
 	<key>NSPhotoLibraryUsageDescription</key>
