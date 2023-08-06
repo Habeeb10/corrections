@@ -58,6 +58,7 @@ export const REFERRAL_CARD_BG = '#F7E7D1';
 export const DARK_BLUE = '#072C50';
 export const PRIMARY_BLUE = '#062C50';
 export const RECEIPT_BG = '#F9FAFB';
+export const DARK_GREEN_BG = 'rgba(124, 220, 226, 0.4)';
 
 // ACTIONS
 export const SUCCESS = '#00CC8D';

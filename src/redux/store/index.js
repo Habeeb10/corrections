@@ -12,7 +12,7 @@ const persistConfig = {
     whitelist: [ // Survives application close
         'user',
         'settings',
-        'wallet',
+        // 'wallet',
         'notifications'
     ],
     blacklist: [ // Does not survive application close

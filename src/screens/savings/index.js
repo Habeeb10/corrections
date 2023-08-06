@@ -99,7 +99,7 @@ class Savings extends Component {
                                             <Text style={styles.noDataText}>{Dictionary.NO_ACTIVE_SAVINGS}</Text>
                                         </View>
                                     )}
-                                    {active_savings.map((savings, index) => {
+                                    {active_savings.filter(s => s.status === 1).map((savings, index) => {
                                         return <SavingsCard key={index} savings={savings} onPress={() => this.showSavingsDetail(savings)} />
                                     })}
                                 </View>

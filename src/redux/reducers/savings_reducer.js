@@ -203,7 +203,7 @@ export default (state = initialState, action) => {
                 let savings_data = {
                     id: savings.ID,
                     status,
-                    name: savings.savingsName,
+                    name: savings.savingsName ?? savings.productName,
                     periodic_amount: savings.periodic_amount||0,
                     target: savings.target||0,
                     isCollectionAuto:savings.isCollectionAuto,
@@ -224,9 +224,10 @@ export default (state = initialState, action) => {
                     tenor: savings.tenor_period||"year",
                     tenor_period: savings.tenor_period||"year",
                     interest_due_at_maturity: savings.interest_due_at_maturity||"0",
-                    amount_at_maturity: savings.amount_at_maturity||"0",
-                    witholding_tax: savings.witholding_tax||0,
-                    accrued_interest: savings.accrued_interest||0
+                    amount_at_maturity: savings.amountAtMaturity||"0",
+                    witholding_tax: savings.WHT||"10%",
+                    accrued_interest: savings.accruedInterest||0,
+                    depositAmount: savings.depositAmount||0
                 };
                 user_savings.push(savings_data);
             });

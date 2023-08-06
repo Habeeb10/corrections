@@ -791,10 +791,10 @@ export const restoreSavingsPlan = async (plan_id) => {
   );
 };
 
-export const getSavingsTransactions = async (plan_id, transaction_type) => {
+export const getSavingsTransactions = async (plan_id, page, pageSize, type) => {
   return makeApiCall(
     BEARER_AUTH,
-    `${Endpoints.SAVINGS}/${plan_id}/transactions?type=${transaction_type}`,
+    `${Endpoints.SAVINGS}/transaction/${plan_id}/?page=${page}&pageSize=${pageSize}&filter=${type}`,
     "get"
   );
 };
@@ -884,10 +884,10 @@ export const getUserWalletData = async (id) => {
   //return makeApiCall(false, Endpoints.USER_WALLET, "get");
 };
 
-export const getAccountTransactions = async (account_no) => {
+export const getAccountTransactions = async (id, page, pageSize, type) => {
   const res = await makeApiCall(
     BEARER_AUTH,
-    `${Endpoints.ACCOUNTS}/${account_no}/transactions`,
+    `${Endpoints.SAVINGS}/transaction/wallet/${id}?page=${page}&pageSize=${pageSize}&filter=${type}`,
     "get"
   );
   return res;

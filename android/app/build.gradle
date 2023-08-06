@@ -161,6 +161,7 @@ android {
         ndkVersion '21.1.6352462'
         versionCode 24
         versionName "2.0.5"
+        resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
     }
     splits {
         abi {

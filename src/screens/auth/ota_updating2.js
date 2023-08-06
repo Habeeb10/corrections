@@ -13,6 +13,7 @@ import Modal from "react-native-modal";
 import { codePushDeploymentKeys } from "../../../index";
 import { updatingApp } from "_actions/settings_actions";
 import { Version } from "_atoms";
+import { Colors } from "_styles";
 
 class Updating extends Component {
   state = {
@@ -87,16 +88,16 @@ class Updating extends Component {
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
             <Text
-              style={{ fontSize: 20, fontWeight: "bold", marginBottom: 20 }}
+              style={{ fontSize: 20, fontWeight: "bold", marginBottom: 20, color: Colors.CV_BLUE }}
             >
               {this.state.statusText}
             </Text>
             <Text
-              style={{ fontSize: 20, fontWeight: "bold", marginBottom: 20 }}
+              style={{ fontSize: 17, fontWeight: "bold", marginBottom: 20, color: Colors.CV_BLUE }}
             >
               {`${this.state.progress}%`}
             </Text>
-            <ActivityIndicator size="large" />
+            <ActivityIndicator size="large" color={Colors.CV_YELLOW}/>
             <Version style={{
               fontSize: 16,
               textAlign: "center",

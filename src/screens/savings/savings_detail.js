@@ -149,27 +149,32 @@ class SavingsDetail extends Component {
                             </View>
                             <View style={SharedStyle.halfColumn}>
                                 <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.label, SharedStyle.right]}>{Dictionary.PERIODIC_AMOUNT}</Text>
-                                <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.value, SharedStyle.right]}>₦{Util.formatAmount(savings.periodic_amount)}</Text>
+                                <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.value, SharedStyle.right]}>₦{Util.formatAmount(savings.depositAmount)}</Text>
                             </View>
                         </View>
+                        {
+                            // !!savings.target && !!savings.frequency && (
+                            !!savings.frequency && (
+                                <View style={styles.row}>
+                                    <View style={SharedStyle.halfColumn}>
+                                        <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.label]}>{Dictionary.TARGET}</Text>
+                                        <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.value]}>₦{Util.formatAmount(savings.target)}</Text>
+                                    </View>
+                                    <View style={SharedStyle.halfColumn}>
+                                        <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.label, SharedStyle.right]}>{Dictionary.FREQUENCY}</Text>
+                                        <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.value, SharedStyle.right]}>{savings.frequency || '- - -'}</Text>
+                                    </View>
+                                </View>
+                            )
+                        }
                         <View style={styles.row}>
                             <View style={SharedStyle.halfColumn}>
-                                <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.label]}>{Dictionary.TARGET}</Text>
-                                <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.value]}>₦{Util.formatAmount(savings.target)}</Text>
+                                <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.label]}>{Dictionary.TENOR}</Text>
+                                <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.value]}>{savings.tenor_period}</Text>
                             </View>
                             <View style={SharedStyle.halfColumn}>
                                 <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.label, SharedStyle.right, { textTransform: 'capitalize' }]}>{Dictionary.INTEREST_RATE}</Text>
                                 <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.value, SharedStyle.right, { textTransform: 'none' }]}>{savings.interest_rate}% {Dictionary.PER_ANNUM}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={SharedStyle.halfColumn}>
-                                <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.label]}>{Dictionary.TENOR}</Text>
-                                <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.value]}>{`${savings.tenor} ${savings.tenor_period}`}</Text>
-                            </View>
-                            <View style={SharedStyle.halfColumn}>
-                                <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.label, SharedStyle.right]}>{Dictionary.FREQUENCY}</Text>
-                                <Text numberOfLines={1} style={[SharedStyle.normalText, SharedStyle.value, SharedStyle.right]}>{savings.frequency || '- - -'}</Text>
                             </View>
                         </View>
                         <View style={styles.row}>

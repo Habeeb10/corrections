@@ -13,6 +13,9 @@ class PrimaryButton extends Component {
                 {this.props.loading && (<ActivityIndicator style={styles.item} size="small" color={Colors.WHITE} />)}
                 {!this.props.loading && (
                     <View style={[styles.content,this.props.centerText?{justifyContent:"center"}:{}]}>
+                        {this.props.hasLeftIcon && <Icon.FontAwesome size={Mixins.scaleSize(15)} style={[styles.icon, {
+                            marginRight: 5
+                        }]} name={this.props.leftIcon} />}
                         <View style={!this.props.centerText?styles.item:{}}>
                             <ButtonWithBackgroundText style={styles.text}>
                                 {this.props.title}

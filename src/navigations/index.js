@@ -155,10 +155,12 @@ class Navigator extends Component {
     this.initializeBiometrics();
     this.props.getInformation()
     // this.resetInactivityTimeout();
-    // this.checkForOTAUpdate();
-    // this.setCodePushVersionNumber();
+    this.checkForOTAUpdate();
+    this.setCodePushVersionNumber();
    // AppState.addEventListener("change", this.handleAppStateChange);
-
+    if(this.props.user.show_session_dialog) {
+      this.props.hideSessionDialog();
+    }
   }
   
 
@@ -246,20 +248,20 @@ class Navigator extends Component {
       }
   }
 
-  // checkForOTAUpdate = async (state = true) => { 
-  //   try {
-  //   const update = await codePush.checkForUpdate(codePushDeploymentKeys)
-  //     if (update) {
-  //       this.props.updatingApp(true)
-  //     }
-  //     else{
-  //       this.props.updatingApp(false)
-  //     }
-  //   }
-  //   catch (error) {
-  //     this.props.updatingApp(false)
-  //     console.log("KO SI ERROR9", error)}
-  // }
+  checkForOTAUpdate = async (state = true) => { 
+    try {
+    const update = await codePush.checkForUpdate(codePushDeploymentKeys)
+      if (update) {
+        this.props.updatingApp(true)
+      }
+      else{
+        this.props.updatingApp(false)
+      }
+    }
+    catch (error) {
+      this.props.updatingApp(false)
+      console.log("KO SI ERROR9", error)}
+  }
 
   handleAppStateChange = async nextAppState => {
     const { appState, lastBackgroundedTime } = this.state;

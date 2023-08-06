@@ -169,8 +169,8 @@ export const dateGroupTransactions = (transactions) => {
     const per_day = transactions
         .reduce((per_day, transaction) => ({
             ...per_day,
-            [fromNowDay(transaction.transaction_date)]:
-                [...(per_day[fromNowDay(transaction.transaction_date)] || []), transaction]
+            [fromNowDay(transaction.createdOn)]:
+                [...(per_day[fromNowDay(transaction.createdOn)] || []), transaction]
         }), {});
 
     for (const calendar_day in per_day) {
@@ -217,3 +217,21 @@ export const randomId = () =>
     /\./g,
     ""
   );
+
+export const transactionFee = (amount) => {
+    if (amount > 50000) {
+        return "53.75"
+    }
+    if (amount > 5000 && amount <= 50000) {
+        return "26.88"
+    }
+
+    return "10.75"
+}
+
+export const removeDuplicates = (arr, prop) => {
+    const uniqueObjects = new Map();
+    arr.forEach(obj => uniqueObjects.set(obj[prop], obj));
+
+    return [...uniqueObjects.values()];
+  }

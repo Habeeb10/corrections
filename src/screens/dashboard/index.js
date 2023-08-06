@@ -24,6 +24,7 @@ import crashlytics from "@react-native-firebase/crashlytics";
 import _ from "lodash";
 import Modal from "react-native-modal";
 import Clipboard from '@react-native-community/clipboard';
+import * as Animatable from 'react-native-animatable';
 
 import { showToast, showToastNav } from "_actions/toast_actions";
 import {
@@ -66,6 +67,7 @@ import { env, Dictionary, Util } from "_utils";
 import { Colors, Mixins, Typography, SharedStyle, FormStyle } from "_styles";
 import { TouchItem, ScrollView as _ScrollView } from "_atoms";
 import { ActionButton, PrimaryButton } from '_molecules';
+import TransactionReceipt from "_screens/shared/transaction_receipt";
 
 import { Network } from "_services";
 let visible = false;
@@ -88,7 +90,9 @@ class Dashboard extends Component {
       _isActive: true,
       refreshing: false,
       showAmount: false,
-      modal_visible: false
+      modal_visible: false,
+      receipt_modal_visible: false,
+      transaction_data: {}
     };
 
     if (user_data.phone_hash) {
@@ -100,7 +104,7 @@ class Dashboard extends Component {
   }
 
   _onRefresh = () => {
-    this.props.getUserProfile();
+    // this.props.getUserProfile();
     // if (this.props.user.user_data.deposit) {
       this.refreshUserWallet(this.props.user.wallet_id);
     //}
@@ -370,10 +374,10 @@ class Dashboard extends Component {
     this.props.getUserWallet(id);
   };
 
-  onAddCard = () => {
+  onTransfer = (account_type) => {
     this.setState({
       modal_visible: false
-    }, () => this.props.navigation.navigate('AddCard'))
+    }, () => this.props.navigation.navigate('Transfers', {account_type}))
   }
 
   onCloseModal = () => {
@@ -466,8 +470,8 @@ class Dashboard extends Component {
     const recent_transactions = this.props.wallet.transaction_data || [];
     let transaction_message =
       transaction_count > 0
-        ? Dictionary.TRANSACTIONS
-        : `0 ${Dictionary.TRANSACTIONS}`;
+        ? Dictionary.RECENT_TRANSACTIONS
+        : `0 ${Dictionary.RECENT_TRANSACTIONS}`;
 
     if (this.props.user.loading_profile) {
       return (
@@ -543,7 +547,7 @@ class Dashboard extends Component {
           {/* )} */}
         </View>
         <_ScrollView {...this.props}>
-          <View style={{ paddingBottom: Mixins.scaleSize(20) }}>
+          <Animatable.View animation="fadeInDown" duration={500} delay={500} style={{ paddingBottom: Mixins.scaleSize(20) }}>
             <View style={styles.wallet}>
               <View style={styles.walletDetails}>
                 {
@@ -867,11 +871,9 @@ class Dashboard extends Component {
               <View style={styles.cardContainer}>
                 <TouchItem
                   style={[styles.card, styles.transfers]}
-                  onPress={() => this.navigateTo("Transfers")}
+                  // onPress={() => this.navigateTo("Transfers")}
+                  onPress={() => this.setState({modal_visible: true})}
                 >
-                  {/* onPress={() => {
-                                        this.props.showToast(Dictionary.COMMING_SOON_CLICK)
-                                    }}> */}
                   <Text style={[SharedStyle.normalText, styles.transfersText]}>
                     {Dictionary.TRANSFERS}
                   </Text>
@@ -900,9 +902,6 @@ class Dashboard extends Component {
               <View style={styles.cardContainer}>
                 <TouchItem
                   style={[styles.card, styles.bills]}
-                  // onPress={() =>{
-                  //     this.props.showToast(Dictionary.COMMING_SOON_CLICK)
-                  // }}>
                   onPress={() => this.navigateTo("Bills")}
                 >
                   <Text style={[SharedStyle.normalText, styles.billsText]}>
@@ -931,7 +930,7 @@ class Dashboard extends Component {
                 </TouchItem>
               </View>
               <View style={styles.cardContainer}>
-                <TouchItem
+                {/* <TouchItem
                   style={[styles.card, styles.referral]}
                   onPress={() => {
                     this.navigateTo("Referrals");
@@ -941,26 +940,40 @@ class Dashboard extends Component {
                     {Dictionary.REFER_PEOPLE}
                   </Text>
                   <Icon.SimpleLineIcons
-                    size={Mixins.scaleSize(15)}
+                    name="arrow-right"
                     color={Colors.CV_GREEN}
-                    name="arrow-right"
-                  />
-                </TouchItem>
-                {/* <TouchItem
-                  style={[styles.card, styles.transfers]}
-                  onPress={() => {
-                    this.navigateTo("AddDebitMethod");
-                  }}
-                >
-                  <Text style={[SharedStyle.normalText, styles.transfersText, {fontSize: 13}]}>
-                    {Dictionary.ADD_DEBIT_METHOD}
-                  </Text>
-                  <Icon.SimpleLineIcons
                     size={Mixins.scaleSize(15)}
-                    color={Colors.CV_YELLOW}
-                    name="arrow-right"
                   />
                 </TouchItem> */}
+                <TouchItem
+                  style={[styles.card, styles.airtime]}
+                  onPress={() => {
+                    this.navigateTo("Referrals");
+                  }}
+                >
+                  <Text style={[SharedStyle.normalText, styles.airtimeText]}>
+                    {Dictionary.REFER_PEOPLE}
+                  </Text>
+                  <Image
+                    style={styles.shortCardIcon}
+                    source={require("../../assets/images/dashboard/airtime.png")}
+                  />
+                </TouchItem>
+                <TouchItem
+                  style={[styles.card, { backgroundColor: Colors.DARK_GREEN_BG }]}
+                  onPress={() => {
+                    this.navigateTo("Transactions");
+                  }}
+                >
+                  <Text style={[SharedStyle.normalText, styles.airtimeText, {fontSize: 13}]}>
+                    {Dictionary.TRANSACTIONS}
+                  </Text>
+                  <Icon.Feather
+                    name="bar-chart-2"
+                    color={Colors.CV_BLUE}
+                    size={Mixins.scaleSize(28)}
+                  />
+                </TouchItem>
               </View>
             </View>
             <View style={styles.transactions}>
@@ -1027,22 +1040,86 @@ class Dashboard extends Component {
                       source={require("../../assets/images/dashboard/empty_transactions.png")}
                     />
                   )}
-                  {recent_transactions.map((transaction, index) => {
+                  {recent_transactions.slice(0, 5).map((transaction, index) => {
+                  // {recent_transactions.map((transaction, index) => {
                     return (
                       <TouchItem
                         key={index}
                         style={styles.transaction}
                         onPress={() => {
-                          this.props.navigation.navigate("Receipt", {
-                            transaction_data: transaction,
-                            allow_back: true
-                          });
+                          // this.props.navigation.navigate("Receipt", {
+                          //   transaction_data: transaction,
+                          //   allow_back: true
+                          // });
+                          this.setState({ transaction_data: transaction, receipt_modal_visible: true })
                           Util.logEventData("transactions_view", {
                             transaction_id: transaction.reference
                           });
                         }}
                       >
-                        <View style={[SharedStyle.row, styles.transactionRow]}>
+                          <View style={SharedStyle.row}>
+                            <View
+                              style={{ flexDirection: "row", width: "60%" }}
+                            >
+                              <View
+                                style={{
+                                  width: Mixins.scaleSize(42),
+                                  height: Mixins.scaleSize(42),
+                                  borderRadius: 50,
+                                  backgroundColor: Number(transaction.amount) < 1 ? "#FDE3EA" : "#DFF1C8",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  alignSelf: "center"
+                                }}
+                              >
+                                <Icon.Feather
+                                  name={
+                                    Number(transaction.amount) < 1
+                                      ? "arrow-up-right"
+                                      : "arrow-down-left"
+                                  }
+                                  color={
+                                    Number(transaction.amount) < 1
+                                      ? "#BB0000"
+                                      : "#00BB29"
+                                  }
+                                  size={Mixins.scaleSize(20)}
+                                  // style={{transform: [{rotate:  Number(transaction.amount) < 1 ? '45deg' :}]}}
+                                />
+                              </View>
+
+                              <View style={{ paddingLeft: 10 }}>
+                                <Text numberOfLines={2} style={styles.walletId}>
+                                  {Util.returnNarration(
+                                    transaction.notes,
+                                    transaction.amount
+                                  )}
+                                </Text>
+                                <Text numberOfLines={1} style={[styles.transactionLabel, { paddingTop: 5 }]}>
+                                  {moment(transaction.createdOn).format("DD-MMM")}  |  {moment(transaction.createdOn).format("HH:mm A")}
+                                </Text>
+                              </View>
+                            </View>
+
+                            <View style={{ width: "auto" }}>
+                              <Text
+                                numberOfLines={1}
+                                style={{
+                                  color:
+                                    Number(transaction.amount) < 1
+                                      ? "#BB0000"
+                                      : "#00BB29",
+                                }}
+                              >
+                                ₦<Text style={{fontSize: 16}}>
+                                {Util.formatAmount(
+                                  Math.abs(transaction.amount)
+                                )}
+                                </Text>
+                              </Text>
+                            </View>
+                          </View>
+                        {/* <View style={[SharedStyle.row, styles.transactionRow]}>
                           <Text
                             numberOfLines={1}
                             style={[
@@ -1072,9 +1149,6 @@ class Dashboard extends Component {
                               styles.transactionValue
                             ]}
                           >
-                            {/* {transaction.debitCreditType.toLowerCase() === "dt"
-                              ? "DEBIT"
-                              : "CREDIT"} */}
                             {Number(transaction.amount) < 1
                               ? "DEBIT"
                               : "CREDIT"}
@@ -1091,7 +1165,7 @@ class Dashboard extends Component {
                               "YYYY-MM-DD HH:mm:ss"
                             ).fromNow()}
                           </Text>
-                        </View>
+                        </View> */}
                       </TouchItem>
                     );
                   })}
@@ -1109,82 +1183,81 @@ class Dashboard extends Component {
                 </View>
               )}
             </View>
-          </View>
+          </Animatable.View>
         </_ScrollView>
 
         <Modal
           isVisible={this.state.modal_visible}
+          animationIn={"slideInUp"}
+          onBackdropPress={this.onCloseModal}
           swipeDirection="down"
           onSwipeComplete={this.onCloseModal}
           onBackButtonPress={this.onCloseModal}
-          animationInTiming={500}
-          animationOutTiming={800}
-          backdropTransitionInTiming={500}
-          backdropTransitionOutTiming={800}
+          animationInTiming={300}
+          animationOutTiming={500}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={500}
           useNativeDriver={true}
-          style={styles.modal}
+          style={{ margin: 0 }}
         >
           <View
-            style={[
-              SharedStyle.modalContent,
-              SharedStyle.authModalContent,
-              { height: Mixins.scaleSize(410) },
-            ]}
+            style={{
+              position: "absolute",
+              bottom: 0,
+              width: "100%",
+              borderTopLeftRadius: Mixins.scaleSize(20),
+              borderTopRightRadius: Mixins.scaleSize(20),
+              backgroundColor: "white",
+              ...Mixins.padding(15)
+            }}
           >
-
-            <View style={SharedStyle.modalPanel}>
-              <View style={styles.modalHeader}>
-                <TouchItem
-                  style={styles.icon}
-                  onPress={this.onCloseModal}
-                >
-                  <Icon.Feather
-                    size={Mixins.scaleSize(17)}
-                    style={{ color: Colors.PRIMARY_BLUE }}
-                    name="x"
-                  />
-                </TouchItem>
-                <View style={{ alignItems: "center" }}>
-                    <Image 
-                      //style={{marginBottom: 13}}
-                      source={require('../../assets/images/dashboard/add_card.png')} 
-                    />
-                </View>
+            <View style={styles.modalHeader}>
+              <TouchItem style={styles.icon} onPress={this.onCloseModal}>
+                <Icon.Feather
+                  size={Mixins.scaleSize(20)}
+                  style={{ color: Colors.PRIMARY_BLUE }}
+                  name="x"
+                />
+              </TouchItem>
+            </View>
+            <View>
+              <Text style={styles.title} numberOfLines={1}>
+                Transfer
+              </Text>
+              <View style={{ width: "90%", ...Mixins.padding(15, 0, 0, 0) }}>
+                <Text style={styles.subtitle} numberOfLines={2}>
+                  Sending money has never been easier. We can help you send
+                  money with ease.
+                </Text>
               </View>
-              <View>
-                <View
-                  style={[SharedStyle.modalMiddle, { ...Mixins.padding(16) }]}
-                >
-                  <View style={{ flex: 1, alignItems: "center" }}>
-                    <Text style={styles.greatJob}>Great Job</Text>
-                    <Text
-                      style={[SharedStyle.value, { textTransform: "none", textAlign: "center", fontSize: 14 }]}
-                      numberOfLines={10}
-                    >
-                      {"To enhance security and unlock new features, please click the 'Add Card' button to link your debit card to your savings"}
-                    </Text>
-                    <View style={styles.shield}>
-                      <Image 
-                        style={{marginRight: 7}}
-                        source={require('../../assets/images/dashboard/shield.png')} 
-                      />
-                      <Text style={styles.shieldText}>
-                      By Clicking the cancel Icon, your savings wont be funded
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-                  <View style={FormStyle.formButton}>
-                    <PrimaryButton
-                      title={Dictionary.ADD_CARD_BTN}
-                      centerText
-                      onPress={this.onAddCard}
-                    />
-                  </View>
-              </View>
+            </View>
+            <View style={{ ...Mixins.padding(25, 0, 0, 0) }}>
+              <PrimaryButton
+                hasLeftIcon
+                title={Dictionary.TOUCHGOLD_BANK}
+                icon="arrow-right"                
+                leftIcon="bank"                
+                onPress={() => this.onTransfer("TOUCH_GOLD")}
+              />
+            </View>
+            <View style={{ ...Mixins.padding(15, 0, 15, 0) }}>
+              <PrimaryButton
+                hasLeftIcon
+                title={Dictionary.OTHER_BANK}
+                icon="arrow-right"
+                leftIcon="bank"  
+                onPress={() => this.onTransfer("OTHERS")}
+              />
             </View>
           </View>
         </Modal>
+
+        <TransactionReceipt 
+          onCloseModal={() => this.setState({ receipt_modal_visible: false })} 
+          modal_visible={this.state.receipt_modal_visible}
+          transaction_data={this.state.transaction_data}
+          props={this.props}
+        />
       </ScrollView>
     );
   }
@@ -1400,7 +1473,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.LIGHT_BLUE_BG
   },
   airtimeText: {
-    color: Colors.CV_BLUE
+    color: Colors.CV_BLUE,
   },
   referral: {
     width: "100%",
@@ -1476,14 +1549,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  modal: {
-    // width: Mixins.scaleSize(200),
-    // height: Mixins.scaleSize(400),
-  },
   modalHeader: {
-    backgroundColor: "#f6f7fe",
+    // backgroundColor: "#f6f7fe",
     width: "100%",
     display: "flex"
+  },
+  title: {
+    color: Colors.CV_BLUE,
+    fontFamily: Typography.FONT_FAMILY_REGULAR,
+    fontSize: Mixins.scaleFont(24),
+    fontWeight: "bold",
+    lineHeight: 28.13,
+  },
+  subtitle: {
+    color: Colors.CV_BLUE,
+    fontFamily: Typography.FONT_FAMILY_REGULAR,
+    fontSize: Mixins.scaleFont(14),
+    lineHeight: 16.41,
   },
   shield: {
     display: "flex",
@@ -1506,8 +1588,9 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     backgroundColor: "#F3F3FF",
     borderRadius: 50,
-    marginTop: 10,
-    marginRight: 20
+    // marginTop: 5,
+    padding: 5,
+    // marginRight: 20
   },
   copyButton: {
     flexDirection: 'row',
@@ -1540,8 +1623,7 @@ const mapStateToProps = (state) => {
     settings: state.settings,
     wallet: state.wallet,
     loading_wallet:
-      state.wallet.loading_wallet_data ||
-      state.wallet.loading_wallet_transactions,
+      state.wallet.loading_wallet_data,
     savings: state.savings,
     loans: state.loans,
     notifications: state.notifications

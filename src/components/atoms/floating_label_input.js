@@ -29,7 +29,7 @@ class FloatingLabelInput extends Component {
     }
 
     render() {
-        const { label, isDropdown, createPin, transfer, enterMobile, ...props } = this.props;
+        const { label, isDropdown, createPin, transfer, enterMobile, enterAccount, ...props } = this.props;
         const labelStyle = {
             ...Typography.FONT_REGULAR,
             letterSpacing: Mixins.scaleSize(0.01),
@@ -58,7 +58,7 @@ class FloatingLabelInput extends Component {
                     onFocus={this.handleFocus}
                     onBlur={this.handleBlur}
                     blurOnSubmit
-                    maxLength={createPin ? 4 : enterMobile ? 11 : 1000}
+                    maxLength={createPin ? 4 : enterMobile ? 11 : enterAccount ? 10 : 1000}
                     keyboardType={createPin ? "numeric" :  transfer ? "number-pad" : "default"}
                 />
             </View>
