@@ -11,8 +11,8 @@ class SavingsCard extends Component {
 
     render() {
         const { savings, addDebit, selected } = this.props;
-        const status_code = savings.is_matured === 1 ? 'matured' : savings.status === 0 ? 'onHold' : savings.status === 1 ? 'active' : 'onHold';
-        const status_name = savings.is_matured === 1 ? 'Matured' : savings.status === 0 ? 'On Hold' : savings.status === 1 ? 'Active' : '';
+        const status_code = savings.is_matured === 1 ? 'matured' : savings.status === 2 ? 'onHold' : savings.status === 1 ? 'active' : 'onHold';
+        const status_name = savings.is_matured === 1 ? 'Matured' : savings.status === 2 ? 'In arrears' : savings.status === 1 ? 'Active' : '';
 
         return (
             <View style={styles.container}>

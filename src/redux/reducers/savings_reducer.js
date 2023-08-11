@@ -199,7 +199,7 @@ export default (state = initialState, action) => {
 
             user_savings_data.forEach(savings => {
                 let archived=savings.achieveStatus && savings.achieveStatus=="A"?true:false;
-                let status=savings.status=="ACTIVE"?1:0;
+                let status=savings.status ==="ACTIVE" ? 1 : savings.status === "IN_ARREARS" ? 2 : 0;
                 let savings_data = {
                     id: savings.ID,
                     status,

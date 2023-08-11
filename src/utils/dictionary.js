@@ -608,7 +608,7 @@ export const CREATE_PIN_SUCCESS = "PIN setup successful.";
 export const SYSTEM_UPGRADE_VERIFYPHONE = "Phone Number verified successfully";
 export const THANK_YOU = "Thank You";
 export const TRANSACTION_FAILED = "Transaction Failed";
-export const TRANSFER_PROCESSING = "Your transfer of N%s to %s %s has been successfully submitted for processing."
+export const TRANSFER_PROCESSING = "Your transfer of N%s to %s %s has been successfully completed"
 export const TRANSFER_FAILED = "Could not process your transaction at this time."
 
 export const NO_PHOTO_URL = "No photo added... Please upload photo";
