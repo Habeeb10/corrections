@@ -155,8 +155,8 @@ class Navigator extends Component {
     this.initializeBiometrics();
     this.props.getInformation()
     // this.resetInactivityTimeout();
-    this.checkForOTAUpdate();
-    this.setCodePushVersionNumber();
+    // this.checkForOTAUpdate();
+    // this.setCodePushVersionNumber();
    // AppState.addEventListener("change", this.handleAppStateChange);
     if(this.props.user.show_session_dialog) {
       this.props.hideSessionDialog();

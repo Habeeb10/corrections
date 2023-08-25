@@ -159,8 +159,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         ndkVersion '21.1.6352462'
-        versionCode 24
-        versionName "2.0.5"
+        versionCode 28
+        versionName "2.0.9"
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
     }
     splits {
@@ -234,6 +234,7 @@ dependencies {
 
     // Facebook SDK
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
+    implementation 'com.facebook.soloader:soloader:0.9.0+'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'

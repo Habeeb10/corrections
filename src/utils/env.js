@@ -1,4 +1,4 @@
-export let environment = '';
+export let environment = 'uat';
 
 export default () => {
     if (environment === 'prod') { 
