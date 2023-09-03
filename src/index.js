@@ -49,7 +49,7 @@ class App extends Component {
       (e) => this.handleKeyboardClosed(e)
     );
     this.loadResources();
-    this.checkVersion();
+    // this.checkVersion();
     LogBox.ignoreLogs(["Setting a timer"]);
   }
 
