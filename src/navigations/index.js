@@ -649,18 +649,20 @@ class Navigator extends Component {
             </View>
           </Modal>
           {this.props.user.show_session_dialog && (
-            <SessionTimeout
-              isVisible={this.props.user.show_session_dialog}
-              onTimeOut={() => {
-                this.props.hideSessionDialog();
-                NavigatorService.navigate("Login");
-                this.handleLogOut();
-              }}
-              onContinue={() => {
-                this.props.hideSessionDialog();
-                this.props.registerSessionListener(this.props.user.user_data);
-              }}
-            />
+            // <SessionTimeout
+            //   isVisible={this.props.user.show_session_dialog}
+            //   onTimeOut={() => {
+            //     this.props.hideSessionDialog();
+            //     NavigatorService.navigate("Login");
+            //     this.handleLogOut();
+            //   }}
+            //   onContinue={() => {
+            //     this.props.hideSessionDialog();
+            //     this.props.registerSessionListener(this.props.user.user_data);
+            //   }}
+            // />
+            NavigatorService.navigate("Login"),
+            this.handleLogOut()
           )}
          {this.props.settings.app_is_updating && <UpdatingScreen2 />}
         </View>

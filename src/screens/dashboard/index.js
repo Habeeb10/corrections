@@ -772,7 +772,7 @@ class Dashboard extends Component {
                 <TouchItem
                   style={[styles.card, styles.longCard]}
                   onPress={() => {
-                    this.props.showToast(Dictionary.COMMING_SOON_CLICK);
+                    // this.props.showToast(Dictionary.COMMING_SOON_CLICK);
                   }}
                 >
                   {/* onPress={() => this.navigateTo('Loans')}> */}
@@ -809,6 +809,33 @@ class Dashboard extends Component {
                             >
                               {Dictionary.GET_LOAN}
                             </Text>
+                            <Animatable.Text 
+                              animation="zoomIn" 
+                              iterationCount={"infinite"} 
+                              direction="alternate"
+                              style={[
+                                SharedStyle.normalText,
+                                styles.longCardNormalText,
+                                {
+                                  ...Typography.FONT_BOLD,
+                                  color: Colors.CV_RED
+                                }
+                              ]}
+                            >
+                              {Dictionary.COMING_SOON}
+                            </Animatable.Text>
+                              {/* <Text
+                                style={[
+                                  SharedStyle.normalText,
+                                  styles.longCardNormalText,
+                                  {
+                                    ...Typography.FONT_BOLD,
+                                    color: Colors.CV_RED
+                                  }
+                                ]}
+                              >
+                                {Dictionary.COMING_SOON}
+                              </Text> */}
                             {!!lowest_loan && (
                               <Text
                                 style={[

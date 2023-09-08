@@ -286,15 +286,15 @@ class Password extends Component {
     if (activated === 1) {
       target = "Dashboard";
     } 
-    else if (validDevice == "N") {
-      target = "AuthorizeDevice";
-      this.props.showToastNav("This device is not authorized", {
-        action: this.handleAuthorizeDevice,
-        actionText: Dictionary.AUTHORIZE_DEVICE_BTN,
-      });
+    // else if (validDevice == "N") {
+    //   target = "AuthorizeDevice";
+    //   this.props.showToastNav("This device is not authorized", {
+    //     action: this.handleAuthorizeDevice,
+    //     actionText: Dictionary.AUTHORIZE_DEVICE_BTN,
+    //   });
 
-      return;
-    } 
+    //   return;
+    // } 
     else if (stage === "0") {
       target = "EnterBVN";
     } else if (stage === "1") {

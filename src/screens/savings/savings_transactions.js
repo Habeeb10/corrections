@@ -256,21 +256,21 @@ class SavingsTransactions extends Component {
           </MenuOptions>
         </Menu>
 
-        {/* {loading && (
+        {loading && (
           <View style={SharedStyle.loaderContainer}>
             <ActivityIndicator size="large" color={Colors.CV_YELLOW} />
           </View>
-        )} */}
+        )}
 
-        {/* {!loading && transaction_groups.length === 0 && (
+        {!loading && transaction_groups.length === 0 && (
           <View style={SharedStyle.loaderContainer}>
             <Text style={SharedStyle.normalText}>
               {Dictionary.NO_TRANSACTIONS}
             </Text>
           </View>
-        )} */}
+        )}
 
-        {/* {!loading && !!transaction_groups?.[0]?.transaction_data && (
+        {!loading && !!transaction_groups?.[0]?.transaction_data && (
           <>
             <View style={styles.formContainer}>
               <FlatList
@@ -282,14 +282,7 @@ class SavingsTransactions extends Component {
               />
             </View>
           </>
-        )} */}
-
-        {/* Remove on next sprint, an uncomment the above */}
-        <View style={SharedStyle.loaderContainer}>
-          <Text style={SharedStyle.normalText}>
-            {Dictionary.NO_TRANSACTIONS}
-          </Text>
-        </View>
+        )}
       </View>
     );
   }

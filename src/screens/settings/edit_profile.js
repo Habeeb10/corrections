@@ -37,7 +37,9 @@ class EditProfile extends Component {
                 // ,{label:"Brother",value:"Brother"}
                 // ,{label:"Brother",value:"Brother"}
               ],
-            marital_status: user_data.maritalStatus || '',
+            marital_status: {
+                "label": user_data.maritalStatus || '', "value": user_data.maritalStatus || ''
+            },
             //marital_status: user_data.maritalStatus ?{label:Util.capitalizeFirstLetter(user_data.maritalStatus),value:user_data.maritalStatus} : '',
             marital_status_error: '',
             address: user_data.address.length>0? user_data.address[0].address1: '',
