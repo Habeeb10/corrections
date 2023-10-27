@@ -9,6 +9,7 @@ import {
   Animated,
   Platform,
   ImageBackground,
+  TouchableOpacity,
 } from "react-native";
 import { withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
@@ -23,6 +24,7 @@ import { SharedStyle, FormStyle, Mixins, Colors, Typography } from "_styles";
 import { SubHeader, ScrollView, FloatingLabelInput, TouchItem } from "_atoms";
 import { MainHeader } from "_organisms";
 import { PrimaryButton } from "_molecules";
+import { AntDesign } from "@expo/vector-icons";
 
 import { Network } from "_services";
 
@@ -85,6 +87,9 @@ class Login extends Component {
 
   loadSignUp = () => {
     this.props.navigation.navigate("EnterMobile");
+  };
+  getHelp = () => {
+    this.props.navigation.navigate("GetHelpSupport"); // Check if this navigation is correct
   };
 
   handleSubmit = () => {
@@ -193,11 +198,22 @@ class Login extends Component {
           title={""}
         />
         <ScrollView {...this.props}>
-          <View style={FormStyle.formContainer}>
-            <Text style={styles.login}>Login</Text>
-            <Text style={styles.enter}>
-              Enter your phone number to continue
-            </Text>
+          <View style={styles.formContainer}>
+            <View>
+              <Text style={styles.login}>Login</Text>
+              <Text style={styles.enter}>
+                Enter your phone number to continue
+              </Text>
+            </View>
+            <TouchItem style={styles.gethelpContainer} onPress={this.getHelp}>
+              {/* <Image
+                source={require("../../../src/assets/images/login/help-circle.png")}
+                style={styles.questionMark}
+                resizeMode="contain"
+              /> */}
+              <AntDesign name="questioncircleo" size={17} color="#000000" />
+              <Text style={styles.getHelp}>Get Help</Text>
+            </TouchItem>
           </View>
           <View style={FormStyle.formContainer}>
             {/* <Text style={styles.phone}>Phone Number</Text> */}
@@ -222,36 +238,36 @@ class Login extends Component {
                       name="arrow-down"
                     />
                   </View> */}
-                  <FloatingLabelInput
-                    value={this.state.phone_number}
-                    keyboardType={"number-pad"}
-                    multiline={false}
-                    autoCorrect={false}
-                    enterMobile
-                    //placeholder={Dictionary.PHONE_NUMBER_LABEL}
-                    //placeholderTextColor={Colors.CV_BLUE}
-                    label={Dictionary.PHONE_NUMBER_LABEL}
-                    style={{ width: "100%" }}
-                    onChangeText={(text) =>
-                      this.setState({
-                        phone_number: text,
-                        phone_number_error: "",
-                      })
-                    }
-                    editable={!this.state.processing}
-                    onFocus={this.handleFocus}
-                    onBlur={this.handleBlur}
-                    blurOnSubmit
-                  />
-                {/* </View> */}
-                <Text
-                  style={[
-                    FormStyle.formError,
-                    // { ...Mixins.margin(-50, 0, 0, 0) },
-                  ]}
-                >
-                  {this.state.phone_number_error}
-                </Text>
+              <FloatingLabelInput
+                value={this.state.phone_number}
+                keyboardType={"number-pad"}
+                multiline={false}
+                autoCorrect={false}
+                enterMobile
+                //placeholder={Dictionary.PHONE_NUMBER_LABEL}
+                //placeholderTextColor={Colors.CV_BLUE}
+                label={Dictionary.PHONE_NUMBER_LABEL}
+                style={{ width: "100%" }}
+                onChangeText={(text) =>
+                  this.setState({
+                    phone_number: text,
+                    phone_number_error: "",
+                  })
+                }
+                editable={!this.state.processing}
+                onFocus={this.handleFocus}
+                onBlur={this.handleBlur}
+                blurOnSubmit
+              />
+              {/* </View> */}
+              <Text
+                style={[
+                  FormStyle.formError,
+                  // { ...Mixins.margin(-50, 0, 0, 0) },
+                ]}
+              >
+                {this.state.phone_number_error}
+              </Text>
               {/* </View> */}
             </View>
 
@@ -286,6 +302,32 @@ class Login extends Component {
 }
 
 const styles = StyleSheet.create({
+  getHelp: {
+    color: Colors.BLACK,
+    fontSize: 14,
+    fontWeight: "400",
+    paddingLeft: 5,
+  },
+  // questionMark: {
+  //   width: 18,
+  //   height: 18,
+  // },
+  gethelpContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderRadius: 50,
+    backgroundColor: "#F5F5F5",
+    alignItems: "center",
+    borderRadius: 10,
+    height: 28,
+    paddingHorizontal: 5,
+    width: 90,
+  },
+  formContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    ...Mixins.margin(40, 16, 0, 16),
+  },
   row: {
     display: "flex",
     flexDirection: "row",
