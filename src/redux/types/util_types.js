@@ -1,4 +1,0 @@
-export const STATUS_BAR_STYLE = 'STATUS_BAR_STYLE';
-
-export const SHOW_EXIT_DIALOG = 'SHOW_EXIT_DIALOG';
-export const HIDE_EXIT_DIALOG = 'HIDE_EXIT_DIALOG';

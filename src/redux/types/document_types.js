@@ -1,3 +1,0 @@
-export const START_LOAD_DOCS = 'START_LOAD_DOCS';
-export const LOAD_DOCS = 'LOAD_DOCS';
-export const LOAD_DOCS_FAILED = 'LOAD_DOCS_FAILED';
