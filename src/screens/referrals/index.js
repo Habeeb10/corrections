@@ -585,6 +585,7 @@ import {
   Image,
   Share,
   Dimensions,
+  TextInput,
 } from "react-native";
 import { connect } from "react-redux";
 import { withNavigationFocus } from "react-navigation";
@@ -601,6 +602,7 @@ import { ScrollView, TouchItem } from "_atoms";
 import { PrimaryButton } from "_molecules";
 import { MainHeader } from "_organisms";
 import axios from "axios";
+import { Network } from "_services";
 
 const { width } = Dimensions.get("window");
 
@@ -623,7 +625,11 @@ class Referrals extends Component {
       referral_message,
       referral_link: `${linkPrefix}${referral_code}`,
       referral_code,
+      edited_referral_code: referral_code,
       shareURL: "",
+      isEdited: false, // Track if the input has been edited
+      isUpdating: false,
+      disabled: false,
     };
   }
 
@@ -680,6 +686,7 @@ class Referrals extends Component {
     let { referral_message } = this.state;
 
     let { referral_activities, referal_code } = this.props.user;
+    let isEdited = this.state.referral_code != this.state.edited_referral_code;
 
     if (this.props.user.loading_referral_activities) {
       return (
@@ -811,24 +818,58 @@ class Referrals extends Component {
           </View>
           <View style={SharedStyle.bottomPanel}>
             <View style={[FormStyle.formButton, styles.invite]}>
-              <View style={styles.inviteTextView}>
-                <Text style={styles.inviteCode}>{referal_code}</Text>
-              </View>
+              <TextInput
+                style={styles.inviteTextView}
+                value={this.state.edited_referral_code}
+                onChangeText={(text) => {
+                  this.setState({ ...this.state, edited_referral_code: text });
+                }}
+              />
               <TouchItem
                 style={styles.inviteButton}
-                onPress={() => {
-                  Clipboard.setString(referal_code);
-                  this.props.showToast(Dictionary.REFERRAL_CODE_COPIED, false);
+                onPress={async () => {
+                  // if the isEdited, update the referral_code
+                  if (isEdited) {
+                    this.setState({ isUpdating: true });
+                    Network.updateReferralCode({
+                      oldReferralCode: this.state.referral_code,
+                      newReferralCode: this.state.edited_referral_code,
+                    }).then((res) => {
+                      console.log({ res });
+
+                      // if success request, update referral_code
+                      this.setState({
+                        ...this.state,
+                        referral_code: this.state.edited_referral_code,
+                        isUpdating: false, // Turn off the ActivityIndicator,
+                      });
+                      // setUpdating loading to false
+                    });
+                  } else {
+                    Clipboard.setString(this.state.edited_referral_code);
+                    this.props.showToast(
+                      Dictionary.REFERRAL_CODE_COPIED,
+                      false
+                    );
+                  }
                 }}
               >
-                <Icon.Ionicons
-                  name={"copy-outline"}
-                  color={Colors.WHITE}
-                  size={Mixins.scaleSize(14)}
-                />
-                <Text style={styles.inviteButtonText}>
-                  {Dictionary.COPY_LINK}
-                </Text>
+                {this.state.isUpdating ? ( // Check the isUpdating state to determine whether to show ActivityIndicator
+                  <ActivityIndicator color={Colors.WHITE} size="small" />
+                ) : (
+                  <>
+                    {!isEdited && (
+                      <Icon.Ionicons
+                        name={"copy-outline"}
+                        color={Colors.WHITE}
+                        size={Mixins.scaleSize(14)}
+                      />
+                    )}
+                    <Text style={styles.inviteButtonText}>
+                      {isEdited ? Dictionary.UPDATE_LINK : Dictionary.COPY_LINK}
+                    </Text>
+                  </>
+                )}
               </TouchItem>
             </View>
             <View style={FormStyle.formButton}>

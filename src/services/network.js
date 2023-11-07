@@ -4,7 +4,7 @@ import {
   getManufacturerSync,
   getModel,
   getDeviceId,
-  getReadableVersion
+  getReadableVersion,
 } from "react-native-device-info";
 import axios from "axios";
 
@@ -38,7 +38,7 @@ const axiosConfig = {
     // "X-Api-Key": env().api_key,
     "X-Mobile-OS": Platform.OS,
     // accessKey: env().accessKey
-  }
+  },
 };
 let axiosInstance = axios.create(axiosConfig);
 
@@ -81,7 +81,7 @@ const apiCall = async (
   // const authorization = with_basic_auth
   //   ? `Basic ${env().signature}`
   //   : `${user_data.token}`;
-  const authorization =`${user_data.token||""}`;
+  const authorization = `${user_data.token || ""}`;
   const session_id = user_data.session_id;
 
   let headers = { apiKey: authorization, ...additional_headers };
@@ -123,33 +123,30 @@ const makeApiCall = async (
 
         if (!result.data.status) {
           resolve(result.data.data || result.data);
-        }
-       else if (result.data.status == "failed") {
+        } else if (result.data.status == "failed") {
           reject({
             message: result.data.message,
-            status: "error"
+            status: "error",
           });
         } else if (
           result.data.status === "SUCCESS" ||
           result.data.status === "success" ||
-          result.data.resp &&( result.data.resp.code  == ResponseCodes.SUCCESS_CODE)
+          (result.data.resp &&
+            result.data.resp.code == ResponseCodes.SUCCESS_CODE)
         ) {
           resolve(result.data.data || result.data);
         } else if (
           result.data.status === "pending" ||
-          result.status === "pending" 
+          result.status === "pending"
         ) {
           resolve(result.data.data || result.data);
-        
-        } 
-        
-        else {
+        } else {
           reject({
             message:
               result.data.resp.message ||
               result.resp.message ||
               result.data.message,
-            status: "error"
+            status: "error",
           });
         }
       })
@@ -161,10 +158,13 @@ const makeApiCall = async (
           data.http_status = status;
           if (
             status === 401 &&
-            !(url === Endpoints.VALIDATE_PIN || url === Endpoints.VALIDATE_USER && method === "post")
+            !(
+              url === Endpoints.VALIDATE_PIN ||
+              (url === Endpoints.VALIDATE_USER && method === "post")
+            )
           ) {
             // A 401 from an endpoint other than authorization pin validation
-            console.log("forbidden", result)
+            console.log("forbidden", result);
             if (!alert_present) {
               alert_present = true;
               Alert.alert(
@@ -176,8 +176,8 @@ const makeApiCall = async (
                     onPress: () => {
                       alert_present = false;
                       NavigatorService.navigate("Login");
-                    }
-                  }
+                    },
+                  },
                 ],
                 { cancelable: false }
               );
@@ -186,8 +186,8 @@ const makeApiCall = async (
             if (typeof result.data === "undefined") {
               //alert()
               reject(result);
-            } 
-            
+            }
+
             // else if (data.data.resp.code === "cv96") {
             //   Alert.alert(
             //     Dictionary.FAILED_ATTEMPT,
@@ -197,10 +197,10 @@ const makeApiCall = async (
             //         text: "Ok",
             //         onPress: () => {
             //           alert_present = false;
-            //           NavigatorService.navigate("Login");  
+            //           NavigatorService.navigate("Login");
             //           logoutUser().then((result) => {
             //             if (result.status === 200) {
-            //                 console.log("Logout successful")  
+            //                 console.log("Logout successful")
             //             }
             //           }).catch((e) => console.log("Logout error message", e))
             //         }
@@ -208,10 +208,9 @@ const makeApiCall = async (
             //     ],
             //     { cancelable: false }
             //   );
-            // } 
-            
+            // }
             else {
-              reject(result.data.resp||result.data.responseData);
+              reject(result.data.resp || result.data.responseData);
             }
           }
         } else {
@@ -222,12 +221,12 @@ const makeApiCall = async (
           if ("Network Error" === error.message) {
             reject({
               message: Dictionary.NETWORK_ERROR,
-              status: "error"
+              status: "error",
             });
           } else {
             reject({
               message: Dictionary.GENERAL_ERROR,
-              status: "error"
+              status: "error",
             });
           }
         }
@@ -254,7 +253,7 @@ export const authenticateUser = async (
     version_id: VERSION_ID,
     mobile_os: Platform.OS,
     os_version: Platform.OS + " " + Platform.Version,
-    deviceName: DEVICE_NAME
+    deviceName: DEVICE_NAME,
   };
   return makeApiCall(BASIC_AUTH, Endpoints.LOGIN_USER, "post", payload);
 };
@@ -264,25 +263,29 @@ export const refreshToken = async (token) => {
 };
 
 export const logoutUser = async () => {
-
   const user_data = store.getState().user.user_data;
 
-  return axios.get(`${Endpoints.LOGOUT_USER}`,{
-    headers:{
-      "apiKey":user_data.token
-    }
-  })
+  return axios.get(`${Endpoints.LOGOUT_USER}`, {
+    headers: {
+      apiKey: user_data.token,
+    },
+  });
 };
 
 export const resetPassword = async (phoneNumber, newPassword, otp) => {
   return makeApiCall(BASIC_AUTH, Endpoints.FORGOT_PASSWORD, "post", {
     phoneNumber,
     newPassword,
-    otp
+    otp,
   });
 };
 
-export const setFirstTimePassword = async (phoneNumber, newPassword, clientId, otp) => {
+export const setFirstTimePassword = async (
+  phoneNumber,
+  newPassword,
+  clientId,
+  otp
+) => {
   return makeApiCall(BASIC_AUTH, Endpoints.FIRSTIME_PASSWORD, "post", {
     token: "101e9c2e-f5a4-4122-be42-4f12e3074b10",
     newPassword,
@@ -292,7 +295,7 @@ export const setFirstTimePassword = async (phoneNumber, newPassword, clientId, o
     userType: "CUSTOMER",
     otp,
     deviceId: DEVICE_ID,
-    deviceName: DEVICE_NAME
+    deviceName: DEVICE_NAME,
   });
 };
 
@@ -306,7 +309,7 @@ export const initializeSignUp = async (
     phoneNumber,
     referralCode,
     latitude,
-    longitude
+    longitude,
   });
 };
 
@@ -322,10 +325,10 @@ export const validateOTP = async (
   otp,
   otpType,
   notificationType,
-  otpId=""
+  otpId = ""
 ) => {
   return makeApiCall(BASIC_AUTH, Endpoints.AUTHENTICATE_OTP, "post", {
-    otpId:otpId==""? phone_number:otpId,
+    otpId: otpId == "" ? phone_number : otpId,
     otp,
     otpType,
     notificationType,
@@ -333,22 +336,23 @@ export const validateOTP = async (
   });
 };
 
-export const verifyEmail = async (
-  phone_number,
-  otp,
-  emailAddress
-) => {
+export const verifyEmail = async (phone_number, otp, emailAddress) => {
   return makeApiCall(BASIC_AUTH, Endpoints.VERIFY_EMAIL, "post", {
     phoneNumber: phone_number,
     otp,
-   
-    emailAddress
+
+    emailAddress,
   });
 };
 
-export const requestOtp = async (phone_number, otpType, notificationType,otpId="") => {
+export const requestOtp = async (
+  phone_number,
+  otpType,
+  notificationType,
+  otpId = ""
+) => {
   return makeApiCall(BASIC_AUTH, Endpoints.REQUEST_OTP, "post", {
-    otpId: otpId==""?phone_number:otpId,
+    otpId: otpId == "" ? phone_number : otpId,
     otpType,
     notificationType,
     // sendSource: phone_number
@@ -364,7 +368,7 @@ export const createPassword = async (
     phone_number,
     password,
     confirmation_id,
-    device_id: DEVICE_ID
+    device_id: DEVICE_ID,
   });
 };
 
@@ -397,7 +401,7 @@ export const createCustomer = async (
     mobileOs: Platform.OS,
     mobileOsVer: Platform.OS + " " + Platform.Version,
     deviceName: DEVICE_NAME,
-    mobileVersionId: VERSION_ID
+    mobileVersionId: VERSION_ID,
   });
 };
 
@@ -427,9 +431,9 @@ export const completeOnboarding = async (
         street: "",
         addressType: "Rent",
         city: "",
-        country: "Nigeria"
-      }
-    ]
+        country: "Nigeria",
+      },
+    ],
   });
 };
 
@@ -442,7 +446,7 @@ export const validateBVN = async (bvn, bvn_phone_number, dob, otp) => {
     bvn,
     bvn_phone_number,
     dob,
-    otp
+    otp,
   });
 };
 
@@ -485,21 +489,21 @@ export const getUserDocuments = async () => {
 export const addUserDocument = async (type_id, url) => {
   return makeApiCall(BEARER_AUTH, Endpoints.DOCUMENTS, "post", {
     type_id,
-    url
+    url,
   });
 };
 
 export const updateUserDocument = async (user_id, type_id, url) => {
   return makeApiCall(BEARER_AUTH, `${Endpoints.DOCUMENTS}/${user_id}`, "put", {
     type_id,
-    url
+    url,
   });
 };
 
 export const getDeviceActivationToken = async (phone_number) => {
   return makeApiCall(BASIC_AUTH, Endpoints.DEVICE_ACTIVATION, "post", {
     phone_number,
-    device_id: DEVICE_ID
+    device_id: DEVICE_ID,
   });
 };
 
@@ -512,25 +516,28 @@ export const activateDevice = async (phoneNumber) => {
     mobileOs: Platform.OS,
     mobileOsVer: Platform.OS + " " + Platform.Version,
     deviceName: DEVICE_NAME,
-    mobileVersionId: VERSION_ID
+    mobileVersionId: VERSION_ID,
   });
 };
 
-export const changePassword = async (old_password, new_password,phoneNumber) => {
+export const changePassword = async (
+  old_password,
+  new_password,
+  phoneNumber
+) => {
   return makeApiCall(false, Endpoints.CHANGE_PASSWORD, "post", {
     oldPassword: old_password,
-    newPassword:new_password,
-    confirmPassword:new_password,
-    userType:"",
-    phoneNumber
-
+    newPassword: new_password,
+    confirmPassword: new_password,
+    userType: "",
+    phoneNumber,
   });
 };
 
 export const changePIN = async (oldPin, newPin) => {
   return makeApiCall(false, Endpoints.CHANGE_PIN, "post", {
     oldPin,
-    newPin
+    newPin,
   });
 };
 
@@ -541,7 +548,7 @@ export const forgotPIN = async () => {
 export const resetPIN = async (otp, new_pin) => {
   return makeApiCall(BEARER_AUTH, Endpoints.RESET_PIN, "post", {
     otp,
-    newPin:new_pin
+    newPin: new_pin,
   });
 };
 
@@ -551,7 +558,7 @@ export const validatePIN = async (pin) => {
 
 export const registerFcmToken = async (notification_token) => {
   return makeApiCall(BEARER_AUTH, Endpoints.STORE_NOTIFICATION_TOKEN, "put", {
-    notification_token
+    notification_token,
   });
 };
 
@@ -564,19 +571,36 @@ export const getUserProfile = async () => {
 };
 
 export const getUserReferralActivities = async (code) => {
-  return makeApiCall(BEARER_AUTH, `${Endpoints.REFERRAL_ACTIVITIES}/${code}`, "get");
+  return makeApiCall(
+    BEARER_AUTH,
+    `${Endpoints.REFERRAL_ACTIVITIES}/${code}`,
+    "get"
+  );
 };
 
 export const getReferralActivitiesRunning = async (code) => {
-  return makeApiCall(BEARER_AUTH, `${Endpoints.REFERRAL_ACTIVITIES}/${code}/RUNNING`, "get");
+  return makeApiCall(
+    BEARER_AUTH,
+    `${Endpoints.REFERRAL_ACTIVITIES}/${code}/RUNNING`,
+    "get"
+  );
 };
 
 export const getReferralActivitiesMatured = async (code) => {
-  return makeApiCall(BEARER_AUTH, `${Endpoints.REFERRAL_ACTIVITIES}/${code}/MATURED`, "get");
+  return makeApiCall(
+    BEARER_AUTH,
+    `${Endpoints.REFERRAL_ACTIVITIES}/${code}/MATURED`,
+    "get"
+  );
 };
 
 export const doReferralTransfer = async (transfer_data) => {
-  return makeApiCall(BEARER_AUTH, `${Endpoints.REFERRAL_ACTIVITIES}/transfer`, "post", transfer_data);
+  return makeApiCall(
+    BEARER_AUTH,
+    `${Endpoints.REFERRAL_ACTIVITIES}/transfer`,
+    "post",
+    transfer_data
+  );
 };
 
 export const getProfileOptions = async () => {
@@ -613,20 +637,28 @@ export const getUserAccounts = async () => {
 };
 
 export const initAddCard = async (payload) => {
-  return makeApiCall(BEARER_AUTH, Endpoints.INIT_ADD_USER_CARD, "post",payload);
+  return makeApiCall(
+    BEARER_AUTH,
+    Endpoints.INIT_ADD_USER_CARD,
+    "post",
+    payload
+  );
 };
 
 export const fundSavingsWithCard = async (payload) => {
-  return makeApiCall(BEARER_AUTH, Endpoints.FUND_SAVINGS_CARD, "post",payload);
+  return makeApiCall(BEARER_AUTH, Endpoints.FUND_SAVINGS_CARD, "post", payload);
 };
-
 
 export const verifyAddCard = async (reference) => {
   return makeApiCall(BEARER_AUTH, Endpoints.USER_CARD, "post", { reference });
 };
 
 export const verifyPAymentByReference = async (reference) => {
-  return makeApiCall(BEARER_AUTH, `${Endpoints.VERIFY_PAYMENT_BY_REF}/${reference}`, "get");
+  return makeApiCall(
+    BEARER_AUTH,
+    `${Endpoints.VERIFY_PAYMENT_BY_REF}/${reference}`,
+    "get"
+  );
 };
 
 export const allArchiveSavings = async () => {
@@ -637,12 +669,16 @@ export const getReferalCode = async () => {
   return makeApiCall(BEARER_AUTH, `${Endpoints.GET_REFERAL_CODE}`, "get");
 };
 
-export const deleteUserCard = async (card_id) => {
+export const updateReferralCode = async (data) => {
   return makeApiCall(
     BEARER_AUTH,
-    `${Endpoints.CARDS}/${card_id}`,
-    "delete"
+    `${Endpoints.UPDATE_REFERAL_CODE}`,
+    "post",
+    data
   );
+};
+export const deleteUserCard = async (card_id) => {
+  return makeApiCall(BEARER_AUTH, `${Endpoints.CARDS}/${card_id}`, "delete");
 };
 
 export const getBankOptions = async () => {
@@ -652,7 +688,7 @@ export const getBankOptions = async () => {
 export const addUserBank = async (account_number, bank_code) => {
   return makeApiCall(BEARER_AUTH, Endpoints.USER_BANKS, "post", {
     account_number,
-    bank_code
+    bank_code,
   });
 };
 
@@ -715,16 +751,16 @@ export const getSavingsBreakdown = async (tenor_options) => {
 };
 
 export const fundWalletPaystack = async (data) => {
-  return makeApiCall(
-    false,
-    Endpoints.FUND_WALLET_PAY_STACK,
-    "post",
-    data
-  );
+  return makeApiCall(false, Endpoints.FUND_WALLET_PAY_STACK, "post", data);
 };
 
 export const createSavingsPlan = async (savings_data) => {
-  return makeApiCall(BEARER_AUTH, Endpoints.CREATE_SAVINGS, "post", savings_data);
+  return makeApiCall(
+    BEARER_AUTH,
+    Endpoints.CREATE_SAVINGS,
+    "post",
+    savings_data
+  );
 };
 
 export const updateSavingsPlan = async (plan_id, plan_data) => {
@@ -741,15 +777,8 @@ export const getUserSavingsData = async (id) => {
 };
 
 export const topUpSavingsPlan = async (topup_data) => {
-  return makeApiCall(
-    false,
-    `${Endpoints.TOP_UP_SAVINGS}`,
-    "post",
-    topup_data
-  );
+  return makeApiCall(false, `${Endpoints.TOP_UP_SAVINGS}`, "post", topup_data);
 };
-
-
 
 export const getWithdrawalWarning = async (account_no, amount) => {
   return makeApiCall(
@@ -834,7 +863,7 @@ export const submitLoanRequest = async (loan_application) => {
 
 export const getLoanSchedules = async (token) => {
   return makeApiCall(BEARER_AUTH, Endpoints.GET_LOAN_PAYMENT_SCHEDULE, "post", {
-    token
+    token,
   });
 };
 
@@ -887,11 +916,11 @@ export const getUserWalletData = async (id) => {
   //   ? `Basic ${env().signature}`
   //   : `${user_data.token}`;
 
-  return axios.get(`${Endpoints.SAVINGS}/${id}`,{
-    headers:{
-      "apiKey":user_data.token
-    }
-  })
+  return axios.get(`${Endpoints.SAVINGS}/${id}`, {
+    headers: {
+      apiKey: user_data.token,
+    },
+  });
 
   //return makeApiCall(false, Endpoints.USER_WALLET, "get");
 };
@@ -953,20 +982,33 @@ export const getTransactionDetails = async (transaction_id) => {
 };
 
 export const getTransferBeneficiaryData = async (bvn) => {
-  return makeApiCall(BEARER_AUTH, `${Endpoints.CREDITVILLE_ONBOARDING}/customer/${bvn}/beneficiaries`, "get");
+  return makeApiCall(
+    BEARER_AUTH,
+    `${Endpoints.CREDITVILLE_ONBOARDING}/customer/${bvn}/beneficiaries`,
+    "get"
+  );
 };
 
 export const getCustomerBeneficiaryData = async (clientId, isIntra) => {
-  return makeApiCall(BEARER_AUTH, `${Endpoints.CREDITVILLE_ONBOARDING}/customer/beneficiaries`, "post", {
-    clientId,
-    intra: isIntra
-  });
+  return makeApiCall(
+    BEARER_AUTH,
+    `${Endpoints.CREDITVILLE_ONBOARDING}/customer/beneficiaries`,
+    "post",
+    {
+      clientId,
+      intra: isIntra,
+    }
+  );
 };
 
 export const addTransferBeneficiary = async (body) => {
-  return makeApiCall(BEARER_AUTH, `${Endpoints.ADD_TRANSFER_BENEFICIARIES}`, "post",body);
+  return makeApiCall(
+    BEARER_AUTH,
+    `${Endpoints.ADD_TRANSFER_BENEFICIARIES}`,
+    "post",
+    body
+  );
 };
-
 
 export const doIntraBankNameEnquiry = async (accountNumber) => {
   return makeApiCall(
@@ -976,16 +1018,13 @@ export const doIntraBankNameEnquiry = async (accountNumber) => {
   );
 };
 
-
 export const doNameEnquiry = async (body) => {
   return makeApiCall(
     BEARER_AUTH,
     `${Endpoints.NAME_ENQUIRY}?bankAccountNumber=${body.AccountNumber}&bankCode=${body.DestinationInstitutionCode}&channelCode=${body.ChannelCode}`,
-    "get",
-    
+    "get"
   );
 };
-
 
 export const doTransferIntra = async (transfer_data) => {
   return makeApiCall(
@@ -1030,10 +1069,13 @@ export const payBill = async (transaction_data) => {
 };
 
 export const payCableBill = async (transaction_data) => {
-  return makeApiCall(BEARER_AUTH, `${Endpoints.CABLE_PAYMENT}`, "post", transaction_data);
+  return makeApiCall(
+    BEARER_AUTH,
+    `${Endpoints.CABLE_PAYMENT}`,
+    "post",
+    transaction_data
+  );
 };
-
-
 
 export const buyAirtime = async (transaction_data) => {
   return makeApiCall(
@@ -1052,12 +1094,16 @@ export const validateUser = async (phone_number) => {
   const payload = {
     phoneNumber: phone_number,
   };
-  
+
   return makeApiCall(BASIC_AUTH, Endpoints.VALIDATE_USER, "post", payload);
 };
 
 export const getReceipt = async (transaction_id) => {
-  return makeApiCall(BEARER_AUTH, `${Endpoints.GET_RECEIPT}/${transaction_id}`, "get");
+  return makeApiCall(
+    BEARER_AUTH,
+    `${Endpoints.GET_RECEIPT}/${transaction_id}`,
+    "get"
+  );
 };
 
 export const getInformation = async () => {
