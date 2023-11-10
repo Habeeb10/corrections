@@ -5,7 +5,6 @@ export default () => {
     /* ===== PROD ===== */
     return {
       target: environment,
-
       creditVille: "https://vigil.lendsqr.com/pecunia/api",
       utility: "",
       signature: "",
@@ -29,7 +28,6 @@ export default () => {
     /* ===== DEV ===== */
     return {
       target: environment,
-
       creditVille: "https://creditvilleprelive.com",
       utility: "",
       signature: "=",
