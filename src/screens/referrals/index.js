@@ -825,7 +825,6 @@ class Referrals extends Component {
                   this.setState({ ...this.state, edited_referral_code: text });
                 }}
               />
-              {/* <TouchItem
               <TouchItem
                 style={styles.inviteButton}
                 onPress={async () => {
@@ -852,70 +851,6 @@ class Referrals extends Component {
                       Dictionary.REFERRAL_CODE_COPIED,
                       false
                     );
-                  }
-                }}
-              >
-                {this.state.isUpdating ? ( // Check the isUpdating state to determine whether to show ActivityIndicator
-                  <ActivityIndicator color={Colors.WHITE} size="small" />
-                ) : (
-                  <>
-                    {!isEdited && (
-                      <Icon.Ionicons
-                        name={"copy-outline"}
-                        color={Colors.WHITE}
-                        size={Mixins.scaleSize(14)}
-                      />
-                    )}
-                    <Text style={styles.inviteButtonText}>
-                      {isEdited ? Dictionary.UPDATE_LINK : Dictionary.COPY_LINK}
-                    </Text>
-                  </>
-                )}
-              </TouchItem> */}
-              <TouchItem
-                style={styles.inviteButton}
-                onPress={async () => {
-                  try {
-                    // if the isEdited, update the referral_code
-                    if (isEdited) {
-                      this.setState({ isUpdating: true });
-                      const response = await Network.updateReferralCode({
-                        oldReferralCode: this.state.referral_code,
-                        newReferralCode: this.state.edited_referral_code,
-                      });
-
-                      console.log({ response });
-
-                      // Check if the request was successful
-                      if (response.success) {
-                        // if success request, update referral_code
-                        this.setState({
-                          ...this.state,
-                          referral_code: this.state.edited_referral_code,
-                          isUpdating: false, // Turn off the ActivityIndicator;
-                        });
-                      } else {
-                        // Handle the case where the request was not successful
-                        console.error(
-                          "Update referral code request failed:",
-                          response.error
-                        );
-                        this.setState({ isUpdating: false }); // Turn off the ActivityIndicator
-                        // You may also want to show an error message to the user
-                        // using showToast or some other mechanism
-                      }
-                    } else {
-                      Clipboard.setString(this.state.edited_referral_code);
-                      this.props.showToast(
-                        Dictionary.REFERRAL_CODE_COPIED,
-                        false
-                      );
-                    }
-                  } catch (error) {
-                    console.error("An error occurred:", error);
-                    this.setState({ isUpdating: false }); // Turn off the ActivityIndicator
-                    // may want to show an error message to the user
-                    // using showToast or some other mechanism
                   }
                 }}
               >
