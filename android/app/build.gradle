@@ -159,8 +159,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         ndkVersion '21.1.6352462'
-        versionCode 28
-        versionName "2.0.9"
+        versionCode 29
+        versionName "2.0.10"
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
     }
     splits {

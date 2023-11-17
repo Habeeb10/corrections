@@ -835,8 +835,6 @@ class Referrals extends Component {
                       oldReferralCode: this.state.referral_code,
                       newReferralCode: this.state.edited_referral_code,
                     }).then((res) => {
-                      console.log({ res });
-
                       // if success request, update referral_code
                       this.setState({
                         ...this.state,

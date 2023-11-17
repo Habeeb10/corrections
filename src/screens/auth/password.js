@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { BackHandler, StyleSheet, View, Text, ActivityIndicator, Image } from "react-native";
+import {
+  BackHandler,
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+  Image,
+} from "react-native";
 import { withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
 import NetInfo from "@react-native-community/netinfo";
@@ -33,7 +40,7 @@ class Password extends Component {
     super(props);
 
     const { navigation } = this.props;
-    const is_system_upgrade = navigation.getParam("is_system_upgrade")??false;
+    const is_system_upgrade = navigation.getParam("is_system_upgrade") ?? false;
     const phone_number = navigation.getParam("phone_number");
     //const confirmation_id = navigation.getParam("confirmation_id");
 
@@ -51,7 +58,7 @@ class Password extends Component {
       showLocationModal: false,
       password: "",
       is_system_upgrade,
-      passwordProcessing: false
+      passwordProcessing: false,
     };
   }
 
@@ -238,55 +245,55 @@ class Password extends Component {
 
   forgotPassword = () => {
     this.setState({ passwordProcessing: true }, () => {
-      Network.initializeSignUp(this.state.phone_number).then((data) => {
-        if (data.resp.code == ResponseCodes.SUCCESS_CODE) {
-          this.setState({ processing: false }, () => {
-            this.props.showToast("This phone number do not exist!");
-          });
-        } else {
-         
-        }
-      })
-      .catch((error)=>{
-              if (error.code==ResponseCodes.USER_ALREADY_EXIST) {
-                //continue with the process
-                const phoneVal = Util.stripFirstZeroInPhone(this.state.phone_number);
-          Network.requestOtp(
-            phoneVal,
-            ResponseCodes.OTP_TYPE.REG,
-            ResponseCodes.OTP_NOTIFICATION_TYPE.SMS,
-            this.state.phone_number
-          )
-            .then(() => {
-              this.setState({ passwordProcessing: false }, () => {
-                this.props.navigation.navigate("ForgotPasswordOTP", {
-                  phone_number: this.state.phone_number,
-                });
-                Util.logEventData("onboarding_forgot");
-              });
-            })
-            .catch((error) => {
-              
-              this.setState({ passwordProcessing: false }, () =>
-                this.props.showToast(error.message)
-              );
+      Network.initializeSignUp(this.state.phone_number)
+        .then((data) => {
+          if (data.resp.code == ResponseCodes.SUCCESS_CODE) {
+            this.setState({ processing: false }, () => {
+              this.props.showToast("This phone number do not exist!");
             });
-              } else {
+          } else {
+          }
+        })
+        .catch((error) => {
+          if (error.code == ResponseCodes.USER_ALREADY_EXIST) {
+            //continue with the process
+            const phoneVal = Util.stripFirstZeroInPhone(
+              this.state.phone_number
+            );
+            Network.requestOtp(
+              phoneVal,
+              ResponseCodes.OTP_TYPE.REG,
+              ResponseCodes.OTP_NOTIFICATION_TYPE.SMS,
+              this.state.phone_number
+            )
+              .then(() => {
+                this.setState({ passwordProcessing: false }, () => {
+                  this.props.navigation.navigate("ForgotPasswordOTP", {
+                    phone_number: this.state.phone_number,
+                  });
+                  Util.logEventData("onboarding_forgot");
+                });
+              })
+              .catch((error) => {
                 this.setState({ passwordProcessing: false }, () =>
-                this.props.showToast(error.message)
-              );
-              }
-      });
+                  this.props.showToast(error.message)
+                );
+              });
+          } else {
+            this.setState({ passwordProcessing: false }, () =>
+              this.props.showToast(error.message)
+            );
+          }
+        });
     });
-  }
+  };
 
   routeToPage = (user_data) => {
     let { stage, activated, validDevice, isFirstTimeLogin } = user_data;
     let target;
     if (activated === 1) {
       target = "Dashboard";
-    } 
-    else if (validDevice == "N") {
+    } else if (validDevice == "N") {
       target = "AuthorizeDevice";
       this.props.showToastNav("This device is not authorized", {
         action: this.handleAuthorizeDevice,
@@ -294,8 +301,7 @@ class Password extends Component {
       });
 
       return;
-    } 
-    else if (stage === "0") {
+    } else if (stage === "0") {
       target = "EnterBVN";
     } else if (stage === "1") {
       target = "EnterBVN";
@@ -303,11 +309,9 @@ class Password extends Component {
       target = "EnterBVN";
     } else if (stage === "3") {
       target = "Dashboard";
-    }
-    else if (stage === 5) {
+    } else if (stage === 5) {
       target = "CreatePIN";
-    }
-    else {
+    } else {
       target = "Dashboard";
     }
 
@@ -377,12 +381,11 @@ class Password extends Component {
 
   render() {
     let can_show_biometrics =
-      this.state.biometrics_supported &&
-      this.state.biometrics_enabled
-      // this.props.user.user_data.activated === 1;
+      this.state.biometrics_supported && this.state.biometrics_enabled;
+    // this.props.user.user_data.activated === 1;
     return (
       <View style={SharedStyle.mainContainer}>
-       {this.state.is_system_upgrade ? (
+        {this.state.is_system_upgrade ? (
           <MainHeader
             backgroundStyle={{
               backgroundColor: Colors.WHITE,
@@ -592,18 +595,18 @@ const styles = StyleSheet.create({
   fingerprint: {
     ...Mixins.padding(12),
     position: "absolute",
-    right: 0
+    right: 0,
   },
   fingerprintImage: {
     width: Mixins.scaleSize(24),
-    height: Mixins.scaleSize(31)
+    height: Mixins.scaleSize(31),
   },
 });
 
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    settings: state.settings
+    settings: state.settings,
   };
 };
 

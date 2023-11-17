@@ -210,7 +210,8 @@ export const NEXT_OF_KIN_SUB_HEADER =
 export const ONBOARD_EMAIL_HEADER =
   "We will keep you informed at all times with our emails.";
 export const VERIFICATION_EMAIL_HEADER = "Please verify your email address";
-export const SELFIE_HEADER = "Please take a selfie in a well lit environment";
+export const SELFIE_HEADER =
+  "To proceed with your transactions, kindly take a selfie in a lit environment!";
 export const APPLY_FOR_LOAN_SUB_HEADER =
   "Quick access to funds for all your emergency needs.";
 export const LOAN_REQUIREMENTS_HEADER =
@@ -268,7 +269,7 @@ export const PRIVACY_POLICY = "Privacy Policy";
 export const TERMS_AND_CONDITIONS = "Terms and Conditions";
 export const CV_LIMITED = "CREDITVILLE MFB LIMITED";
 export const CV_ADDRESS = `1B Olosa Street, Off Karimu Kotun Street, ${"\n"} Victoria Island, Lagos.`;
-export const SUPPORT_CHAT = "Chat with Support";
+export const SUPPORT_CHAT = "Chat only";
 export const CONNECT_WITH_US = "Connect with us";
 export const BIOMETRIC_LOGIN_TITLE = "Login with Biometrics";
 export const BIOMETRIC_LOGIN_DESCRIPTION =
