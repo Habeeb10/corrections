@@ -829,67 +829,67 @@ class Login extends Component {
     this.props.navigation.navigate("EnterMobile");
   };
 
-  handleSubmit = (isBiometrics) => {
-    if (this.validFields(isBiometrics)) {
-      let { phone_number, password, latitude, longitude, authenticating } =
-        this.state;
+  // handleSubmit = (isBiometrics) => {
+  //   if (this.validFields(isBiometrics)) {
+  //     let { phone_number, password, latitude, longitude, authenticating } =
+  //       this.state;
 
-      if (isBiometrics) {
-        phone_number = this.props.user.user_data.phoneNumber;
-        password = this.props.user.user_pwd;
-      }
+  //     if (isBiometrics) {
+  //       phone_number = this.props.user.user_data.phoneNumber;
+  //       password = this.props.user.user_pwd;
+  //     }
 
-      let previous_user = this.props.user.user_data.phoneNumber;
+  //     let previous_user = this.props.user.user_data.phoneNumber;
 
-      const handleSuccess = (result) => {
-        this.setState(
-          {
-            authenticating: false,
-            password: "",
-          },
-          () => {
-            let user_data = { ...result, activated: "", stage_id: "" };
-            user_data.phoneNumber = phone_number;
+  //     const handleSuccess = (result) => {
+  //       this.setState(
+  //         {
+  //           authenticating: false,
+  //           password: "",
+  //         },
+  //         () => {
+  //           let user_data = { ...result, activated: "", stage_id: "" };
+  //           user_data.phoneNumber = phone_number;
 
-            this.props.storeUserData(user_data);
-            this.props.storeUserPwd(password);
+  //           this.props.storeUserData(user_data);
+  //           this.props.storeUserPwd(password);
 
-            if (phone_number !== previous_user) {
-              this.props.clearUserPin();
-              this.props.resetLoanApplicationData();
-            }
+  //           if (phone_number !== previous_user) {
+  //             this.props.clearUserPin();
+  //             this.props.resetLoanApplicationData();
+  //           }
 
-            this.routeToPage(user_data);
-            Util.logEventData("onboarding_sign_in");
-          }
-        );
-      };
+  //           this.routeToPage(user_data);
+  //           Util.logEventData("onboarding_sign_in");
+  //         }
+  //       );
+  //     };
 
-      const handleFailure = (error) => {
-        this.setState(
-          {
-            authenticating: false,
-          },
-          () => {
-            if (error.http_status === 412) {
-              this.props.showToastNav(error.message, {
-                action: this.handleAuthorizeDevice,
-                actionText: Dictionary.AUTHORIZE_DEVICE_BTN,
-              });
-            } else {
-              this.props.showToast(error.message);
-            }
-          }
-        );
-      };
+  //     const handleFailure = (error) => {
+  //       this.setState(
+  //         {
+  //           authenticating: false,
+  //         },
+  //         () => {
+  //           if (error.http_status === 412) {
+  //             this.props.showToastNav(error.message, {
+  //               action: this.handleAuthorizeDevice,
+  //               actionText: Dictionary.AUTHORIZE_DEVICE_BTN,
+  //             });
+  //           } else {
+  //             this.props.showToast(error.message);
+  //           }
+  //         }
+  //       );
+  //     };
 
-      this.setState({ authenticating: true }, () => {
-        Network.authenticateUser(phone_number, password, latitude, longitude)
-          .then(handleSuccess)
-          .catch(handleFailure);
-      });
-    }
-  };
+  //     this.setState({ authenticating: true }, () => {
+  //       Network.authenticateUser(phone_number, password, latitude, longitude)
+  //         .then(handleSuccess)
+  //         .catch(handleFailure);
+  //     });
+  //   }
+  // };
 
   onCloseModal = () => {
     this.setState({

@@ -828,31 +828,42 @@ class Referrals extends Component {
               <TouchItem
                 style={styles.inviteButton}
                 onPress={async () => {
-                  // if the isEdited, update the referral_code
-                  if (isEdited) {
-                    this.setState({ isUpdating: true });
-                    Network.updateReferralCode({
-                      oldReferralCode: this.state.referral_code,
-                      newReferralCode: this.state.edited_referral_code,
-                    }).then((res) => {
+                  try {
+                    // if the isEdited, update the referral_code
+                    if (isEdited) {
+                      this.setState({ isUpdating: true });
+                      await Network.updateReferralCode({
+                        oldReferralCode: this.state.referral_code,
+                        newReferralCode: this.state.edited_referral_code,
+                      });
                       // if success request, update referral_code
                       this.setState({
                         ...this.state,
                         referral_code: this.state.edited_referral_code,
                         isUpdating: false, // Turn off the ActivityIndicator,
                       });
-                      // setUpdating loading to false
-                    });
-                  } else {
-                    Clipboard.setString(this.state.edited_referral_code);
+                    } else {
+                      Clipboard.setString(this.state.edited_referral_code);
+                      this.props.showToast(
+                        Dictionary.REFERRAL_CODE_COPIED,
+                        false
+                      );
+                    }
+                  } catch (error) {
+                    // Handle the error here
+                    console.error(error);
+                    this.setState({ isUpdating: false });
                     this.props.showToast(
-                      Dictionary.REFERRAL_CODE_COPIED,
-                      false
+                      Dictionary.REFERRAL_CODE_BELONGS_TO_ANOTHER_CUSTOMER,
+                      true
                     );
+                    // You can also show an error message to the user if needed
+                    // For example: this.props.showToast("An error occurred", true);
                   }
                 }}
               >
-                {this.state.isUpdating ? ( // Check the isUpdating state to determine whether to show ActivityIndicator
+                {this.state.isUpdating ? (
+                  // Check the isUpdating state to determine whether to show ActivityIndicator
                   <ActivityIndicator color={Colors.WHITE} size="small" />
                 ) : (
                   <>

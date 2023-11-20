@@ -269,7 +269,7 @@ export const PRIVACY_POLICY = "Privacy Policy";
 export const TERMS_AND_CONDITIONS = "Terms and Conditions";
 export const CV_LIMITED = "CREDITVILLE MFB LIMITED";
 export const CV_ADDRESS = `1B Olosa Street, Off Karimu Kotun Street, ${"\n"} Victoria Island, Lagos.`;
-export const SUPPORT_CHAT = " 07055554900 (Chat only)";
+export const SUPPORT_CHAT = " 07055554900(Chat only)";
 export const CONNECT_WITH_US = "Connect with us";
 export const BIOMETRIC_LOGIN_TITLE = "Login with Biometrics";
 export const BIOMETRIC_LOGIN_DESCRIPTION =
@@ -297,6 +297,10 @@ export const ENTER_VALID_PHONE = "Enter a valid mobile number";
 export const ENTER_FIRST_NAME = "First name is required";
 export const ENTER_LAST_NAME = "Last name is required";
 export const ENTER_VALID_REFERRAL_CODE = "Enter a valid referral code";
+export const REFERRAL_CODE_BELONGS_TO_ANOTHER_CUSTOMER =
+  "Referral code belong to another customer";
+export const REFERRAL_CODE_UPDATED_SUCCESSFULLY =
+  "Referral code is Updated Successfully";
 export const ENTER_VALID_OTP = "Enter a valid OTP";
 export const OTP_EMPTY_ERROR =
   "Please enter the six digit otp sent to your phone number";
