@@ -9,7 +9,7 @@ import {
   Image,
   ImageBackground,
   ScrollView,
-  RefreshControl
+  RefreshControl,
 } from "react-native";
 import { connect } from "react-redux";
 import { withNavigationFocus } from "react-navigation";
@@ -23,14 +23,14 @@ import analytics from "@react-native-firebase/analytics";
 import crashlytics from "@react-native-firebase/crashlytics";
 import _ from "lodash";
 import Modal from "react-native-modal";
-import Clipboard from '@react-native-community/clipboard';
-import * as Animatable from 'react-native-animatable';
+import Clipboard from "@react-native-community/clipboard";
+import * as Animatable from "react-native-animatable";
 
 import { showToast, showToastNav } from "_actions/toast_actions";
 import {
   getDropdownOptions,
   getStateOptions,
-  getLgaOptions
+  getLgaOptions,
 } from "_actions/config_actions";
 import { showExitDialog } from "_actions/util_actions";
 import {
@@ -38,7 +38,7 @@ import {
   getUserProfile,
   showScreenInactivityDialog,
   hideScreenInactivityDialog,
-  getReferalCode
+  getReferalCode,
 } from "_actions/user_actions";
 import { getTransactionFeeTypes } from "_actions/transaction_actions";
 import { getUserWallet } from "_actions/wallet_actions";
@@ -46,12 +46,12 @@ import {
   getUserSavings,
   getSavingsProducts,
   getSavingsCollectionModes,
-  getSavingsFrequencies
+  getSavingsFrequencies,
 } from "_actions/savings_actions";
 import {
   getLoanProducts,
   getLoanReasons,
-  getUserLoans
+  getUserLoans,
 } from "_actions/loan_actions";
 import { getUserCards, getUserAccounts } from "_actions/payment_actions";
 import { resetDataPurchase } from "_actions/data_actions";
@@ -59,7 +59,7 @@ import { resetAirtimePurchase } from "_actions/airtime_actions";
 import { getBillerCategories } from "_actions/bills_actions";
 import {
   syncNotifications,
-  saveNotification
+  saveNotification,
 } from "_actions/notification_actions";
 import { getUserNextOfKin } from "_actions/next_of_kin_actions";
 import { getDocuments } from "_actions/document_actions";
@@ -67,7 +67,7 @@ import { clearDeepLinkPath } from "_actions/settings_actions";
 import { env, Dictionary, Util } from "_utils";
 import { Colors, Mixins, Typography, SharedStyle, FormStyle } from "_styles";
 import { TouchItem, ScrollView as _ScrollView } from "_atoms";
-import { ActionButton, PrimaryButton } from '_molecules';
+import { ActionButton, PrimaryButton } from "_molecules";
 import TransactionReceipt from "_screens/shared/transaction_receipt";
 
 import { Network } from "_services";
@@ -94,7 +94,7 @@ class Dashboard extends Component {
       showSavingsBalance: false,
       modal_visible: false,
       receipt_modal_visible: false,
-      transaction_data: {}
+      transaction_data: {},
     };
 
     if (user_data.phone_hash) {
@@ -102,13 +102,13 @@ class Dashboard extends Component {
       crashlytics().setUserId(user_data.phone_hash);
     }
 
-    this.timer = null
+    this.timer = null;
   }
 
   _onRefresh = () => {
     // this.props.getUserProfile();
     // if (this.props.user.user_data.deposit) {
-      this.refreshUserWallet(this.props.user.wallet_id);
+    this.refreshUserWallet(this.props.user.wallet_id);
     //}
 
     // if (this.props.user.user_data && this.props.user.user_data.bvn) {
@@ -147,7 +147,7 @@ class Dashboard extends Component {
     this.props.getUserProfile();
     //this.refreshUserWallet(this.props.user.wallet_id);
     if (this.props.user.wallet_id) {
-      this.props.getUserWallet(this.props.user.wallet_id)
+      this.props.getUserWallet(this.props.user.wallet_id);
     }
     // if(this.props.user.user_data.deposit && this.props.user.user_data.deposit.length>0){
     //     console.log("rttttt##rerer#")
@@ -161,7 +161,7 @@ class Dashboard extends Component {
     if (this.props.user.user_data && this.props.user.user_data.bvn) {
       this.props.getUserSavings(this.props.user.user_data.bvn);
     }
-    this.props.getReferalCode()
+    this.props.getReferalCode();
     // if (!visible) {
     //   this.timer = setTimeout(() => {
     //     this.setState({
@@ -202,7 +202,7 @@ class Dashboard extends Component {
     }
 
     if (this.props.user.wallet_id !== prevProps.user.wallet_id) {
-      this.props.getUserWallet(this.props.user.wallet_id)
+      this.props.getUserWallet(this.props.user.wallet_id);
     }
   }
 
@@ -275,7 +275,7 @@ class Dashboard extends Component {
     console.log("dsddpubs", publicKey);
     RNPaystack.init({
       //publicKey: "pk_test_32e272bc5dcac5d9593787d9c713af4ba5eab1f5"
-      publicKey: "pk_live_fed2ad4e9922a1226b5b6db113ddfc062a732a3f"
+      publicKey: "pk_live_fed2ad4e9922a1226b5b6db113ddfc062a732a3f",
     });
   };
 
@@ -354,19 +354,20 @@ class Dashboard extends Component {
       this.props.navigation.navigate("EnterEmail");
     } else if (user_data.documents.length < 2) {
       if (
-        user_data?.documents[0]?.type &&
-        user_data?.documents[0]?.type == "utility" || user_data?.documents[0]?.type == "util"
+        (user_data?.documents[0]?.type &&
+          user_data?.documents[0]?.type == "utility") ||
+        user_data?.documents[0]?.type == "util"
       ) {
         this.props.navigation.navigate("UploadID", {
           update_user: true,
-          redirectToDashboard: true
+          redirectToDashboard: true,
         });
       } else {
         this.props.navigation.navigate("UploadUtility", {
-          update_user: true
+          update_user: true,
         });
       }
-    // } else if (!user_data.photoUrl) {
+      // } else if (!user_data.photoUrl) {
     } else if (!user_data.photoLocation) {
       this.props.navigation.navigate("OnboardSelfie");
     }
@@ -377,19 +378,22 @@ class Dashboard extends Component {
   };
 
   onTransfer = (account_type) => {
-    this.setState({
-      modal_visible: false
-    }, () => this.props.navigation.navigate('Transfers', {account_type}))
-  }
+    this.setState(
+      {
+        modal_visible: false,
+      },
+      () => this.props.navigation.navigate("Transfers", { account_type })
+    );
+  };
 
   onCloseModal = () => {
     this.setState({
-        modal_visible: false
-    })
-  }
+      modal_visible: false,
+    });
+  };
   render() {
     let { user_data } = this.props.user;
-  let greeting = Dictionary.HI_USER;
+    let greeting = Dictionary.HI_USER;
     if (user_data.firstName) {
       greeting = greeting.replace(
         "%s",
@@ -480,7 +484,7 @@ class Dashboard extends Component {
         <View
           style={[
             SharedStyle.mainContainer,
-            { alignItems: "center", justifyContent: "center" }
+            { alignItems: "center", justifyContent: "center" },
           ]}
         >
           <ActivityIndicator color={Colors.CV_YELLOW} />
@@ -506,7 +510,7 @@ class Dashboard extends Component {
             onPress={() => this.navigateTo("Settings")}
           >
             {/* {(!user_data.photoUrl || user_data.photoUrl == "") && ( */}
-            {(!user_data.photoLocation || user_data.photoLocation === "") ? (
+            {!user_data.photoLocation || user_data.photoLocation === "" ? (
               <Image
                 style={styles.profileImage}
                 source={require("../../assets/images/shared/profile.png")}
@@ -549,44 +553,65 @@ class Dashboard extends Component {
           {/* )} */}
         </View>
         <_ScrollView {...this.props}>
-          <Animatable.View animation="fadeInDown" duration={500} delay={500} style={{ paddingBottom: Mixins.scaleSize(20) }}>
+          <Animatable.View
+            animation="fadeInDown"
+            duration={500}
+            delay={500}
+            style={{ paddingBottom: Mixins.scaleSize(20) }}
+          >
             <View style={styles.wallet}>
               <View style={styles.walletDetails}>
-                {
-                  user_data?.tier !== "" && (
-                    <View style={[styles.tier, {
-                      backgroundColor: user_data?.tier === "Tier 2" ? Colors.LIGHT_BLUE_BG : Colors.CV_YELLOW
-                    }]}>
-                      <Text style={[styles.tierText, {
-                        color: user_data?.tier === "Tier 2" ? Colors.CV_BLUE : Colors.WHITE
-                      }]}>{`${user_data?.tier}`}</Text>
-                    </View>
-                  )
-                }
+                {user_data?.tier !== "" && (
+                  <View
+                    style={[
+                      styles.tier,
+                      {
+                        backgroundColor:
+                          user_data?.tier === "Tier 2"
+                            ? Colors.LIGHT_BLUE_BG
+                            : Colors.CV_YELLOW,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.tierText,
+                        {
+                          color:
+                            user_data?.tier === "Tier 2"
+                              ? Colors.CV_BLUE
+                              : Colors.WHITE,
+                        },
+                      ]}
+                    >{`${user_data?.tier}`}</Text>
+                  </View>
+                )}
                 <View
                   style={styles.walletIdContainer}
                   disabled={this.props.wallet.loading_wallet_data}
                 >
-                  <View style={{ flexDirection: 'row' }}>
+                  <View style={{ flexDirection: "row" }}>
                     <TouchItem
-                        style={styles.copyButton}
-                        onPress={() => {
-                          Clipboard.setString(user_data?.nuban);
-                            this.props.showToast(Dictionary.ACCOUNT_COPIED, false);
-                        }}>
-                          <View style={styles.walletIdText}>
-                            <Text
-                              style={[SharedStyle.normalText, styles.walletId]}
-                             numberOfLines={1}
-                            >
-                              {/* {(user_data.deposit && this.props.user.wallet_id) || */}
-                              {(user_data.nuban) || "- - -"}
-                          </Text>
-                        </View>
-                          <Icon.MaterialCommunityIcons
-                            size={Mixins.scaleSize(15)}
-                            style={styles.copyIcon}
-                            name="content-copy" />
+                      style={styles.copyButton}
+                      onPress={() => {
+                        Clipboard.setString(user_data?.nuban);
+                        this.props.showToast(Dictionary.ACCOUNT_COPIED, false);
+                      }}
+                    >
+                      <View style={styles.walletIdText}>
+                        <Text
+                          style={[SharedStyle.normalText, styles.walletId]}
+                          numberOfLines={1}
+                        >
+                          {/* {(user_data.deposit && this.props.user.wallet_id) || */}
+                          {user_data.nuban || "- - -"}
+                        </Text>
+                      </View>
+                      <Icon.MaterialCommunityIcons
+                        size={Mixins.scaleSize(15)}
+                        style={styles.copyIcon}
+                        name="content-copy"
+                      />
                     </TouchItem>
                   </View>
                   {/* <View style={styles.walletLoader}>
@@ -596,36 +621,33 @@ class Dashboard extends Component {
                                     </View> */}
                 </View>
                 {!this.props.wallet.loading_wallet_data && (
-                  <View style={{flexDirection:"row",alignItems:"center"}}>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Text style={styles.walletBalance} numberOfLines={1}>
-                      
-                      {this.state.showAmount?
-                        `₦ ${Util.formatAmount(this.props.wallet.wallet_balance )}`
-                        :
-                        "* * * *"}
+                      {this.state.showAmount
+                        ? `₦ ${Util.formatAmount(
+                            this.props.wallet.wallet_balance
+                          )}`
+                        : "* * * *"}
                     </Text>
 
                     <TouchItem
                       style={[
                         // styles.secureToggle,
-                        { backgroundColor: "white", marginLeft: 10 }
+                        { backgroundColor: "white", marginLeft: 10 },
                       ]}
                       onPress={() => {
                         this.setState({
-                          showAmount: !this.state.showAmount
+                          showAmount: !this.state.showAmount,
                         });
                       }}
                     >
                       <Icon.Ionicons
-                        style={{color:Colors.CV_YELLOW}}
+                        style={{ color: Colors.CV_YELLOW }}
                         size={Mixins.scaleSize(25)}
                         name={
-                          !this.state.showAmount
-                            ? "ios-eye-off"
-                            : "ios-eye"
+                          !this.state.showAmount ? "ios-eye-off" : "ios-eye"
                         }
                       />
-                     
                     </TouchItem>
                   </View>
                 )}
@@ -662,7 +684,7 @@ class Dashboard extends Component {
                   <Text
                     style={[
                       SharedStyle.normalText,
-                      styles.incompleteDescription
+                      styles.incompleteDescription,
                     ]}
                     numberOfLines={1}
                   >
@@ -717,7 +739,7 @@ class Dashboard extends Component {
                             <Text
                               style={[
                                 SharedStyle.normalText,
-                                styles.longCardNormalText
+                                styles.longCardNormalText,
                               ]}
                             >
                               {Dictionary.ADD_SAVINGS}
@@ -727,7 +749,7 @@ class Dashboard extends Component {
                                 style={[
                                   SharedStyle.normalText,
                                   styles.longCardNormalText,
-                                  { ...Typography.FONT_BOLD }
+                                  { ...Typography.FONT_BOLD },
                                 ]}
                               >
                                 {highest_savings.interest_rate}%{" "}
@@ -741,26 +763,34 @@ class Dashboard extends Component {
                             <Text
                               style={[
                                 SharedStyle.normalText,
-                                styles.longCardNormalText
+                                styles.longCardNormalText,
                               ]}
                             >
                               {Dictionary.SAVINGS_BALANCE}
                             </Text>
-                            <View style={{flexDirection: "row", alignItems: "center"}}>
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                              }}
+                            >
                               <Text
                                 style={[
                                   SharedStyle.normalText,
                                   styles.longCardNormalText,
-                                  { ...Typography.FONT_BOLD }
+                                  { ...Typography.FONT_BOLD },
                                 ]}
                               >
-                                {this.state.showSavingsBalance ? `₦ ${total_savings}` : "* * * *"}
+                                {this.state.showSavingsBalance
+                                  ? `₦ ${total_savings}`
+                                  : "* * * *"}
                               </Text>
                               <TouchItem
                                 style={{ marginLeft: 10 }}
                                 onPress={() => {
                                   this.setState({
-                                    showSavingsBalance: !this.state.showSavingsBalance,
+                                    showSavingsBalance:
+                                      !this.state.showSavingsBalance,
                                   });
                                 }}
                               >
@@ -807,7 +837,7 @@ class Dashboard extends Component {
                           <Text
                             style={[
                               styles.longCardHeaderText,
-                              { color: Colors.CV_BLUE }
+                              { color: Colors.CV_BLUE },
                             ]}
                           >
                             {Dictionary.LOANS}
@@ -823,22 +853,22 @@ class Dashboard extends Component {
                               style={[
                                 SharedStyle.normalText,
                                 styles.longCardNormalText,
-                                { color: Colors.CV_BLUE }
+                                { color: Colors.CV_BLUE },
                               ]}
                             >
                               {Dictionary.GET_LOAN}
                             </Text>
-                            <Animatable.Text 
-                              animation="zoomIn" 
-                              iterationCount={"infinite"} 
+                            <Animatable.Text
+                              animation="zoomIn"
+                              iterationCount={"infinite"}
                               direction="alternate"
                               style={[
                                 SharedStyle.normalText,
                                 styles.longCardNormalText,
                                 {
                                   ...Typography.FONT_BOLD,
-                                  color: Colors.CV_RED
-                                }
+                                  color: Colors.CV_RED,
+                                },
                               ]}
                             >
                               {Dictionary.COMING_SOON}
@@ -850,8 +880,8 @@ class Dashboard extends Component {
                                   styles.longCardNormalText,
                                   {
                                     ...Typography.FONT_BOLD,
-                                    color: Colors.CV_BLUE
-                                  }
+                                    color: Colors.CV_BLUE,
+                                  },
                                 ]}
                               >
                                 {lowest_loan.interest_rate}%{" "}
@@ -866,7 +896,7 @@ class Dashboard extends Component {
                               style={[
                                 SharedStyle.normalText,
                                 styles.longCardNormalText,
-                                { color: Colors.CV_BLUE }
+                                { color: Colors.CV_BLUE },
                               ]}
                             >
                               {Dictionary.OUTSTANDING_LOAN}
@@ -877,8 +907,8 @@ class Dashboard extends Component {
                                 styles.longCardNormalText,
                                 {
                                   ...Typography.FONT_BOLD,
-                                  color: Colors.CV_BLUE
-                                }
+                                  color: Colors.CV_BLUE,
+                                },
                               ]}
                             >
                               ₦{Util.formatAmount(outstanding_loans)}
@@ -906,7 +936,7 @@ class Dashboard extends Component {
                 <TouchItem
                   style={[styles.card, styles.transfers]}
                   // onPress={() => this.navigateTo("Transfers")}
-                  onPress={() => this.setState({modal_visible: true})}
+                  onPress={() => this.setState({ modal_visible: true })}
                 >
                   <Text style={[SharedStyle.normalText, styles.transfersText]}>
                     {Dictionary.TRANSFERS}
@@ -994,12 +1024,21 @@ class Dashboard extends Component {
                   />
                 </TouchItem>
                 <TouchItem
-                  style={[styles.card, { backgroundColor: Colors.DARK_GREEN_BG }]}
+                  style={[
+                    styles.card,
+                    { backgroundColor: Colors.DARK_GREEN_BG },
+                  ]}
                   onPress={() => {
                     this.navigateTo("Transactions");
                   }}
                 >
-                  <Text style={[SharedStyle.normalText, styles.airtimeText, {fontSize: 13}]}>
+                  <Text
+                    style={[
+                      SharedStyle.normalText,
+                      styles.airtimeText,
+                      { fontSize: 13 },
+                    ]}
+                  >
                     {Dictionary.TRANSACTIONS}
                   </Text>
                   <Icon.Feather
@@ -1023,7 +1062,7 @@ class Dashboard extends Component {
                           style={[
                             styles.loaderPill,
                             styles.shortPill,
-                            { marginRight: Mixins.scaleSize(8) }
+                            { marginRight: Mixins.scaleSize(8) },
                           ]}
                         />
                         <View style={[styles.loaderPill, styles.shortPill]} />
@@ -1031,7 +1070,7 @@ class Dashboard extends Component {
                       <View
                         style={[
                           styles.tRow,
-                          { marginTop: Mixins.scaleSize(8) }
+                          { marginTop: Mixins.scaleSize(8) },
                         ]}
                       >
                         <View style={[styles.loaderPill, styles.longPill]} />
@@ -1043,7 +1082,7 @@ class Dashboard extends Component {
                           style={[
                             styles.loaderPill,
                             styles.shortPill,
-                            { marginRight: Mixins.scaleSize(8) }
+                            { marginRight: Mixins.scaleSize(8) },
                           ]}
                         />
                         <View style={[styles.loaderPill, styles.tinyPill]} />
@@ -1053,8 +1092,8 @@ class Dashboard extends Component {
                           styles.tRow,
                           {
                             marginTop: Mixins.scaleSize(8),
-                            alignSelf: "flex-end"
-                          }
+                            alignSelf: "flex-end",
+                          },
                         ]}
                       >
                         <View style={[styles.loaderPill, styles.longPill]} />
@@ -1075,7 +1114,7 @@ class Dashboard extends Component {
                     />
                   )}
                   {recent_transactions.slice(0, 5).map((transaction, index) => {
-                  // {recent_transactions.map((transaction, index) => {
+                    // {recent_transactions.map((transaction, index) => {
                     return (
                       <TouchItem
                         key={index}
@@ -1085,74 +1124,89 @@ class Dashboard extends Component {
                           //   transaction_data: transaction,
                           //   allow_back: true
                           // });
-                          this.setState({ transaction_data: transaction, receipt_modal_visible: true })
+                          this.setState({
+                            transaction_data: transaction,
+                            receipt_modal_visible: true,
+                          });
                           Util.logEventData("transactions_view", {
-                            transaction_id: transaction.reference
+                            transaction_id: transaction.reference,
                           });
                         }}
                       >
-                          <View style={SharedStyle.row}>
+                        <View style={SharedStyle.row}>
+                          <View style={{ flexDirection: "row", width: "60%" }}>
                             <View
-                              style={{ flexDirection: "row", width: "60%" }}
+                              style={{
+                                width: Mixins.scaleSize(42),
+                                height: Mixins.scaleSize(42),
+                                borderRadius: 50,
+                                backgroundColor:
+                                  Number(transaction.amount) < 1
+                                    ? "#FDE3EA"
+                                    : "#DFF1C8",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                alignSelf: "center",
+                              }}
                             >
-                              <View
-                                style={{
-                                  width: Mixins.scaleSize(42),
-                                  height: Mixins.scaleSize(42),
-                                  borderRadius: 50,
-                                  backgroundColor: Number(transaction.amount) < 1 ? "#FDE3EA" : "#DFF1C8",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  alignSelf: "center"
-                                }}
-                              >
-                                <Icon.Feather
-                                  name={
-                                    Number(transaction.amount) < 1
-                                      ? "arrow-up-right"
-                                      : "arrow-down-left"
-                                  }
-                                  color={
-                                    Number(transaction.amount) < 1
-                                      ? "#BB0000"
-                                      : "#00BB29"
-                                  }
-                                  size={Mixins.scaleSize(20)}
-                                  // style={{transform: [{rotate:  Number(transaction.amount) < 1 ? '45deg' :}]}}
-                                />
-                              </View>
-
-                              <View style={{ paddingLeft: 10 }}>
-                                <Text numberOfLines={2} style={styles.walletId}>
-                                  {Util.returnNarration(
-                                    transaction.notes,
-                                    transaction.amount
-                                  )}
-                                </Text>
-                                <Text numberOfLines={1} style={[styles.transactionLabel, { paddingTop: 5 }]}>
-                                  {moment(transaction.createdOn).format("DD-MMM")}  |  {moment(transaction.createdOn).format("HH:mm A")}
-                                </Text>
-                              </View>
+                              <Icon.Feather
+                                name={
+                                  Number(transaction.amount) < 1
+                                    ? "arrow-up-right"
+                                    : "arrow-down-left"
+                                }
+                                color={
+                                  Number(transaction.amount) < 1
+                                    ? "#BB0000"
+                                    : "#00BB29"
+                                }
+                                size={Mixins.scaleSize(20)}
+                                // style={{transform: [{rotate:  Number(transaction.amount) < 1 ? '45deg' :}]}}
+                              />
                             </View>
 
-                            <View style={{ width: "auto" }}>
+                            <View style={{ paddingLeft: 10 }}>
+                              <Text numberOfLines={2} style={styles.walletId}>
+                                {Util.returnNarration(
+                                  transaction.notes,
+                                  transaction.amount
+                                )}
+                              </Text>
                               <Text
                                 numberOfLines={1}
-                                style={{
-                                  color:
-                                    Number(transaction.amount) < 1
-                                      ? "#BB0000"
-                                      : "#00BB29",
-                                }}
+                                style={[
+                                  styles.transactionLabel,
+                                  { paddingTop: 5 },
+                                ]}
                               >
-                                ₦<Text style={{fontSize: 16}}>
-                                {Util.formatAmount(
-                                  Math.abs(transaction.amount)
+                                {moment(transaction.createdOn).format("DD-MMM")}{" "}
+                                |{" "}
+                                {moment(transaction.createdOn).format(
+                                  "HH:mm A"
                                 )}
-                                </Text>
                               </Text>
                             </View>
                           </View>
+
+                          <View style={{ width: "auto" }}>
+                            <Text
+                              numberOfLines={1}
+                              style={{
+                                color:
+                                  Number(transaction.amount) < 1
+                                    ? "#BB0000"
+                                    : "#00BB29",
+                              }}
+                            >
+                              ₦
+                              <Text style={{ fontSize: 16 }}>
+                                {Util.formatAmount(
+                                  Math.abs(transaction.amount)
+                                )}
+                              </Text>
+                            </Text>
+                          </View>
+                        </View>
                         {/* <View style={[SharedStyle.row, styles.transactionRow]}>
                           <Text
                             numberOfLines={1}
@@ -1242,7 +1296,7 @@ class Dashboard extends Component {
               borderTopLeftRadius: Mixins.scaleSize(20),
               borderTopRightRadius: Mixins.scaleSize(20),
               backgroundColor: "white",
-              ...Mixins.padding(15)
+              ...Mixins.padding(15),
             }}
           >
             <View style={styles.modalHeader}>
@@ -1269,8 +1323,8 @@ class Dashboard extends Component {
               <PrimaryButton
                 hasLeftIcon
                 title={Dictionary.TOUCHGOLD_BANK}
-                icon="arrow-right"                
-                leftIcon="bank"                
+                icon="arrow-right"
+                leftIcon="bank"
                 onPress={() => this.onTransfer("TOUCH_GOLD")}
               />
             </View>
@@ -1279,15 +1333,15 @@ class Dashboard extends Component {
                 hasLeftIcon
                 title={Dictionary.OTHER_BANK}
                 icon="arrow-right"
-                leftIcon="bank"  
+                leftIcon="bank"
                 onPress={() => this.onTransfer("OTHERS")}
               />
             </View>
           </View>
         </Modal>
 
-        <TransactionReceipt 
-          onCloseModal={() => this.setState({ receipt_modal_visible: false })} 
+        <TransactionReceipt
+          onCloseModal={() => this.setState({ receipt_modal_visible: false })}
           modal_visible={this.state.receipt_modal_visible}
           transaction_data={this.state.transaction_data}
           props={this.props}
@@ -1302,10 +1356,10 @@ const styles = StyleSheet.create({
     height: Mixins.scaleSize(64),
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
   },
   navButton: {
-    ...Mixins.padding(16)
+    ...Mixins.padding(16),
   },
   navText: {
     ...Typography.FONT_REGULAR,
@@ -1313,14 +1367,14 @@ const styles = StyleSheet.create({
     lineHeight: Mixins.scaleSize(21),
     letterSpacing: Mixins.scaleSize(0.01),
     color: Colors.DARK_GREY,
-    flex: 1
+    flex: 1,
   },
   profileImage: {
     width: Mixins.scaleSize(32),
     height: Mixins.scaleSize(32),
     borderRadius: Mixins.scaleSize(8),
     resizeMode: "cover",
-    backgroundColor: Colors.TAB_BG
+    backgroundColor: Colors.TAB_BG,
   },
   badge: {
     position: "absolute",
@@ -1330,13 +1384,13 @@ const styles = StyleSheet.create({
     borderRadius: Mixins.scaleSize(21),
     paddingHorizontal: Mixins.scaleSize(2),
     paddingVertical: Mixins.scaleSize(3.5),
-    width: Mixins.scaleSize(18)
+    width: Mixins.scaleSize(18),
   },
   badgeText: {
     ...Typography.FONT_MEDIUM,
     color: Colors.WHITE,
     fontSize: Mixins.scaleFont(7),
-    textAlign: "center"
+    textAlign: "center",
   },
   wallet: {
     flex: 1,
@@ -1344,34 +1398,34 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginHorizontal: Mixins.scaleSize(16),
-    marginBottom: Mixins.scaleSize(10)
+    marginBottom: Mixins.scaleSize(10),
   },
   walletDetails: {
-    paddingVertical: Mixins.scaleSize(12)
+    paddingVertical: Mixins.scaleSize(12),
   },
   walletIdContainer: {
     flexDirection: "row",
     alignSelf: "flex-start",
-    marginBottom: Mixins.scaleSize(12)
+    marginBottom: Mixins.scaleSize(12),
   },
   walletIdText: {
     ...Mixins.padding(4, 8, 4, 8),
     borderRadius: Mixins.scaleSize(4),
-    backgroundColor: Colors.LIGHT_BG
+    backgroundColor: Colors.LIGHT_BG,
   },
   walletId: {
     ...Typography.FONT_REGULAR,
-    color: Colors.DARK_GREY
+    color: Colors.DARK_GREY,
   },
   walletLoader: {
     marginLeft: Mixins.scaleSize(5),
-    justifyContent: "center"
+    justifyContent: "center",
   },
   walletBalance: {
     ...Typography.FONT_BOLD,
     fontSize: Mixins.scaleFont(32),
     lineHeight: Mixins.scaleSize(37),
-    color: Colors.DARK_GREY
+    color: Colors.DARK_GREY,
   },
   topup: {
     ...Mixins.padding(16, 12, 16, 12),
@@ -1381,7 +1435,7 @@ const styles = StyleSheet.create({
     ...Typography.FONT_MEDIUM,
     marginRight: Mixins.scaleSize(6),
     fontSize: Mixins.scaleFont(14),
-    color: Colors.CV_GREEN
+    color: Colors.CV_GREEN,
   },
   topupButton: {
     alignItems: "center",
@@ -1390,10 +1444,10 @@ const styles = StyleSheet.create({
     width: Mixins.scaleSize(90),
     height: Mixins.scaleSize(32),
     backgroundColor: Colors.LIGHT_GREEN_BG,
-    borderRadius: Mixins.scaleSize(5)
+    borderRadius: Mixins.scaleSize(5),
   },
   topupIcon: {
-    color: Colors.CV_GREEN
+    color: Colors.CV_GREEN,
   },
   incomplete: {
     ...Mixins.padding(12),
@@ -1404,31 +1458,31 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
   },
   incompleteText: {
-    width: "60%"
+    width: "60%",
   },
   incompleteHeader: {
     ...Typography.FONT_BOLD,
     color: Colors.DARK_GREY,
-    marginBottom: Mixins.scaleSize(8)
+    marginBottom: Mixins.scaleSize(8),
   },
   incompleteDescription: {
-    color: Colors.VERY_LIGHT_GREY
+    color: Colors.VERY_LIGHT_GREY,
   },
   incompleteProgress: {
-    width: "35%"
+    width: "35%",
   },
   actionCards: {
-    marginBottom: Mixins.scaleSize(10)
+    marginBottom: Mixins.scaleSize(10),
   },
   cardContainer: {
     marginHorizontal: Mixins.scaleSize(16),
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: Mixins.scaleSize(16)
+    marginBottom: Mixins.scaleSize(16),
   },
   card: {
     ...Mixins.padding(20, 16, 20, 16),
@@ -1436,27 +1490,27 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderRadius: Mixins.scaleSize(8)
+    borderRadius: Mixins.scaleSize(8),
   },
   longCard: {
     ...Mixins.padding(0),
-    height: Mixins.scaleSize(240)
+    height: Mixins.scaleSize(240),
   },
   longCardBackground: {
     width: "100%",
-    height: "100%"
+    height: "100%",
   },
   longCardContent: {
     ...Mixins.padding(20, 16, 20, 16),
     flex: 1,
     flexDirection: "column",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   longCardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: Mixins.scaleSize(20)
+    marginBottom: Mixins.scaleSize(20),
   },
   longCardHeaderText: {
     ...Typography.FONT_BOLD,
@@ -1464,14 +1518,14 @@ const styles = StyleSheet.create({
     lineHeight: Mixins.scaleSize(19),
     letterSpacing: Mixins.scaleSize(0.01),
     textTransform: "uppercase",
-    color: Colors.WHITE
+    color: Colors.WHITE,
   },
   longCardIcon: {
     width: Mixins.scaleSize(25),
-    height: Mixins.scaleSize(25)
+    height: Mixins.scaleSize(25),
   },
   longCardNormalText: {
-    color: Colors.WHITE
+    color: Colors.WHITE,
   },
   longCardButton: {
     backgroundColor: "rgba(0, 0 , 0, 0.15)",
@@ -1480,113 +1534,113 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: Mixins.scaleSize(32),
     height: Mixins.scaleSize(32),
-    borderRadius: Mixins.scaleSize(32)
+    borderRadius: Mixins.scaleSize(32),
   },
   longCardButtonIcon: {
-    color: Colors.WHITE
+    color: Colors.WHITE,
   },
   transfers: {
-    backgroundColor: Colors.LIGHT_ORANGE_BG
+    backgroundColor: Colors.LIGHT_ORANGE_BG,
   },
   transfersText: {
-    color: Colors.CV_YELLOW
+    color: Colors.CV_YELLOW,
   },
   data: {
-    backgroundColor: Colors.LIGHT_GREEN_BG
+    backgroundColor: Colors.LIGHT_GREEN_BG,
   },
   dataText: {
-    color: Colors.CV_GREEN
+    color: Colors.CV_GREEN,
   },
   bills: {
-    backgroundColor: Colors.LIGHT_RED_BG
+    backgroundColor: Colors.LIGHT_RED_BG,
   },
   billsText: {
-    color: Colors.CV_RED
+    color: Colors.CV_RED,
   },
   airtime: {
-    backgroundColor: Colors.LIGHT_BLUE_BG
+    backgroundColor: Colors.LIGHT_BLUE_BG,
   },
   airtimeText: {
     color: Colors.CV_BLUE,
   },
   referral: {
     width: "100%",
-    backgroundColor: Colors.LIGHT_GREEN_BG
+    backgroundColor: Colors.LIGHT_GREEN_BG,
   },
   referralText: {
-    color: Colors.CV_GREEN
+    color: Colors.CV_GREEN,
   },
   shortCardIcon: {
     width: Mixins.scaleSize(28),
     height: Mixins.scaleSize(28),
-    resizeMode: "contain"
+    resizeMode: "contain",
   },
   transactions: {
-    marginHorizontal: Mixins.scaleSize(16)
+    marginHorizontal: Mixins.scaleSize(16),
   },
   summaryText: {
     ...Typography.FONT_MEDIUM,
     color: Colors.LIGHT_GREY,
-    marginBottom: Mixins.scaleSize(10)
+    marginBottom: Mixins.scaleSize(10),
   },
   tLoader: {
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   tRow: {
-    flexDirection: "row"
+    flexDirection: "row",
   },
   loaderPill: {
     height: Mixins.scaleSize(16),
-    borderRadius: Mixins.scaleSize(10)
+    borderRadius: Mixins.scaleSize(10),
   },
   shortPill: {
-    width: Mixins.scaleSize(56)
+    width: Mixins.scaleSize(56),
   },
   longPill: {
-    width: Mixins.scaleSize(77)
+    width: Mixins.scaleSize(77),
   },
   tinyPill: {
-    width: Mixins.scaleSize(20)
+    width: Mixins.scaleSize(20),
   },
   blankTransactions: {
     width: "100%",
     height: Mixins.scaleSize(50),
-    resizeMode: "contain"
+    resizeMode: "contain",
   },
   transaction: {
     borderTopWidth: Mixins.scaleSize(1),
     borderTopColor: Colors.FAINT_BORDER,
-    paddingTop: Mixins.scaleSize(12)
+    paddingTop: Mixins.scaleSize(12),
   },
   transactionRow: {
-    marginBottom: Mixins.scaleSize(5)
+    marginBottom: Mixins.scaleSize(5),
   },
   transactionLeft: {
-    width: "68%"
+    width: "68%",
   },
   transactionRight: {
     width: "30%",
-    textAlign: "right"
+    textAlign: "right",
   },
   transactionLabel: {
     ...SharedStyle.normalText,
-    color: Colors.VERY_LIGHT_GREY
+    color: Colors.VERY_LIGHT_GREY,
   },
   transactionValue: {
     ...SharedStyle.normalText,
-    color: Colors.LIGHT_GREY
+    color: Colors.LIGHT_GREY,
   },
   showAllButton: {
     paddingVertical: Mixins.scaleSize(8),
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   modalHeader: {
     // backgroundColor: "#f6f7fe",
     width: "100%",
-    display: "flex"
+    display: "flex",
   },
   title: {
     color: Colors.CV_BLUE,
@@ -1606,17 +1660,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingTop: 33,
-    paddingBottom: 44
+    paddingBottom: 44,
   },
   shieldText: {
     fontSize: 8,
-    color: "#EB001B"
+    color: "#EB001B",
   },
   greatJob: {
     color: Colors.DARK_GREY,
     fontSize: 22,
     paddingBottom: 10,
-    ...Typography.FONT_BOLD
+    ...Typography.FONT_BOLD,
   },
   icon: {
     alignSelf: "flex-end",
@@ -1627,8 +1681,8 @@ const styles = StyleSheet.create({
     // marginRight: 20
   },
   copyButton: {
-    flexDirection: 'row',
-    alignItems: 'center'
+    flexDirection: "row",
+    alignItems: "center",
   },
   copyIcon: {
     ...Mixins.margin(0, 0, 0, 5),
@@ -1642,13 +1696,13 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   tierText: {
     ...Typography.FONT_REGULAR,
     fontSize: 12,
-    textAlign: "center"
-  }
+    textAlign: "center",
+  },
 });
 
 const mapStateToProps = (state) => {
@@ -1656,11 +1710,10 @@ const mapStateToProps = (state) => {
     user: state.user,
     settings: state.settings,
     wallet: state.wallet,
-    loading_wallet:
-      state.wallet.loading_wallet_data,
+    loading_wallet: state.wallet.loading_wallet_data,
     savings: state.savings,
     loans: state.loans,
-    notifications: state.notifications
+    notifications: state.notifications,
   };
 };
 
@@ -1694,7 +1747,7 @@ const mapDispatchToProps = {
   showScreenInactivityDialog,
   hideScreenInactivityDialog,
   clearDeepLinkPath,
-  getReferalCode
+  getReferalCode,
 };
 
 export default connect(

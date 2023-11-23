@@ -1,10 +1,12 @@
+"@ts-check";
+
 import React, { Component } from "react";
 import Modal from "react-native-modal";
 import { StyleSheet, View, Text, Image } from "react-native";
 import * as Icon from "@expo/vector-icons";
 import _ from "lodash";
 import { connect } from "react-redux";
-import moment from 'moment';
+import moment from "moment";
 
 import { Dictionary, Util } from "_utils";
 import { PrimaryButton } from "_molecules";
@@ -56,6 +58,7 @@ class Summary extends Component {
 
       return;
     }
+
     if (!this.props.user.user_data.photoUrl) {
       this.setState({
         auth_screen_visible: false,
@@ -64,6 +67,7 @@ class Summary extends Component {
       navigation.navigate("OnboardSelfie");
       return;
     }
+
     this.setState(
       {
         processing: true,
@@ -80,11 +84,12 @@ class Summary extends Component {
           account_name,
           narration,
         } = this.props.transfers.funds_transfer;
+
+        const account_type = this.props.transfers.account_type,
+          touch_gold = account_type_data.ACCOUNT_TYPE.TOUCH_GOLD;
         let payload;
-        if (
-          this.props.transfers.account_type ==
-          account_type_data.ACCOUNT_TYPE.TOUCH_GOLD
-        ) {
+
+        if (account_type == touch_gold) {
           payload = {
             fromAccountId: this.props.user.wallet_id,
             fromNuban: this.props.user.user_data.nuban,
@@ -117,71 +122,81 @@ class Summary extends Component {
             account_id: this.props.user.wallet_id,
           };
         }
+
         Network.validatePIN(pin)
           .then(() => {
             const apiCall =
-              this.props.transfers.account_type ==
-              account_type_data.ACCOUNT_TYPE.OTHERS
+              account_type == account_type_data.ACCOUNT_TYPE.OTHERS
                 ? Network.doTransfer
                 : Network.doTransferIntra;
             apiCall(payload)
               .then((result) => {
-                this.setState(
-                  {
-                    processing: false,
-                    auth_screen_visible: false,
-                  },
-                  () => {
-                    if (result.resp.code == ResponseCodes.SUCCESS_CODE) {
-                      onCloseModal();
-                      result.account_type = this.props.transfers.account_type;
+                console.log({ result });
 
-                      if (
-                        this.props.transfers.account_type ==
-                        account_type_data.ACCOUNT_TYPE.OTHERS
-                      ) {
-                        navigation.navigate("TransferSuccess", {
-                          event_name: "transactions_successful_transfer",
-                          event_data: {
-                            transaction_id: result.referenceNumber,
-                            amount,
-                          },
-                          success_message: result.resp.message,
-                          transaction_data: payload,
-                          transaction_payload: payload,
-                        });
-                      } else {
-                        navigation.navigate("Success", {
-                          event_name: "transactions_successful_transfer",
-                          event_data: {
-                            transaction_id: result.referenceNumber,
-                            amount,
-                          },
-                          success_message: result.resp.message,
-                          transaction_data:
-                            result.intraDepositResp || result.transferData,
-                          transaction_payload: payload,
-                        });
-                      }
+                this.setState({
+                  processing: false,
+                  auth_screen_visible: false,
+                });
 
-                      this.props.addNotification({
-                        id: randomId(),
-                        is_read: false,
-                        title: "Transfer Debit",
-                        description: `You just sent NGN${amount} to ${account_number} for ${narration}.`,
-                        timestamp: moment().toString(),
-                      });
-                    } else {
-                      onCloseModal();
-                      navigation.navigate("Error", {
-                        event_name: "transactions_failed_transfer",
-                        error_message:
-                          error.message ??
-                          "Transfer is not successfull,Try again.",
-                      });
-                    }
+                if (result.resp.code == ResponseCodes.SUCCESS_CODE) {
+                  onCloseModal();
+                  result.account_type = this.props.transfers.account_type;
+
+                  if (
+                    this.props.transfers.account_type ==
+                    account_type_data.ACCOUNT_TYPE.OTHERS
+                  ) {
+                    navigation.navigate("TransferSuccess", {
+                      event_name: "transactions_successful_transfer",
+                      event_data: {
+                        transaction_id: result.referenceNumber,
+                        amount,
+                      },
+
+                      success_message: result.resp.message,
+                      transaction_data: {
+                        ...payload,
+                        referenceNumber: result.referenceNumber,
+                      },
+                      transaction_payload: {
+                        ...payload,
+                        referenceNumber: result.referenceNumber,
+                      },
+                    });
+                  } else {
+                    navigation.navigate("Success", {
+                      event_name: "transactions_successful_transfer",
+                      event_data: {
+                        transaction_id: result.referenceNumber,
+                        amount,
+                      },
+                      success_message: result.resp.message,
+                      transaction_data: {
+                        ...(result.intraDepositResp || result.transferData),
+                        referenceNumber: result.referenceNumber,
+                      },
+                      transaction_payload: {
+                        ...payload,
+                        referenceNumber: result.referenceNumber,
+                      },
+                    });
                   }
-                );
+
+                  this.props.addNotification({
+                    id: randomId(),
+                    is_read: false,
+                    title: "Transfer Debit",
+                    description: `You just sent NGN${amount} to ${account_number} for ${narration}.`,
+                    timestamp: moment().toString(),
+                  });
+                } else {
+                  onCloseModal();
+                  navigation.navigate("Error", {
+                    event_name: "transactions_failed_transfer",
+                    error_message:
+                      error.message ?? "Transfer is not successfull,Try again.",
+                  });
+                }
               })
               .catch((error) => {
                 if (
