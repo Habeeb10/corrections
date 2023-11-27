@@ -652,22 +652,6 @@ class Dashboard extends Component {
                   </View>
                 )}
               </View>
-              <TouchItem
-                style={styles.topup}
-                onPress={() => this.navigateTo("FundWallet")}
-                disabled={!this.props.user.wallet_id}
-              >
-                <View style={styles.topupButton}>
-                  <Text style={styles.topupText} numberOfLines={1}>
-                    {"Deposit"}
-                  </Text>
-                  <Icon.Entypo
-                    size={Mixins.scaleSize(17)}
-                    style={styles.topupIcon}
-                    name="plus"
-                  />
-                </View>
-              </TouchItem>
             </View>
             {account_progress < 4 && (
               <TouchItem
@@ -947,22 +931,21 @@ class Dashboard extends Component {
                   />
                 </TouchItem>
                 <TouchItem
-                  style={[styles.card, styles.data]}
-                  onPress={() => {
-                    // this.props.showToast(Dictionary.COMMING_SOON_CLICK)
-                    this.props.resetDataPurchase();
-                    this.navigateTo("Data");
-                  }}
+                  style={[styles.card, styles.topup]}
+                  onPress={() => this.navigateTo("FundWallet")}
+                  disabled={!this.props.user.wallet_id}
                 >
-                  <Text style={[SharedStyle.normalText, styles.dataText]}>
-                    {Dictionary.DATA}
+                  <Text style={[SharedStyle.normalText, styles.airtimeText]}>
+                    {"Deposit"}
                   </Text>
-                  <Image
-                    style={styles.shortCardIcon}
-                    source={require("../../assets/images/dashboard/data.png")}
+                  <Icon.Entypo
+                    size={Mixins.scaleSize(30)}
+                    style={styles.topupIcon}
+                    name="plus"
                   />
                 </TouchItem>
               </View>
+
               <View style={styles.cardContainer}>
                 <TouchItem
                   style={[styles.card, styles.bills]}
@@ -981,6 +964,7 @@ class Dashboard extends Component {
                   onPress={() => {
                     //  this.props.showToast(Dictionary.COMMING_SOON_CLICK)
                     this.props.resetAirtimePurchase();
+                    this.props.resetDataPurchase();
                     this.navigateTo("Airtime");
                   }}
                 >
@@ -1428,24 +1412,20 @@ const styles = StyleSheet.create({
     color: Colors.DARK_GREY,
   },
   topup: {
-    ...Mixins.padding(16, 12, 16, 12),
     //maxWidth: "30%"
+    backgroundColor: Colors.LIGHT_GREEN_BG,
   },
   topupText: {
     ...Typography.FONT_MEDIUM,
-    marginRight: Mixins.scaleSize(6),
+    // marginRight: Mixins.scaleSize(6),
     fontSize: Mixins.scaleFont(14),
     color: Colors.CV_GREEN,
   },
-  topupButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    width: Mixins.scaleSize(90),
-    height: Mixins.scaleSize(32),
-    backgroundColor: Colors.LIGHT_GREEN_BG,
-    borderRadius: Mixins.scaleSize(5),
-  },
+  // topupButton: {
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   flexDirection: "row",
+  // },
   topupIcon: {
     color: Colors.CV_GREEN,
   },

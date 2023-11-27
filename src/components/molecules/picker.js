@@ -5,7 +5,7 @@ import * as Icon from "@expo/vector-icons";
 import { TouchItem } from "_atoms";
 import { Colors, Mixins, Typography } from "_styles";
 
-class SelectListItem extends Component {
+const PickItem = class extends Component {
   render() {
     let hasImage = typeof this.props.image !== "undefined";
     let hasDescription = typeof this.props.description !== "undefined";
@@ -18,6 +18,17 @@ class SelectListItem extends Component {
       textWidth += 10;
     }
 
+    const containerStyle = {
+      borderWidth: 2,
+      borderColor: this.props.selected ? Colors.CV_YELLOW : Colors.GREY,
+      height: Mixins.scaleSize(46),
+      borderRadius: Mixins.scaleSize(10),
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: 8,
+      marginBottom: 10,
+    };
+
     if (this.props.onPress) {
       return (
         <TouchItem
@@ -27,21 +38,24 @@ class SelectListItem extends Component {
           <View
             style={[
               styles.listContent,
-              !isSelectable ? { paddingRight: Mixins.scaleSize(16) } : {},
-              !hasDescription
-                ? {
-                    paddingTop: Mixins.scaleSize(16),
-                    paddingBottom: Mixins.scaleSize(16),
-                  }
-                : {},
-              !hasImage && !hasDescription
-                ? {
-                    paddingTop: Mixins.scaleSize(20),
-                    paddingBottom: Mixins.scaleSize(20),
-                  }
-                : {},
+              containerStyle,
+              {
+                flexDirection: "row",
+                alignItems: "center",
+                paddingHorizontal: Mixins.scaleSize(20),
+              },
             ]}
           >
+            {isSelectable && this.props.selected && (
+              <View style={styles.checkbox}>
+                <Icon.Ionicons
+                  name={"ios-checkmark-circle"}
+                  size={Mixins.scaleFont(12)}
+                  color={Colors.CV_YELLOW}
+                />
+              </View>
+            )}
+
             {hasImage && (
               <View
                 style={[
@@ -61,7 +75,16 @@ class SelectListItem extends Component {
                 />
               </View>
             )}
-            <View style={[styles.listText, { width: `${textWidth}%` }]}>
+
+            <View
+              style={[
+                styles.listText,
+                {
+                  marginLeft: Mixins.scaleSize(5),
+                  marginTop: hasImage ? 0 : Mixins.scaleSize(8),
+                },
+              ]}
+            >
               <Text
                 numberOfLines={2}
                 style={[
@@ -88,18 +111,6 @@ class SelectListItem extends Component {
                 </Text>
               )}
             </View>
-            {isSelectable && (
-              <View style={styles.checkbox}>
-                {!this.props.selected && <View style={styles.blank}></View>}
-                {this.props.selected && (
-                  <Icon.Ionicons
-                    name={"ios-checkmark-circle"}
-                    size={Mixins.scaleFont(22)}
-                    color={Colors.SUCCESS}
-                  />
-                )}
-              </View>
-            )}
           </View>
         </TouchItem>
       );
@@ -123,7 +134,7 @@ class SelectListItem extends Component {
                 <Image style={styles.image} source={this.props.image} />
               </View>
             )}
-            <View style={[styles.listText, { width: `${textWidth}%` }]}>
+            <View style={[styles.listText]}>
               <Text
                 numberOfLines={2}
                 style={[
@@ -150,7 +161,7 @@ class SelectListItem extends Component {
                 </Text>
               )}
             </View>
-            {isSelectable && (
+            {isSelectable && this.props.selected && (
               <View style={styles.checkbox}>
                 <View style={styles.blank}></View>
               </View>
@@ -160,75 +171,64 @@ class SelectListItem extends Component {
       );
     }
   }
-}
+};
 
 const styles = StyleSheet.create({
-  listContent: {
-    ...Mixins.padding(30, 16, 30, 0),
-    flex: 1,
+  listContent: {},
+  itemContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginLeft: Mixins.scaleSize(16),
-    borderTopWidth: Mixins.scaleSize(1),
-    borderColor: Colors.LIGHT_BG,
   },
-  imageContainer: {},
+  imageContainer: {
+    borderRadius: Mixins.scaleSize(10),
+  },
   carpetContainer: {
     backgroundColor: Colors.LIGHT_UNCHECKED_BG,
-    width: Mixins.scaleSize(60),
-    height: Mixins.scaleSize(60),
-    borderRadius: Mixins.scaleSize(10),
-    alignItems: "center",
-    justifyContent: "center",
   },
   image: {
-    width: Mixins.scaleSize(60),
-    height: Mixins.scaleSize(60),
+    width: Mixins.scaleSize(25),
+    height: Mixins.scaleSize(25),
+    borderRadius: Mixins.scaleSize(15),
   },
   carpetImage: {
-    width: Mixins.scaleSize(60),
-    height: Mixins.scaleSize(53),
-    resizeMode: "contain",
-  },
-  listText: {
-    marginHorizontal: Mixins.scaleSize(16),
+    width: Mixins.scaleSize(22),
+    borderRadius: Mixins.scaleSize(10),
   },
   text: {
     color: Colors.LIGHT_GREY,
-    letterSpacing: Mixins.scaleSize(0.01),
   },
   selectedText: {
-    color: Colors.CV_BLUE,
+    color: Colors.CV_YELLOW,
   },
   title: {
+    fontSize: Mixins.scaleFont(12),
     ...Typography.FONT_BOLD,
-    fontSize: Mixins.scaleFont(20),
-    lineHeight: Mixins.scaleSize(23),
-    marginBottom: Mixins.scaleSize(12),
+    color: Colors.BLACK,
   },
   imageTitle: {
-    fontSize: Mixins.scaleFont(18),
-    lineHeight: Mixins.scaleSize(21),
+    fontSize: Mixins.scaleFont(15),
   },
   description: {
-    ...Typography.FONT_REGULAR,
     fontSize: Mixins.scaleFont(14),
-    lineHeight: Mixins.scaleSize(16),
+    ...Typography.FONT_BOLD,
+    color: Colors.BLACK,
   },
   imageDescription: {
     fontSize: Mixins.scaleFont(12),
-    lineHeight: Mixins.scaleSize(14),
+    lineHeight: Mixins.scaleSize(12),
   },
   checkbox: {
-    width: "8%",
+    position: "absolute",
+    top: Mixins.scaleSize(3),
+    right: Mixins.scaleSize(3),
   },
   blank: {
-    width: Mixins.scaleSize(20),
-    height: Mixins.scaleSize(20),
-    backgroundColor: Colors.LIGHT_UNCHECKED_BG,
+    width: Mixins.scaleSize(8),
+    height: Mixins.scaleSize(8),
+    backgroundColor: Colors.CV_YELLOW,
     borderRadius: Mixins.scaleSize(50),
+    flex: 1,
   },
 });
 
-export default SelectListItem;
+export default PickItem;
