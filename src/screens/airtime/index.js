@@ -730,27 +730,27 @@ class Airtime extends Component {
             {this.state.type === "data" && (
               <>
                 {!this.state.processing && (
-                  <View style={styles.packageContainer}>
-                    <View>
-                      <Text style={styles.selectPackages}>Select Package</Text>
+                  <View style={styles.categoryContainer}>
+                    <Text style={styles.selectPackages}>Select Package</Text>
+                    <View style={styles.categoryContainerBox}>
                       <Text>
                         {this.state.selectedPackage
                           ? this.state.selectedPackage.billerName
                           : null}
                       </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.getDataPackages();
+                          this.openModal();
+                        }}
+                      >
+                        <MaterialIcons
+                          name={"keyboard-arrow-down"}
+                          size={Mixins.scaleSize(30)}
+                          color={"#666"}
+                        />
+                      </TouchableOpacity>
                     </View>
-                    <TouchableOpacity
-                      onPress={() => {
-                        this.getDataPackages();
-                        this.openModal();
-                      }}
-                    >
-                      <MaterialIcons
-                        name={"keyboard-arrow-down"}
-                        size={Mixins.scaleSize(30)}
-                        color={"#666"}
-                      />
-                    </TouchableOpacity>
                   </View>
                 )}
                 {this.state.recent_transactions.length > 0 && (
@@ -947,6 +947,21 @@ class Airtime extends Component {
   }
 }
 const styles = StyleSheet.create({
+  categoryContainer: {
+    height: Mixins.scaleSize(60),
+    borderColor: Colors.GREY,
+    borderWidth: 1,
+    borderRadius: Mixins.scaleSize(4),
+    // marginBottom: Mixins.scaleSize(10),
+    paddingHorizontal: Mixins.scaleSize(5),
+    // alignItems: "center",
+    ...Mixins.margin(0, 0, 10, 0), // Increase the bottom margin to 40
+  },
+  categoryContainerBox: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   formItem: {
     ...Mixins.margin(10, 0, 10, 0), // Increase the bottom margin to 40
   },
@@ -955,28 +970,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     ...Mixins.margin(0, 0, 10, 0), // Increase the bottom margin to 40
   },
-  // packagesBox: {
-  //   flexDirection: "row",
-  //   justifyContent: "space-between",
-  //   alignItems: "center",
-  // },
+
   selectPackages: {
-    fontSize: Mixins.scaleFont(11),
-    color: Colors.LIGHT_GREY,
-    marginTop: Mixins.scaleSize(5),
-    paddingVertical: 5,
+    fontSize: Mixins.scaleFont(12),
+    color: "#8397B1",
+    marginTop: Mixins.scaleSize(3),
+    ...Typography.FONT_MEDIUM,
   },
-  packageContainer: {
-    height: Mixins.scaleSize(60),
-    borderColor: Colors.GREY,
-    borderWidth: 1,
-    borderRadius: Mixins.scaleSize(4),
-    marginBottom: Mixins.scaleSize(10),
-    paddingHorizontal: Mixins.scaleSize(5),
-    flexDirection: "row",
-    justifyContent: "space-between",
-    // alignItems: "center",
-  },
+
   checkBox: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -1012,7 +1013,7 @@ const styles = StyleSheet.create({
   },
   pillsText: {
     color: Colors.WHITE,
-    ...Typography.FONT_REGULAR,
+    ...Typography.FONT_MEDIUM,
   },
   formButton: {
     marginHorizontal: Mixins.scaleSize(0),
