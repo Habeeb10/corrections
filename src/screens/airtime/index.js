@@ -795,19 +795,18 @@ class Airtime extends Component {
                   </View>
                 )}
                 <View style={styles.formItem}>
-                  <FloatingLabelInput
-                    label={Dictionary.AMOUNT}
-                    value={`₦${Util.formatAmount(data_package?.amount)}`}
-                    multiline={false}
-                    maxLength={11}
-                    autoCorrect={false}
-                    editable={false}
-                  />
-                  <Text style={FormStyle.formError}>
-                    {this.state.phone_number_error}
-                  </Text>
+                  <View style={styles.amountformItem}>
+                    <FloatingLabelInput
+                      label={Dictionary.AMOUNT}
+                      value={`₦${Util.formatAmount(data_package?.amount)}`}
+                      multiline={false}
+                      maxLength={11}
+                      autoCorrect={false}
+                      editable={false}
+                    />
+                  </View>
                   <Text style={SharedStyle.balanceLabel}>
-                    {Dictionary.BALANCE}{" "}
+                    {Dictionary.BALANCE}
                     <Text style={SharedStyle.balanceValue}>
                       ₦
                       {Util.formatAmount(
@@ -949,7 +948,12 @@ class Airtime extends Component {
 }
 const styles = StyleSheet.create({
   formItem: {
-    ...Mixins.margin(5, 0, 5, 0), // Increase the bottom margin to 40
+    ...Mixins.margin(10, 0, 10, 0), // Increase the bottom margin to 40
+  },
+  amountformItem: {
+    backgroundColor: "#F5F7F9",
+    borderRadius: 5,
+    ...Mixins.margin(0, 0, 10, 0), // Increase the bottom margin to 40
   },
   // packagesBox: {
   //   flexDirection: "row",
@@ -963,11 +967,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   packageContainer: {
-    width: "100%",
-    height: Mixins.scaleSize(55),
+    height: Mixins.scaleSize(60),
     borderColor: Colors.GREY,
     borderWidth: 1,
-    borderRadius: Mixins.scaleSize(3),
+    borderRadius: Mixins.scaleSize(4),
     marginBottom: Mixins.scaleSize(10),
     paddingHorizontal: Mixins.scaleSize(5),
     flexDirection: "row",
@@ -977,7 +980,7 @@ const styles = StyleSheet.create({
   checkBox: {
     flexDirection: "row",
     flexWrap: "wrap",
-    ...Mixins.margin(0, 0, 0, 0), // Increase the bottom margin to 40\
+    ...Mixins.margin(10, 0, 10, 0), // Increase the bottom margin to 40\
   },
   formContainer: {
     // ...Mixins.margin(10, 0, 10, 0),
@@ -990,7 +993,7 @@ const styles = StyleSheet.create({
     marginBottom: Mixins.scaleSize(15),
   },
   pillContainer: {
-    ...Mixins.margin(10, 0, 10, 0),
+    ...Mixins.margin(20, 0, 10, 0),
     ...Mixins.padding(10),
     backgroundColor: "#F5F5F5",
     width: width * 0.9,
