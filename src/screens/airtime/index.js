@@ -914,10 +914,11 @@ class Airtime extends Component {
               style={{
                 position: "absolute",
                 width: "100%",
-                top: Mixins.scaleSize(320),
+                top: Mixins.scaleSize(280),
                 borderTopLeftRadius: Mixins.scaleSize(10),
                 borderTopRightRadius: Mixins.scaleSize(10),
                 backgroundColor: "white",
+                flex: 1,
               }}
             >
               <FlatList
@@ -934,6 +935,9 @@ class Airtime extends Component {
                       selected={this.state.data_package?.index === index}
                     />
                   );
+                }}
+                contentContainerStyle={{
+                  flexGrow: 1,
                 }}
               />
             </View>
