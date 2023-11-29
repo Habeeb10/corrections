@@ -25,7 +25,7 @@ const PickItem = class extends Component {
       borderRadius: Mixins.scaleSize(10),
       alignItems: "center",
       justifyContent: "center",
-      marginRight: Mixins.scaleSize(4),
+      marginRight: 8,
       marginBottom: 10,
     };
 
