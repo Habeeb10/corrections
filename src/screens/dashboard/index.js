@@ -505,87 +505,108 @@ class Dashboard extends Component {
         }
       >
         <View style={styles.header}>
-          <TouchItem
-            style={styles.navButton}
-            onPress={() => this.navigateTo("Settings")}
-          >
-            {/* {(!user_data.photoUrl || user_data.photoUrl == "") && ( */}
-            {!user_data.photoLocation || user_data.photoLocation === "" ? (
-              <Image
-                style={styles.profileImage}
-                source={require("../../assets/images/shared/profile.png")}
-              />
-            ) : (
-              <Image
-                style={styles.profileImage}
-                // source={{ uri: user_data.photoUrl }}
-                source={{ uri: user_data.photoLocation }}
-              />
-            )}
-            {/* {user_data.photoUrl !== "" && ( */}
-            {/* {user_data.photoLocation !== "" && (
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+            <TouchItem
+              style={styles.navButton}
+              onPress={() => this.navigateTo("Settings")}
+            >
+              {/* {(!user_data.photoUrl || user_data.photoUrl == "") && ( */}
+              {!user_data.photoLocation || user_data.photoLocation === "" ? (
+                <Image
+                  style={styles.profileImage}
+                  source={require("../../assets/images/shared/profile.png")}
+                />
+              ) : (
+                <Image
+                  style={styles.profileImage}
+                  // source={{ uri: user_data.photoUrl }}
+                  source={{ uri: user_data.photoLocation }}
+                />
+              )}
+              {/* {user_data.photoUrl !== "" && ( */}
+              {/* {user_data.photoLocation !== "" && (
               <Image
                 style={styles.profileImage}
                 source={{ uri: user_data.photoUrl }}
                 source={{ uri: user_data.photoLocation }}
               />
             )} */}
-          </TouchItem>
-          <Text style={styles.navText} numberOfLines={1}>
-            {greeting}
-          </Text>
-          {/* {this.props.settings.app_notifications && ( */}
-          <TouchItem
-            style={styles.navButton}
-            onPress={() => this.navigateTo("Notifications")}
-          >
-            <Icon.Ionicons
-              name={"ios-notifications-outline"}
-              color={Colors.CV_BLUE}
-              size={Mixins.scaleSize(28)}
-            />
-            {unread > 0 && (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{unread_text}</Text>
+            </TouchItem>
+            <Text style={styles.navText} numberOfLines={1}>
+              {greeting}
+            </Text>
+            {user_data?.tier !== "" && (
+              <View
+                style={[
+                  styles.tier,
+                  {
+                    backgroundColor:
+                      user_data?.tier === "Tier 2"
+                        ? Colors.LIGHT_BLUE_BG
+                        : Colors.CV_YELLOW,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.tierText,
+                    {
+                      color:
+                        user_data?.tier === "Tier 2"
+                          ? Colors.CV_BLUE
+                          : Colors.WHITE,
+                    },
+                  ]}
+                >{`${user_data?.tier}`}</Text>
               </View>
             )}
-          </TouchItem>
-          {/* )} */}
+          </View>
+          {/* {this.props.settings.app_notifications && ( */}
+          <View
+            style={{
+              flexDirection: "row",
+              marginRight: 0,
+              marginLeft: 0,
+            }}
+          >
+            <TouchItem
+              style={styles.navButton}
+              onPress={() => this.navigateTo("Settings")}
+            >
+              <Icon.Ionicons
+                name={"ios-settings-outline"}
+                color={Colors.CV_BLUE}
+                size={Mixins.scaleSize(28)}
+              />
+            </TouchItem>
+            <TouchItem
+              style={styles.navButton}
+              onPress={() => this.navigateTo("Notifications")}
+            >
+              <Icon.Ionicons
+                name={"ios-notifications-outline"}
+                color={Colors.CV_BLUE}
+                size={Mixins.scaleSize(28)}
+              />
+
+              {unread > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{unread_text}</Text>
+                </View>
+              )}
+            </TouchItem>
+            {/* )} */}
+          </View>
         </View>
         <_ScrollView {...this.props}>
           <Animatable.View
             animation="fadeInDown"
             duration={500}
             delay={500}
-            style={{ paddingBottom: Mixins.scaleSize(20) }}
+            style={{ paddingBottom: Mixins.scaleSize(15) }}
           >
             <View style={styles.wallet}>
               <View style={styles.walletDetails}>
-                {user_data?.tier !== "" && (
-                  <View
-                    style={[
-                      styles.tier,
-                      {
-                        backgroundColor:
-                          user_data?.tier === "Tier 2"
-                            ? Colors.LIGHT_BLUE_BG
-                            : Colors.CV_YELLOW,
-                      },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.tierText,
-                        {
-                          color:
-                            user_data?.tier === "Tier 2"
-                              ? Colors.CV_BLUE
-                              : Colors.WHITE,
-                        },
-                      ]}
-                    >{`${user_data?.tier}`}</Text>
-                  </View>
-                )}
                 <View
                   style={styles.walletIdContainer}
                   disabled={this.props.wallet.loading_wallet_data}
@@ -608,11 +629,14 @@ class Dashboard extends Component {
                         </Text>
                       </View>
                       <Icon.MaterialCommunityIcons
-                        size={Mixins.scaleSize(15)}
+                        size={Mixins.scaleSize(18)}
                         style={styles.copyIcon}
                         name="content-copy"
                       />
                     </TouchItem>
+                    <Text style={[styles.copyIcon, { marginLeft: 5 }]}>
+                      Copy
+                    </Text>
                   </View>
                   {/* <View style={styles.walletLoader}>
                                         {this.props.wallet.loading_wallet_data && (
@@ -624,12 +648,11 @@ class Dashboard extends Component {
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Text style={styles.walletBalance} numberOfLines={1}>
                       {this.state.showAmount
-                        ? `₦ ${Util.formatAmount(
+                        ? `₦${Util.formatAmount(
                             this.props.wallet.wallet_balance
                           )}`
                         : "* * * *"}
                     </Text>
-
                     <TouchItem
                       style={[
                         // styles.secureToggle,
@@ -643,12 +666,15 @@ class Dashboard extends Component {
                     >
                       <Icon.Ionicons
                         style={{ color: Colors.CV_YELLOW }}
-                        size={Mixins.scaleSize(25)}
+                        size={Mixins.scaleSize(18)}
                         name={
                           !this.state.showAmount ? "ios-eye-off" : "ios-eye"
                         }
                       />
                     </TouchItem>
+                    <Text style={[styles.copyIcon, { marginLeft: 5 }]}>
+                      {!this.state.showAmount ? "Show" : "Hide"}
+                    </Text>
                   </View>
                 )}
               </View>
@@ -1337,28 +1363,31 @@ class Dashboard extends Component {
 
 const styles = StyleSheet.create({
   header: {
-    height: Mixins.scaleSize(64),
+    // height: Mixins.scaleSize(64),
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   navButton: {
-    ...Mixins.padding(16),
+    ...Mixins.margin(16, 16, 16, 0), // Increase the bottom margin to 40\
   },
   navText: {
     ...Typography.FONT_REGULAR,
     fontSize: Mixins.scaleFont(18),
-    lineHeight: Mixins.scaleSize(21),
-    letterSpacing: Mixins.scaleSize(0.01),
+    // lineHeight: Mixins.scaleSize(21),
+    // letterSpacing: Mixins.scaleSize(0.01),
     color: Colors.DARK_GREY,
-    flex: 1,
+    // flex: 1,
+    marginRight: 3,
+    marginLeft: 0,
   },
   profileImage: {
-    width: Mixins.scaleSize(32),
-    height: Mixins.scaleSize(32),
+    width: Mixins.scaleSize(30),
+    height: Mixins.scaleSize(30),
     borderRadius: Mixins.scaleSize(8),
     resizeMode: "cover",
     backgroundColor: Colors.TAB_BG,
+    ...Mixins.margin(0, 0, 0, 16), // Increase the bottom margin to 40\
   },
   badge: {
     position: "absolute",
@@ -1382,7 +1411,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginHorizontal: Mixins.scaleSize(16),
-    marginBottom: Mixins.scaleSize(10),
+    marginBottom: Mixins.scaleSize(3),
   },
   walletDetails: {
     paddingVertical: Mixins.scaleSize(12),
@@ -1390,10 +1419,10 @@ const styles = StyleSheet.create({
   walletIdContainer: {
     flexDirection: "row",
     alignSelf: "flex-start",
-    marginBottom: Mixins.scaleSize(12),
+    marginBottom: Mixins.scaleSize(5),
   },
   walletIdText: {
-    ...Mixins.padding(4, 8, 4, 8),
+    ...Mixins.padding(2, 8, 2, 8),
     borderRadius: Mixins.scaleSize(4),
     backgroundColor: Colors.LIGHT_BG,
   },
@@ -1430,9 +1459,9 @@ const styles = StyleSheet.create({
     color: Colors.CV_GREEN,
   },
   incomplete: {
-    ...Mixins.padding(12),
+    ...Mixins.padding(10),
     marginHorizontal: Mixins.scaleSize(16),
-    marginBottom: Mixins.scaleSize(30),
+    marginBottom: Mixins.scaleSize(10),
     borderRadius: Mixins.scaleSize(4),
     backgroundColor: Colors.LIGHT_BG,
     flex: 1,
@@ -1446,7 +1475,7 @@ const styles = StyleSheet.create({
   incompleteHeader: {
     ...Typography.FONT_BOLD,
     color: Colors.DARK_GREY,
-    marginBottom: Mixins.scaleSize(8),
+    marginBottom: Mixins.scaleSize(5),
   },
   incompleteDescription: {
     color: Colors.VERY_LIGHT_GREY,
@@ -1455,7 +1484,7 @@ const styles = StyleSheet.create({
     width: "35%",
   },
   actionCards: {
-    marginBottom: Mixins.scaleSize(10),
+    marginBottom: Mixins.scaleSize(6),
   },
   cardContainer: {
     marginHorizontal: Mixins.scaleSize(16),
@@ -1465,7 +1494,7 @@ const styles = StyleSheet.create({
     marginBottom: Mixins.scaleSize(16),
   },
   card: {
-    ...Mixins.padding(20, 16, 20, 16),
+    ...Mixins.padding(10, 16, 10, 16),
     width: "48%",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -1474,14 +1503,14 @@ const styles = StyleSheet.create({
   },
   longCard: {
     ...Mixins.padding(0),
-    height: Mixins.scaleSize(240),
+    height: Mixins.scaleSize(225),
   },
   longCardBackground: {
     width: "100%",
     height: "100%",
   },
   longCardContent: {
-    ...Mixins.padding(20, 16, 20, 16),
+    ...Mixins.padding(10, 16, 10, 16),
     flex: 1,
     flexDirection: "column",
     justifyContent: "space-between",
@@ -1551,9 +1580,10 @@ const styles = StyleSheet.create({
     color: Colors.CV_GREEN,
   },
   shortCardIcon: {
-    width: Mixins.scaleSize(28),
-    height: Mixins.scaleSize(28),
+    width: Mixins.scaleSize(24),
+    height: Mixins.scaleSize(24),
     resizeMode: "contain",
+    marginLeft: 5,
   },
   transactions: {
     marginHorizontal: Mixins.scaleSize(16),
@@ -1591,10 +1621,10 @@ const styles = StyleSheet.create({
   transaction: {
     borderTopWidth: Mixins.scaleSize(1),
     borderTopColor: Colors.FAINT_BORDER,
-    paddingTop: Mixins.scaleSize(12),
+    paddingTop: Mixins.scaleSize(6),
   },
   transactionRow: {
-    marginBottom: Mixins.scaleSize(5),
+    marginBottom: Mixins.scaleSize(3),
   },
   transactionLeft: {
     width: "68%",
@@ -1612,7 +1642,7 @@ const styles = StyleSheet.create({
     color: Colors.LIGHT_GREY,
   },
   showAllButton: {
-    paddingVertical: Mixins.scaleSize(8),
+    paddingVertical: Mixins.scaleSize(5),
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -1639,8 +1669,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 33,
-    paddingBottom: 44,
+    paddingTop: 15,
+    paddingBottom: 25,
   },
   shieldText: {
     fontSize: 8,
@@ -1657,7 +1687,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F3FF",
     borderRadius: 50,
     // marginTop: 5,
-    padding: 5,
+    padding: 3,
     // marginRight: 20
   },
   copyButton: {
@@ -1665,15 +1695,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   copyIcon: {
-    ...Mixins.margin(0, 0, 0, 5),
+    ...Mixins.margin(0, 0, 0, 0),
     color: Colors.CV_YELLOW,
   },
   tier: {
-    width: Mixins.scaleSize(49),
-    height: Mixins.scaleSize(18),
+    width: Mixins.scaleSize(37),
+    height: Mixins.scaleSize(16),
     borderRadius: 5,
-    marginBottom: 16,
-    display: "flex",
+    // marginBottom: 16,
+    // display: "flex",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
