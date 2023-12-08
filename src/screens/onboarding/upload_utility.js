@@ -2,11 +2,11 @@ import React, { Component } from "react";
 import { BackHandler, ActivityIndicator, StyleSheet, View } from "react-native";
 import { withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from "expo-file-system";
 
 import { showToast } from "_actions/toast_actions";
 import { getDocuments } from "_actions/document_actions";
-import {  getUserProfile } from '_actions/user_actions';
+import { getUserProfile } from "_actions/user_actions";
 
 import { Dictionary, Util } from "_utils";
 import { Colors, Mixins, Typography, SharedStyle } from "_styles";
@@ -20,7 +20,7 @@ class UploadUtility extends Component {
     loading: false,
     image_preview: false,
     processing: false,
-    document_id: null
+    document_id: null,
   };
 
   componentDidMount() {
@@ -47,14 +47,14 @@ class UploadUtility extends Component {
   };
 
   getFileInfo = async (fileURI) => {
-    const fileInfo = await FileSystem.getInfoAsync(fileURI)
-    return fileInfo
-  }
+    const fileInfo = await FileSystem.getInfoAsync(fileURI);
+    return fileInfo;
+  };
 
   isLessThanTheMB = (fileSize, smallerThanSizeMB) => {
-    const isOk = fileSize / 1024 / 1024 < smallerThanSizeMB
-    return isOk
-  }
+    const isOk = fileSize / 1024 / 1024 < smallerThanSizeMB;
+    return isOk;
+  };
 
   getDocuments = () => {
     this.setState({ loading: true });
@@ -65,7 +65,7 @@ class UploadUtility extends Component {
       .catch((error) => {
         this.setState(
           {
-            loading: false
+            loading: false,
           },
           () => {
             this.props.navigation.navigate("Login");
@@ -80,12 +80,12 @@ class UploadUtility extends Component {
     if (identity) {
       this.setState({
         loading: false,
-        document_id: identity.id
+        document_id: identity.id,
       });
     } else {
       this.setState(
         {
-          loading: false
+          loading: false,
         },
         () => {
           this.handleSkip();
@@ -104,7 +104,7 @@ class UploadUtility extends Component {
       this.props.navigation.navigate("Dashboard");
     } else {
       this.props.navigation.navigate("CreatePIN", {
-        bvn_data
+        bvn_data,
       });
     }
   };
@@ -115,7 +115,7 @@ class UploadUtility extends Component {
 
   handleImagePreview = (is_previewing) => {
     this.setState({
-      image_preview: is_previewing
+      image_preview: is_previewing,
     });
   };
 
@@ -124,7 +124,9 @@ class UploadUtility extends Component {
 
     let localUri = imageData.uri;
     let filename = localUri.split("/").pop();
-    let androidURI = localUri.includes("file:///") ? localUri : localUri.replace("file:/", "file:///")
+    let androidURI = localUri.includes("file:///")
+      ? localUri
+      : localUri.replace("file:/", "file:///");
 
     // Infer the type of the image
     let match = /\.(\w+)$/.exec(filename);
@@ -134,18 +136,19 @@ class UploadUtility extends Component {
     formData.append("files", { uri: localUri, name: filename, type });
     formData.append("docType", "utility");
 
-    const fileInfo = await this.getFileInfo(androidURI)
+    const fileInfo = await this.getFileInfo(androidURI);
 
-    const isLt1MB = this.isLessThanTheMB(fileInfo.size, 1)
-    
+    const isLt1MB = this.isLessThanTheMB(fileInfo.size, 1);
+
     if (!isLt1MB) {
-        this.props.showToast(`Image size must be smaller than 1MB!`)
-        this.setState({ processing: false });
-        return
+      this.props.showToast(`Image size must be smaller than 1MB!`);
+      this.setState({ processing: false });
+      return;
     }
 
     Network.uploadUtility(formData)
       .then((fileData) => {
+        console.log("myfile", fileData);
         this.setState({ processing: false });
         this.handleSkip();
         Util.logEventData("onboarding_document_utility");
@@ -195,13 +198,13 @@ const styles = StyleSheet.create({
   requirementsPanel: {
     position: "absolute",
     top: Mixins.scaleSize(90),
-    width: "100%"
+    width: "100%",
   },
   requirements: {
     backgroundColor: "rgba(0, 0, 0, 0.8)",
     borderRadius: Mixins.scaleSize(8),
     ...Mixins.margin(16),
-    ...Mixins.padding(12)
+    ...Mixins.padding(12),
   },
   requirementsHeader: {
     ...Typography.FONT_MEDIUM,
@@ -209,7 +212,7 @@ const styles = StyleSheet.create({
     fontSize: Mixins.scaleFont(14),
     lineHeight: Mixins.scaleSize(16),
     letterSpacing: Mixins.scaleSize(0.01),
-    opacity: 0.9
+    opacity: 0.9,
   },
   requirementsText: {
     ...Typography.FONT_REGULAR,
@@ -217,21 +220,21 @@ const styles = StyleSheet.create({
     fontSize: Mixins.scaleFont(12),
     lineHeight: Mixins.scaleSize(16),
     letterSpacing: Mixins.scaleSize(0.01),
-    opacity: 0.8
-  }
+    opacity: 0.8,
+  },
 });
 
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    documents: state.documents
+    documents: state.documents,
   };
 };
 
 const mapDispatchToProps = {
   showToast,
   getDocuments,
-  getUserProfile
+  getUserProfile,
 };
 
 export default connect(

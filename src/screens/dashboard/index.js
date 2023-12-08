@@ -75,16 +75,7 @@ let visible = false;
 class Dashboard extends Component {
   constructor(props) {
     super(props);
-
     const { user_data } = this.props.user;
-
-    // let greeting = Dictionary.HI_USER;
-    // if (user_data.firstName) {
-    //     greeting = greeting.replace("%s", user_data.firstName.charAt(0).toUpperCase() + user_data.firstName.substring(1).toLowerCase());
-    // } else {
-    //     greeting = greeting.substring(0, 2);
-    // }
-
     this.state = {
       greeting: "",
       UserInactivityState: false,
@@ -95,6 +86,8 @@ class Dashboard extends Component {
       modal_visible: false,
       receipt_modal_visible: false,
       transaction_data: {},
+      image: this.props.information.image,
+      information: this.props.information.imageVisible,
     };
 
     if (user_data.phone_hash) {
@@ -121,7 +114,7 @@ class Dashboard extends Component {
     BackHandler.addEventListener("hardwareBackPress", this.handleBackButton);
     // Initialize configs...
     this.initializePaystack();
-    //this.initializePushNotifications();
+    // this.initializePushNotifications();
 
     // this.props.getDropdownOptions();
     // this.props.getStateOptions();
@@ -177,8 +170,9 @@ class Dashboard extends Component {
     // this.props.getUserAccounts();
     // this.props.getDocuments();
     // this.props.getUserNextOfKin();
-  }
 
+    // Check and request permissions
+  }
   componentWillUnmount() {
     BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
   }
@@ -308,7 +302,7 @@ class Dashboard extends Component {
         console.log("Firebase Token:", fcm_token);
         Network.registerFcmToken(fcm_token)
           .then(() => {
-            console.log("FCM token registered successfully");
+            console.log("FCM token registered successfully", fcm_token);
             this.openForegroundListener();
           })
           .catch((error) => {
@@ -389,6 +383,7 @@ class Dashboard extends Component {
   onCloseModal = () => {
     this.setState({
       modal_visible: false,
+      information: false,
     });
   };
   render() {
@@ -403,9 +398,7 @@ class Dashboard extends Component {
     } else {
       greeting = greeting.substring(0, 2);
     }
-    // this.setState({greeting})
     let account_progress = 1;
-    // if (user_data.photoUrl && user_data.photoUrl != "") {
     if (user_data.photoLocation && user_data.photoLocation != "") {
       account_progress += 1;
     }
@@ -415,10 +408,6 @@ class Dashboard extends Component {
     if (user_data.emailVerificationStatus) {
       account_progress += 1;
     }
-
-    // if (account_progress==0.9999999999999999) {
-    //     account_progress=1;
-    // }
 
     let wallet = this.props.wallet.wallet_data;
 
@@ -510,7 +499,6 @@ class Dashboard extends Component {
               style={styles.navButton}
               onPress={() => this.navigateTo("Settings")}
             >
-              {/* {(!user_data.photoUrl || user_data.photoUrl == "") && ( */}
               {!user_data.photoLocation || user_data.photoLocation === "" ? (
                 <Image
                   style={styles.profileImage}
@@ -519,18 +507,9 @@ class Dashboard extends Component {
               ) : (
                 <Image
                   style={styles.profileImage}
-                  // source={{ uri: user_data.photoUrl }}
                   source={{ uri: user_data.photoLocation }}
                 />
               )}
-              {/* {user_data.photoUrl !== "" && ( */}
-              {/* {user_data.photoLocation !== "" && (
-              <Image
-                style={styles.profileImage}
-                source={{ uri: user_data.photoUrl }}
-                source={{ uri: user_data.photoLocation }}
-              />
-            )} */}
             </TouchItem>
             <Text style={styles.navText} numberOfLines={1}>
               {greeting}
@@ -561,7 +540,6 @@ class Dashboard extends Component {
               </View>
             )}
           </View>
-          {/* {this.props.settings.app_notifications && ( */}
           <View
             style={{
               flexDirection: "row",
@@ -608,10 +586,15 @@ class Dashboard extends Component {
             <View style={styles.wallet}>
               <View style={styles.walletDetails}>
                 <View
-                  style={styles.walletIdContainer}
+                  style={[styles.walletIdContainer]}
                   disabled={this.props.wallet.loading_wallet_data}
                 >
-                  <View style={{ flexDirection: "row" }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
                     <TouchItem
                       style={styles.copyButton}
                       onPress={() => {
@@ -624,25 +607,25 @@ class Dashboard extends Component {
                           style={[SharedStyle.normalText, styles.walletId]}
                           numberOfLines={1}
                         >
-                          {/* {(user_data.deposit && this.props.user.wallet_id) || */}
                           {user_data.nuban || "- - -"}
                         </Text>
                       </View>
                       <Icon.MaterialCommunityIcons
-                        size={Mixins.scaleSize(18)}
+                        size={Mixins.scaleSize(17)}
                         style={styles.copyIcon}
                         name="content-copy"
                       />
                     </TouchItem>
-                    <Text style={[styles.copyIcon, { marginLeft: 5 }]}>
+                    <Text
+                      style={{
+                        color: Colors.CV_YELLOW,
+                        fontSize: Mixins.scaleSize(11),
+                        marginLeft: Mixins.scaleSize(3),
+                      }}
+                    >
                       Copy
                     </Text>
                   </View>
-                  {/* <View style={styles.walletLoader}>
-                                        {this.props.wallet.loading_wallet_data && (
-                                            <ActivityIndicator size="small" color={Colors.CV_YELLOW} />
-                                        )}
-                                    </View> */}
                 </View>
                 {!this.props.wallet.loading_wallet_data && (
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -654,10 +637,7 @@ class Dashboard extends Component {
                         : "* * * *"}
                     </Text>
                     <TouchItem
-                      style={[
-                        // styles.secureToggle,
-                        { backgroundColor: "white", marginLeft: 10 },
-                      ]}
+                      style={[{ backgroundColor: "white", marginLeft: 10 }]}
                       onPress={() => {
                         this.setState({
                           showAmount: !this.state.showAmount,
@@ -672,13 +652,36 @@ class Dashboard extends Component {
                         }
                       />
                     </TouchItem>
-                    <Text style={[styles.copyIcon, { marginLeft: 5 }]}>
+                    <Text
+                      style={{
+                        color: Colors.CV_YELLOW,
+                        fontSize: Mixins.scaleSize(11),
+                        marginLeft: Mixins.scaleSize(3),
+                      }}
+                    >
                       {!this.state.showAmount ? "Show" : "Hide"}
                     </Text>
                   </View>
                 )}
               </View>
+              <TouchItem
+                style={styles.topup}
+                onPress={() => this.navigateTo("FundWallet")}
+                disabled={!this.props.user.wallet_id}
+              >
+                <View style={styles.topupButton}>
+                  <Text style={styles.topupText} numberOfLines={1}>
+                    {"Deposit"}
+                  </Text>
+                  <Icon.Entypo
+                    size={Mixins.scaleSize(17)}
+                    style={styles.topupIcon}
+                    name="plus"
+                  />
+                </View>
+              </TouchItem>
             </View>
+
             {account_progress < 4 && (
               <TouchItem
                 style={styles.incomplete}
@@ -719,14 +722,8 @@ class Dashboard extends Component {
               <View style={styles.cardContainer}>
                 <TouchItem
                   style={[styles.card, styles.longCard]}
-                  // onPress={() => {
-                  //     this.props.showToast(Dictionary.COMMING_SOON_CLICK)
-                  // }}
-
-                  // >
                   onPress={() => this.navigateTo("Savings")}
                 >
-                  {/* onPress={() => this.navigateTo('Savings')}> */}
                   <ImageBackground
                     style={styles.longCardBackground}
                     imageStyle={{ borderRadius: Mixins.scaleSize(8) }}
@@ -776,7 +773,7 @@ class Dashboard extends Component {
                                 styles.longCardNormalText,
                               ]}
                             >
-                              {Dictionary.SAVINGS_BALANCE}
+                              {Dictionary.ADD_SAVINGS}
                             </Text>
                             <View
                               style={{
@@ -791,9 +788,7 @@ class Dashboard extends Component {
                                   { ...Typography.FONT_BOLD },
                                 ]}
                               >
-                                {this.state.showSavingsBalance
-                                  ? `₦ ${total_savings}`
-                                  : "* * * *"}
+                                11% interest
                               </Text>
                               <TouchItem
                                 style={{ marginLeft: 10 }}
@@ -803,38 +798,18 @@ class Dashboard extends Component {
                                       !this.state.showSavingsBalance,
                                   });
                                 }}
-                              >
-                                <Icon.Ionicons
-                                  style={{ color: Colors.WHITE }}
-                                  size={Mixins.scaleSize(15)}
-                                  name={
-                                    !this.state.showSavingsBalance
-                                      ? "ios-eye-off"
-                                      : "ios-eye"
-                                  }
-                                />
-                              </TouchItem>
+                              ></TouchItem>
                             </View>
                           </View>
                         )}
-                      </View>
-                      <View style={styles.longCardButton}>
-                        <Icon.Entypo
-                          size={Mixins.scaleSize(20)}
-                          style={styles.longCardButtonIcon}
-                          name="plus"
-                        />
                       </View>
                     </View>
                   </ImageBackground>
                 </TouchItem>
                 <TouchItem
                   style={[styles.card, styles.longCard]}
-                  onPress={() => {
-                    // this.props.showToast(Dictionary.COMMING_SOON_CLICK);
-                  }}
+                  onPress={() => {}}
                 >
-                  {/* onPress={() => this.navigateTo('Loans')}> */}
                   <ImageBackground
                     style={styles.longCardBackground}
                     imageStyle={{ borderRadius: Mixins.scaleSize(8) }}
@@ -926,18 +901,6 @@ class Dashboard extends Component {
                           </View>
                         )}
                       </View>
-                      {/* <View
-                        style={[
-                          styles.longCardButton,
-                          { backgroundColor: Colors.CV_BLUE }
-                        ]}
-                      >
-                        <Icon.Entypo
-                          size={Mixins.scaleSize(20)}
-                          style={styles.longCardButtonIcon}
-                          name="plus"
-                        />
-                      </View> */}
                     </View>
                   </ImageBackground>
                 </TouchItem>
@@ -945,7 +908,6 @@ class Dashboard extends Component {
               <View style={styles.cardContainer}>
                 <TouchItem
                   style={[styles.card, styles.transfers]}
-                  // onPress={() => this.navigateTo("Transfers")}
                   onPress={() => this.setState({ modal_visible: true })}
                 >
                   <Text style={[SharedStyle.normalText, styles.transfersText]}>
@@ -956,18 +918,21 @@ class Dashboard extends Component {
                     source={require("../../assets/images/dashboard/transfers.png")}
                   />
                 </TouchItem>
+
                 <TouchItem
-                  style={[styles.card, styles.topup]}
-                  onPress={() => this.navigateTo("FundWallet")}
-                  disabled={!this.props.user.wallet_id}
+                  style={[styles.card, styles.data]}
+                  onPress={() => {
+                    this.props.resetAirtimePurchase();
+                    this.props.resetDataPurchase();
+                    this.navigateTo("Data");
+                  }}
                 >
                   <Text style={[SharedStyle.normalText, styles.airtimeText]}>
-                    {"Deposit"}
+                    {Dictionary.DATA}
                   </Text>
-                  <Icon.Entypo
-                    size={Mixins.scaleSize(30)}
-                    style={styles.topupIcon}
-                    name="plus"
+                  <Image
+                    style={styles.shortCardIcon}
+                    source={require("../../assets/images/dashboard/data.png")}
                   />
                 </TouchItem>
               </View>
@@ -988,7 +953,6 @@ class Dashboard extends Component {
                 <TouchItem
                   style={[styles.card, styles.airtime]}
                   onPress={() => {
-                    //  this.props.showToast(Dictionary.COMMING_SOON_CLICK)
                     this.props.resetAirtimePurchase();
                     this.props.resetDataPurchase();
                     this.navigateTo("Airtime");
@@ -1004,21 +968,6 @@ class Dashboard extends Component {
                 </TouchItem>
               </View>
               <View style={styles.cardContainer}>
-                {/* <TouchItem
-                  style={[styles.card, styles.referral]}
-                  onPress={() => {
-                    this.navigateTo("Referrals");
-                  }}
-                >
-                  <Text style={[SharedStyle.normalText, styles.referralText]}>
-                    {Dictionary.REFER_PEOPLE}
-                  </Text>
-                  <Icon.SimpleLineIcons
-                    name="arrow-right"
-                    color={Colors.CV_GREEN}
-                    size={Mixins.scaleSize(15)}
-                  />
-                </TouchItem> */}
                 <TouchItem
                   style={[styles.card, styles.airtime]}
                   onPress={() => {
@@ -1124,16 +1073,11 @@ class Dashboard extends Component {
                     />
                   )}
                   {recent_transactions.slice(0, 5).map((transaction, index) => {
-                    // {recent_transactions.map((transaction, index) => {
                     return (
                       <TouchItem
                         key={index}
                         style={styles.transaction}
                         onPress={() => {
-                          // this.props.navigation.navigate("Receipt", {
-                          //   transaction_data: transaction,
-                          //   allow_back: true
-                          // });
                           this.setState({
                             transaction_data: transaction,
                             receipt_modal_visible: true,
@@ -1171,7 +1115,6 @@ class Dashboard extends Component {
                                     : "#00BB29"
                                 }
                                 size={Mixins.scaleSize(20)}
-                                // style={{transform: [{rotate:  Number(transaction.amount) < 1 ? '45deg' :}]}}
                               />
                             </View>
 
@@ -1217,67 +1160,9 @@ class Dashboard extends Component {
                             </Text>
                           </View>
                         </View>
-                        {/* <View style={[SharedStyle.row, styles.transactionRow]}>
-                          <Text
-                            numberOfLines={1}
-                            style={[
-                              styles.transactionLeft,
-                              styles.transactionLabel
-                            ]}
-                          >
-                            {Util.returnNarration(transaction.notes,transaction.amount) }
-                          </Text>
-                          <Text
-                            numberOfLines={1}
-                            style={[
-                              styles.transactionRight,
-                              styles.transactionValue,
-                              { ...Typography.FONT_BOLD }
-                            ]}
-                          >
-                           
-                            ₦{Util.formatAmount(Math.abs(transaction.amount))}
-                          </Text>
-                        </View>
-                        <View style={SharedStyle.row}>
-                          <Text
-                            numberOfLines={1}
-                            style={[
-                              styles.transactionLeft,
-                              styles.transactionValue
-                            ]}
-                          >
-                            {Number(transaction.amount) < 1
-                              ? "DEBIT"
-                              : "CREDIT"}
-                          </Text>
-                          <Text
-                            numberOfLines={1}
-                            style={[
-                              styles.transactionRight,
-                              styles.transactionValue
-                            ]}
-                          >
-                            {moment(
-                              transaction.createdOn,
-                              "YYYY-MM-DD HH:mm:ss"
-                            ).fromNow()}
-                          </Text>
-                        </View> */}
                       </TouchItem>
                     );
                   })}
-                  {/* {transaction_count > 0 && (
-                                        <TouchItem
-                                            style={styles.showAllButton}
-                                            onPress={() => this.navigateTo('Transactions')}>
-                                            <Icon.Entypo
-                                                size={Mixins.scaleSize(18)}
-                                                style={SharedStyle.sectionButtonIcon}
-                                                name="list" />
-                                            <Text style={SharedStyle.sectionButtonText}>{Dictionary.ALL_TRANSACTIONS}</Text>
-                                        </TouchItem>
-                                    )} */}
                 </View>
               )}
             </View>
@@ -1441,23 +1326,28 @@ const styles = StyleSheet.create({
     color: Colors.DARK_GREY,
   },
   topup: {
+    ...Mixins.padding(16, 12, 16, 12),
     //maxWidth: "30%"
-    backgroundColor: Colors.LIGHT_GREEN_BG,
   },
   topupText: {
     ...Typography.FONT_MEDIUM,
-    // marginRight: Mixins.scaleSize(6),
+    marginRight: Mixins.scaleSize(6),
     fontSize: Mixins.scaleFont(14),
     color: Colors.CV_GREEN,
   },
-  // topupButton: {
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   flexDirection: "row",
-  // },
+  topupButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    width: Mixins.scaleSize(100),
+    height: Mixins.scaleSize(32),
+    backgroundColor: Colors.LIGHT_GREEN_BG,
+    borderRadius: Mixins.scaleSize(5),
+  },
   topupIcon: {
     color: Colors.CV_GREEN,
   },
+
   incomplete: {
     ...Mixins.padding(10),
     marginHorizontal: Mixins.scaleSize(16),
@@ -1583,7 +1473,6 @@ const styles = StyleSheet.create({
     width: Mixins.scaleSize(24),
     height: Mixins.scaleSize(24),
     resizeMode: "contain",
-    marginLeft: 5,
   },
   transactions: {
     marginHorizontal: Mixins.scaleSize(16),
@@ -1724,6 +1613,7 @@ const mapStateToProps = (state) => {
     savings: state.savings,
     loans: state.loans,
     notifications: state.notifications,
+    information: state.information,
   };
 };
 

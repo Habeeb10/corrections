@@ -4,14 +4,12 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
-  KeyboardAvoidingView,
-  FlatList,
+  TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import Modal from "react-native-modal";
 import { withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
-import * as Icon from "@expo/vector-icons";
 import moment from "moment";
 import { Slider } from "@sharcoux/slider";
 import SwitchToggle from "@dooboo-ui/native-switch-toggle";
@@ -19,6 +17,7 @@ import SwitchToggle from "@dooboo-ui/native-switch-toggle";
 import {
   updateSavingsApplicationData,
   getSavingsCollectionModes,
+  getUserSavings,
 } from "_actions/savings_actions";
 import { showToast } from "_actions/toast_actions";
 
@@ -31,9 +30,12 @@ import {
   TouchItem,
   ScrollView as _ScrollView,
 } from "_atoms";
-import { PrimaryButton, _DateTimePicker } from "_molecules";
+import { PrimaryButton, _DateTimePicker, SelectListItem } from "_molecules";
 import { MainHeader } from "_organisms";
-import { Network } from "_services";
+import { MaterialIcons } from "@expo/vector-icons";
+import { addNotification } from "_actions/notification_actions";
+
+const { width } = Dimensions.get("screen");
 
 class SavingsAmount extends Component {
   constructor(props) {
@@ -69,6 +71,9 @@ class SavingsAmount extends Component {
       plan_name_error: "",
       auto_collection_mode: true,
       finalizing: false,
+      modalVisible: false,
+      animationTrigger: false,
+      frequency: "daily",
     };
   }
 
@@ -95,6 +100,13 @@ class SavingsAmount extends Component {
       return true;
     }
   };
+  openModal = () => {
+    this.setState({ modalVisible: true });
+  };
+
+  closeModal = () => {
+    this.setState({ modalVisible: false });
+  };
 
   hidePlanNameModal = () => {
     this.setState({ is_plan_name_modal_visible: false });
@@ -116,6 +128,7 @@ class SavingsAmount extends Component {
       {
         frequency,
         frequency_error: "",
+        modalVisible: false,
       },
       () => {
         this.updateBreakdown();
@@ -391,7 +404,6 @@ class SavingsAmount extends Component {
     if (!this.validFields()) {
       return;
     }
-    //
     this.setState({ processing: true }, () => {
       const {
         savings_product,
@@ -401,7 +413,33 @@ class SavingsAmount extends Component {
         duration,
         start_date,
         breakdown,
+        plan_name,
+        auto_collection_mode,
       } = this.state;
+
+      // Validate plan_name
+      if (!plan_name || plan_name.length < 2) {
+        this.setState({
+          plan_name_error: Dictionary.ENTER_VALID_PLAN_NAME,
+          processing: false,
+        });
+        return;
+      }
+
+      // Validate auto_collection_mode
+      let collection_modes = this.props.savings.collection_modes;
+      let collection_mode = collection_modes.find(
+        (mode) => mode.slug === (auto_collection_mode ? "automated" : "manual")
+      );
+
+      if (!collection_mode) {
+        this.props.showToast(Dictionary.GENERAL_ERROR);
+        this.handleBackButton();
+        this.props.getSavingsCollectionModes();
+        this.setState({ processing: false });
+        return;
+      }
+
       let formatted_start_date = moment(start_date, "DD/MM/YYYY").format(
         "MM/DD/YYYY"
       );
@@ -409,7 +447,7 @@ class SavingsAmount extends Component {
         .add(duration, preferred_offer.tenor_period)
         .format("MM/DD/YYYY");
 
-      // if (!savings_product.is_fixed) {
+      // Update savings application data including plan_name
       this.props.updateSavingsApplicationData({
         savings_product,
         preferred_offer,
@@ -422,90 +460,31 @@ class SavingsAmount extends Component {
         end_date,
         saving_frequency: frequency,
         interestAtMaturity: breakdown.interest_earned,
+        plan_name, // Include plan_name here
+        collection_mode,
       });
 
-      this.setState({
-        processing: false,
-        is_plan_name_modal_visible: true,
-      });
+      // Reset state and navigate to the appropriate screen
+      this.setState(
+        {
+          processing: false,
+          is_plan_name_modal_visible: false,
+          breakdownModalVisible: false,
+        },
+        () => {
+          if (auto_collection_mode) {
+            this.props.navigation.navigate("PaymentMethods", {
+              redirect: "SavingsSummary",
+              enable_wallet: true,
+              enable_accounts: false,
+            });
+          } else {
+            this.props.navigation.navigate("SavingsSummary");
+          }
+        }
+      );
+
       Util.logEventData("investment_apply_new", { amount });
-      // } else {
-      //     Network.getSavingsBreakdown({
-      //         periodic_amount: amount,
-      //         product_id: savings_product.id,
-      //         frequency_id: frequency.id,
-      //         start_date: formatted_start_date,
-      //         end_date,
-      //         offer_id: preferred_offer.id,
-      //         tenor: duration
-      //     }).then((result) => {
-      //         let result_data = result.data;
-      //         if (result_data.interest_earned) {
-      //             result_data.withholding_tax = ((savings_product.withholding_tax_rate / 100) * result_data.interest_earned).toFixed(2);
-      //         }
-
-      //         this.props.updateSavingsApplicationData({
-      //             savings_product,
-      //             preferred_offer,
-      //             amount,
-      //             target: result_data.maturity_value,
-      //             duration,
-      //             start_date,
-      //             saving_frequency: frequency,
-      //             breakdown: result_data
-      //         });
-
-      //         this.setState({
-      //             processing: false,
-      //             is_plan_name_modal_visible: true
-      //         });
-      //         Util.logEventData('investment_apply_new', { amount });
-      //     }).catch((error) => {
-      //         this.setState({
-      //             processing: false
-      //         }, () => {
-      //             this.props.showToast(error.message);
-      //         });
-      //     });
-      // }
-    });
-  };
-
-  handleSavePlanName = () => {
-    const { collection_modes } = this.props.savings;
-    const { plan_name, auto_collection_mode } = this.state;
-
-    if (!plan_name || plan_name.length < 2) {
-      this.setState({ plan_name_error: Dictionary.ENTER_VALID_PLAN_NAME });
-      return;
-    }
-
-    let collection_mode = collection_modes.find(
-      (mode) => mode.slug === (auto_collection_mode ? "automated" : "manual")
-    );
-
-    if (!collection_mode) {
-      this.props.showToast(Dictionary.GENERAL_ERROR);
-      this.handleBackButton();
-      this.props.getSavingsCollectionModes();
-      return;
-    }
-
-    this.props.updateSavingsApplicationData({
-      plan_name,
-      collection_mode,
-    });
-
-    this.setState({ is_plan_name_modal_visible: false }, () => {
-      if (auto_collection_mode) {
-        this.props.navigation.navigate("PaymentMethods", {
-          redirect: "SavingsSummary",
-          enable_wallet: true,
-          enable_accounts: false,
-        });
-      } else {
-        this.props.navigation.navigate("SavingsSummary");
-      }
     });
   };
 
@@ -533,6 +512,12 @@ class SavingsAmount extends Component {
 
   render() {
     let { saving_frequencies } = this.props.savings;
+    const opacity = this.state.animationTrigger
+      ? this.fadeAnim.interpolate({
+          inputRange: [0, 0.5, 1],
+          outputRange: [0, 1, 1],
+        })
+      : 1;
     let {
       savings_product,
       preferred_offer,
@@ -571,70 +556,56 @@ class SavingsAmount extends Component {
           >
             <View style={!!breakdown ? styles.palette : {}}>
               {!savings_product.is_fixed && (
-                <View>
-                  <View style={FormStyle.formItem}>
-                    <Text style={styles.duration}>
+                <>
+                  <View style={[styles.packageContainer]}>
+                    <Text
+                      style={{
+                        ...Typography.FONT_REGULAR,
+                        fontSize: Mixins.scaleFont(14),
+                        lineHeight: Mixins.scaleSize(16),
+                        letterSpacing: Mixins.scaleSize(0.01),
+                        color: Colors.LIGHT_GREY,
+                        paddingTop: Mixins.scaleSize(5),
+                      }}
+                    >
                       {Dictionary.HOW_OFTEN_TO_SAVE}
                     </Text>
-                  </View>
-                  <View style={FormStyle.formItem}>
-                    <ScrollView
-                      style={styles.frequencySlider}
-                      horizontal={true}
-                      scrollEnabled={true}
-                      showsHorizontalScrollIndicator={false}
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
                     >
-                      {saving_frequencies.map((frequency, index) => {
-                        return (
-                          <TouchItem
-                            key={index}
-                            style={[
-                              styles.durationOptions,
-                              this.state.frequency &&
-                              this.state.frequency.id === frequency.id
-                                ? styles.selectedFrequency
-                                : {},
-                              index === saving_frequencies.length - 1
-                                ? { marginRight: Mixins.scaleSize(16) }
-                                : {},
-                            ]}
-                            onPress={() =>
-                              this.handleFrequencyChange(frequency)
-                            }
-                          >
-                            <View>
-                              {(!this.state.frequency ||
-                                (this.state.frequency &&
-                                  this.state.frequency.id != frequency.id)) && (
-                                <View
-                                  style={[styles.blank, styles.icon]}
-                                ></View>
-                              )}
-                              {!!this.state.frequency &&
-                                this.state.frequency.id === frequency.id && (
-                                  <Icon.Ionicons
-                                    style={styles.icon}
-                                    name={"ios-checkmark-circle"}
-                                    size={Mixins.scaleFont(22)}
-                                    color={Colors.SUCCESS}
-                                  />
-                                )}
-                            </View>
-                            <View>
-                              <Text style={styles.frequencyHeader}>
-                                {frequency.name}
-                              </Text>
-                            </View>
-                          </TouchItem>
-                        );
-                      })}
-                    </ScrollView>
-                    <Text style={FormStyle.formError}>
-                      {this.state.frequency_error}
-                    </Text>
+                      <Text
+                        style={{
+                          ...Typography.FONT_MEDIUM,
+                          fontSize: Mixins.scaleFont(14),
+                          color: "#28374C",
+                        }}
+                      >
+                        {this.state.frequency
+                          ? this.state.frequency.name
+                          : "-:-:-"}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.setState({ modalVisible: true });
+                        }}
+                      >
+                        <MaterialIcons
+                          name={"keyboard-arrow-down"}
+                          size={Mixins.scaleSize(25)}
+                          color={"#8397B1"}
+                        />
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
+                  <Text style={FormStyle.formError}>
+                    {this.state.frequency_error}
+                  </Text>
+                </>
               )}
+
               <View style={FormStyle.formItem}>
                 <Text style={FormStyle.sectionLabel}>{how_much_label}</Text>
               </View>
@@ -665,6 +636,26 @@ class SavingsAmount extends Component {
                 </Text>
               </View>
               <View style={FormStyle.formItem}>
+                <Text style={styles.duration}>
+                  {Dictionary.WHEN_TO_START_SAVING}
+                </Text>
+              </View>
+              <View style={FormStyle.formItem}>
+                <TouchItem onPress={() => this.toggleSelectDate(true)}>
+                  <FloatingLabelInput
+                    pointerEvents="none"
+                    label={"Start date"}
+                    value={this.state.start_date}
+                    multiline={false}
+                    autoCorrect={false}
+                    editable={false}
+                  />
+                </TouchItem>
+                <Text style={FormStyle.formError}>
+                  {this.state.start_date_error}
+                </Text>
+              </View>
+              <View style={FormStyle.formItem}>
                 <Text style={FormStyle.sectionLabel}>
                   {Dictionary.HOW_LONG_TO_SAVE}
                 </Text>
@@ -689,197 +680,67 @@ class SavingsAmount extends Component {
               </View>
               <View style={FormStyle.formItem}>
                 <Text style={styles.duration}>
-                  {Dictionary.WHEN_TO_START_SAVING}
+                  {Dictionary.NAME_YOUR_SAVINGS}
                 </Text>
               </View>
-              <View style={FormStyle.formItem}>
-                <TouchItem onPress={() => this.toggleSelectDate(true)}>
-                  <FloatingLabelInput
-                    pointerEvents="none"
-                    label={Dictionary.DATE_LABEL}
-                    value={this.state.start_date}
-                    multiline={false}
-                    autoCorrect={false}
-                    editable={false}
-                  />
-                </TouchItem>
+              <View style={SharedStyle.FormStyle}>
+                <FloatingLabelInput
+                  label={"Enter Name"}
+                  value={this.state.plan_name}
+                  multiline={false}
+                  autoCorrect={false}
+                  // autoFocus={true}
+                  onChangeText={(text) =>
+                    this.setState({
+                      plan_name: text,
+                      plan_name_error: "",
+                    })
+                  }
+                />
                 <Text style={FormStyle.formError}>
-                  {this.state.start_date_error}
+                  {this.state.plan_name_error}
                 </Text>
-              </View>
-            </View>
-            {!!breakdown && (
-              <View>
-                <View style={FormStyle.formItem}>
-                  <Text style={styles.breakdownHeader}>
-                    {Dictionary.BREAKDOWN}
-                  </Text>
-                </View>
-                <View style={styles.breakdown}>
-                  <View style={SharedStyle.row}>
-                    <View style={SharedStyle.halfColumn}>
-                      <Text
-                        numberOfLines={1}
-                        style={[SharedStyle.normalText, SharedStyle.label]}
-                      >
-                        {Dictionary.AMOUNT_SAVED}
-                      </Text>
-                      <Text numberOfLines={2} style={[styles.value]}>
-                        ₦{Util.formatAmount(breakdown.total_contribution)}
-                      </Text>
-                    </View>
-                    <View style={SharedStyle.halfColumn}>
-                      <Text
-                        numberOfLines={1}
-                        style={[
-                          SharedStyle.normalText,
-                          SharedStyle.label,
-                          SharedStyle.right,
-                        ]}
-                      >{`Interest at Maturity`}</Text>
-                      <Text
-                        numberOfLines={2}
-                        style={[styles.value, SharedStyle.right]}
-                      >
-                        ₦{Util.formatAmount(breakdown.interest_earned)}
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={SharedStyle.row}>
-                    <View style={SharedStyle.halfColumn}>
-                      <Text
-                        numberOfLines={1}
-                        style={[SharedStyle.normalText, SharedStyle.label]}
-                      >
-                        {Dictionary.TENOR}
-                      </Text>
-                      <Text numberOfLines={2} style={[styles.value]}>
-                        {`${Dictionary.FROM} ${moment(
-                          start_date,
-                          "DD/MM/YYYY"
-                        ).format("D MMM, YYYY")} ${Dictionary.TO} ${moment(
-                          breakdown.maturity_date,
-                          "yyyy-MM-DD"
-                        ).format("D MMM, YYYY")}`}
-                      </Text>
-                    </View>
-                    <View style={SharedStyle.halfColumn}>
-                      <Text
-                        numberOfLines={1}
-                        style={[
-                          SharedStyle.normalText,
-                          SharedStyle.label,
-                          SharedStyle.right,
-                        ]}
-                      >
-                        {Dictionary.FREQUENCY}
-                      </Text>
-                      <Text
-                        numberOfLines={2}
-                        style={[styles.value, SharedStyle.right]}
-                      >
-                        ₦{Util.formatAmount(amount)}{" "}
-                        {frequency.name?.toLowerCase()} {Dictionary.FOR}{" "}
-                        {duration} {preferred_offer.tenor_period}
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={SharedStyle.row}>
-                    <View style={SharedStyle.halfColumn}>
-                      <Text
-                        numberOfLines={1}
-                        style={[SharedStyle.normalText, SharedStyle.label]}
-                      >
-                        {Dictionary.WITHOLDING_TAX}
-                      </Text>
-                      <Text numberOfLines={2} style={[styles.value]}>
-                        {breakdown.withholding_tax_rate}
-                        {Dictionary.PERCENT_OF_INTEREST}
-                      </Text>
-                    </View>
-                    <View style={SharedStyle.halfColumn}>
-                      <Text
-                        numberOfLines={1}
-                        style={[
-                          SharedStyle.normalText,
-                          SharedStyle.label,
-                          SharedStyle.right,
-                        ]}
-                      >
-                        {Dictionary.MATURITY_AMOUNT}
-                      </Text>
-                      <Text
-                        numberOfLines={2}
-                        style={[styles.value, SharedStyle.right]}
-                      >
-                        ₦{Util.formatAmount(breakdown.maturity_value)}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-                {breakdown.schedules.length > 0 && (
+                {!savings_product.is_fixed && (
                   <View>
-                    <View style={FormStyle.formItem}>
-                      <Text style={styles.breakdownHeader}>
-                        {Dictionary.SCHEDULES}
+                    <View style={styles.switchHead}>
+                      <Text style={styles.modalLabel}>
+                        {Dictionary.AUTOMATE_YOUR_SAVINGS}
                       </Text>
-                    </View>
-                    <View style={styles.breakdown}>
-                      <View style={SharedStyle.row}>
-                        <View style={SharedStyle.triColumn}>
-                          <Text
-                            numberOfLines={1}
-                            style={[SharedStyle.normalText, SharedStyle.label]}
-                          >
-                            {Dictionary.DATE_LABEL}
-                          </Text>
-                        </View>
-                        <View style={SharedStyle.triColumn}>
-                          <Text
-                            numberOfLines={1}
-                            style={[SharedStyle.normalText, SharedStyle.label]}
-                          >
-                            {Dictionary.SAVED}
-                          </Text>
-                        </View>
-                        <View style={SharedStyle.triColumn}>
-                          <Text
-                            numberOfLines={1}
-                            style={[
-                              SharedStyle.normalText,
-                              SharedStyle.label,
-                              SharedStyle.right,
-                            ]}
-                          >
-                            {Dictionary.BALANCE}
-                          </Text>
-                        </View>
-                      </View>
-                      <FlatList
-                        data={breakdown.schedules}
-                        renderItem={this.renderSchedules}
-                        keyExtractor={(schedule) => schedule.index}
+                      <SwitchToggle
+                        containerStyle={FormStyle.switchContainer}
+                        circleStyle={FormStyle.switchCircle}
+                        switchOn={this.state.auto_collection_mode}
+                        onPress={this.handleCollectionModeChange}
+                        backgroundColorOn={Colors.GREEN}
+                        backgroundColorOff={Colors.LIGHT_GREY}
+                        circleColorOff={Colors.WHITE}
+                        circleColorOn={Colors.WHITE}
+                        duration={100}
                       />
+                    </View>
+                    <View>
+                      <Text style={styles.switchBody}>
+                        {Dictionary.AUTOMATE_YOUR_SAVINGS_DESCRIPTION}
+                      </Text>
                     </View>
                   </View>
                 )}
               </View>
-            )}
-          </View>
-          {!!breakdown && (
-            <View style={SharedStyle.bottomPanel}>
-              {!!show_penal && <InfoPanel text={penal_notice} />}
-              <View style={FormStyle.formButton}>
-                <PrimaryButton
-                  loading={this.state.processing}
-                  disabled={this.state.processing}
-                  title={Dictionary.PROCEED_BTN}
-                  icon="arrow-right"
-                  onPress={this.handleSubmit}
-                />
-              </View>
             </View>
-          )}
+          </View>
+
+          <View style={SharedStyle.bottomPanel}>
+            {!!show_penal && <InfoPanel text={penal_notice} />}
+            <View style={FormStyle.formButton}>
+              <PrimaryButton
+                loading={this.state.processing}
+                disabled={this.state.processing}
+                title={Dictionary.PROCEED_BTN}
+                icon="arrow-right"
+                onPress={this.handleSubmit}
+              />
+            </View>
+          </View>
         </_ScrollView>
         <_DateTimePicker
           show={this.state.show_date_picker}
@@ -888,92 +749,40 @@ class SavingsAmount extends Component {
           onChange={this.prcessSelectedDate}
           onClose={this.closeDatePicker}
         />
+
         <Modal
-          isVisible={this.state.is_plan_name_modal_visible}
-          swipeDirection="down"
-          onSwipeComplete={this.handleBackButton}
-          onBackButtonPress={this.handleBackButton}
-          animationInTiming={500}
-          animationOutTiming={500}
-          backdropTransitionInTiming={500}
-          backdropTransitionOutTiming={500}
-          useNativeDriver={true}
-          style={SharedStyle.modal}
+          // transparent={true}
+          isVisible={this.state.modalVisible}
+          style={{ margin: 0, width: "100%", bottom: 0 }}
+          animationIn={"slideInUp"}
+          backdropOpacity={0.5}
+          onBackdropPress={() => this.closeModal()}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "position" : ""}
+          <View
+            style={{
+              position: "absolute",
+              width: "100%",
+              top: Mixins.scaleSize(200),
+              borderTopLeftRadius: Mixins.scaleSize(10),
+              borderTopRightRadius: Mixins.scaleSize(10),
+              borderBottomLeftRadius: Mixins.scaleSize(10),
+              borderBottomRightRadius: Mixins.scaleSize(10),
+              backgroundColor: "white",
+              borderRadius: Mixins.scaleSize(10),
+              // flex: 1,
+            }}
           >
-            <View
-              style={[
-                SharedStyle.modalContent,
-                {
-                  height: savings_product.is_fixed
-                    ? Mixins.scaleSize(200)
-                    : Mixins.scaleSize(300),
-                },
-              ]}
-            >
-              <View style={SharedStyle.modalSlider} />
-              <View style={SharedStyle.modalPanel}>
-                <View style={styles.modalMiddle}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.modalLabel}>
-                      {Dictionary.NAME_YOUR_SAVINGS}
-                    </Text>
-                    <FloatingLabelInput
-                      label={Dictionary.PLAN_NAME}
-                      value={this.state.plan_name}
-                      multiline={false}
-                      autoCorrect={false}
-                      autoFocus={true}
-                      onChangeText={(text) =>
-                        this.setState({
-                          plan_name: text,
-                          plan_name_error: "",
-                        })
-                      }
-                    />
-                    <Text style={FormStyle.formError}>
-                      {this.state.plan_name_error}
-                    </Text>
-                    {!savings_product.is_fixed && (
-                      <View>
-                        <View style={styles.switchHead}>
-                          <Text style={styles.modalLabel}>
-                            {Dictionary.AUTOMATE_YOUR_SAVINGS}
-                          </Text>
-                          <SwitchToggle
-                            containerStyle={FormStyle.switchContainer}
-                            circleStyle={FormStyle.switchCircle}
-                            switchOn={this.state.auto_collection_mode}
-                            onPress={this.handleCollectionModeChange}
-                            backgroundColorOn={Colors.GREEN}
-                            backgroundColorOff={Colors.LIGHT_GREY}
-                            circleColorOff={Colors.WHITE}
-                            circleColorOn={Colors.WHITE}
-                            duration={100}
-                          />
-                        </View>
-                        <View>
-                          <Text style={styles.switchBody}>
-                            {Dictionary.AUTOMATE_YOUR_SAVINGS_DESCRIPTION}
-                          </Text>
-                        </View>
-                      </View>
-                    )}
-                  </View>
-                </View>
-              </View>
-            </View>
-            <View style={styles.modalBottom}>
-              <PrimaryButton
-                title={Dictionary.CONTINUE_BTN}
-                icon="arrow-right"
-                onPress={this.handleSavePlanName}
-                loading={this.state.finalizing}
-              />
-            </View>
-          </KeyboardAvoidingView>
+            {saving_frequencies.map((frequency, index) => {
+              return (
+                <SelectListItem
+                  key={index}
+                  title={frequency.name}
+                  onPress={() => this.handleFrequencyChange(frequency)}
+                  selected={this.state.frequency.id === frequency.id}
+                />
+              );
+            })}
+          </View>
         </Modal>
       </View>
     );
@@ -981,15 +790,47 @@ class SavingsAmount extends Component {
 }
 
 const styles = StyleSheet.create({
+  pillContainer: {
+    ...Mixins.margin(20, 0, 20, 0),
+    ...Mixins.padding(10),
+    width: width * 0.9,
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderColor: "#A4A4A4",
+    alignSelf: "center",
+  },
+  pills: {
+    width: width * 0.2,
+    borderRadius: 5,
+    height: Mixins.scaleSize(30),
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pillsText: {
+    // color: Colors.WHITE,
+    ...Typography.FONT_REGULAR,
+    fontSize: Mixins.scaleFont(14),
+  },
+  packageContainer: {
+    width: "100%",
+    height: Mixins.scaleSize(55),
+    borderColor: Colors.GREY,
+    borderWidth: 1,
+    borderRadius: Mixins.scaleSize(5),
+    marginBottom: Mixins.scaleSize(16),
+    paddingHorizontal: Mixins.scaleSize(5),
+
+    // alignItems: "center",
+  },
   formContainer: {
     paddingBottom: Mixins.scaleSize(70),
   },
   palette: {
     ...Mixins.margin(-40, -16, 30, -16),
     ...Mixins.padding(40, 16, 0, 16),
-    elevation: 5,
-    marginBottom: Mixins.scaleSize(30),
-    backgroundColor: Colors.WHITE,
+    // marginBottom: Mixins.scaleSize(30),
   },
   duration: {
     ...Typography.FONT_REGULAR,
@@ -1076,10 +917,10 @@ const styles = StyleSheet.create({
   },
   breakdown: {
     ...Mixins.padding(20, 16, 0, 16),
-    borderWidth: Mixins.scaleSize(1),
-    borderColor: Colors.INPUT_BORDER,
-    backgroundColor: Colors.WHITE,
-    borderRadius: Mixins.scaleSize(10),
+    // borderWidth: Mixins.scaleSize(1),
+    // borderColor: Colors.INPUT_BORDER,
+    // backgroundColor: Colors.WHITE,
+    // borderRadius: Mixins.scaleSize(10),
     marginBottom: Mixins.scaleSize(30),
   },
   value: {
@@ -1091,25 +932,27 @@ const styles = StyleSheet.create({
     ...SharedStyle.modalMiddle,
   },
   modalLabel: {
-    ...Typography.FONT_REGULAR,
-    fontSize: Mixins.scaleFont(16),
+    ...Typography.FONT_MEDIUM,
+    fontSize: Mixins.scaleFont(14),
     lineHeight: Mixins.scaleSize(19),
-    color: Colors.DARK_GREY,
+    color: Colors.SUCCESS,
     marginBottom: Mixins.scaleSize(10),
   },
-  modalBottom: {
-    ...SharedStyle.modalBottom,
-    borderTopWidth: Mixins.scaleSize(0),
-    marginBottom: Mixins.scaleSize(16),
-  },
+  // modalBottom: {
+  //   ...SharedStyle.modalBottom,
+  //   borderTopWidth: Mixins.scaleSize(0),
+  //   marginBottom: Mixins.scaleSize(16),
+  // },
   switchHead: {
-    marginTop: Mixins.scaleSize(16),
+    // marginTop: Mixins.scaleSize(16),
     flexDirection: "row",
     justifyContent: "space-between",
   },
   switchBody: {
     ...Typography.FONT_REGULAR,
-    color: Colors.LIGHT_GREY,
+    color: "#28374C",
+    maxWidth: 300,
+    fontSize: Mixins.scaleFont(12),
   },
 });
 
@@ -1117,6 +960,7 @@ const mapStateToProps = (state) => {
   return {
     user: state.user,
     savings: state.savings,
+    wallet: state.wallet,
   };
 };
 
@@ -1124,6 +968,8 @@ const mapDispatchToProps = {
   showToast,
   updateSavingsApplicationData,
   getSavingsCollectionModes,
+  getUserSavings,
+  addNotification,
 };
 
 export default connect(

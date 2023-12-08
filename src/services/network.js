@@ -594,6 +594,13 @@ export const getReferralActivitiesMatured = async (code) => {
   );
 };
 
+export const getFcmTokenAndSave = async (phoneNumber, token) => {
+  return makeApiCall(BEARER_AUTH, `${Endpoints.FCMTOKEN}`, "post", {
+    phoneNumber,
+    token,
+  });
+};
+
 export const doReferralTransfer = async (transfer_data) => {
   return makeApiCall(
     BEARER_AUTH,

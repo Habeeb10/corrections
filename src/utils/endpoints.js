@@ -94,6 +94,8 @@ export const CREATE_PIN = CREDITVILLE_ONBOARDING + "/pin";
 export const COMPLETE_ONBOARDING =
   CREDITVILLE_ONBOARDING + "/customer/create/complete";
 export const GET_INFORMATION = CREDITVILLE_ONBOARDING + "/photo/image";
+export const FCMTOKEN =
+  CREDITVILLE_ONBOARDING + "/customer/fcm/update/{number}/{token}";
 
 //savings
 
@@ -105,6 +107,7 @@ export const PREFERENCES = AUTH + "/preference";
 export const ONBOARD = AUTH + "/onboard";
 export const ONBOARD_OTP = ONBOARD + "/otp";
 export const CREATE_PASSWORD = ONBOARD + "/password";
+
 // export const VALIDATE_BVN = ONBOARD + '/bvn';
 export const ADD_EMAIL = ONBOARD + "/email";
 //export const CREATE_PIN = ONBOARD + '/pin';

@@ -30,6 +30,8 @@ class Success extends Component {
     const event_name = navigation.getParam("event_name");
     const event_data = navigation.getParam("event_data");
 
+    // console.log({ event_name, event_data, transaction_data });
+
     this.state = {
       success_message,
       transaction_data,

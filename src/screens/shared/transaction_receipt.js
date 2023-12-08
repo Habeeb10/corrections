@@ -30,7 +30,9 @@ class TransactionReceipt extends Component {
     this.state = {
       snapshot: null,
       sharing: false,
-      receipt_data: this.props.fromTransferPage ? this.props.transaction_data : {},
+      receipt_data: this.props.fromTransferPage
+        ? this.props.transaction_data
+        : {},
       receipt_data_loading: false,
       scrollHeight: Mixins.DRAW_HEIGHT,
       scrollWithTabHeight: Mixins.DRAW_HEIGHT_WITH_NAV,
@@ -111,7 +113,10 @@ class TransactionReceipt extends Component {
     const status = receipt_data?.status ?? transaction_data?.status;
 
     const TranxType = transaction_data?.debitCreditType ?? "Debit";
-    const BeneficiaryName = receipt_data?.BeneficiaryName ?? receipt_data?.BeneficiaryAccountName
+    const BeneficiaryName =
+      receipt_data?.BeneficiaryName ?? receipt_data?.BeneficiaryAccountName;
+
+    // console.log({ transaction_data, transaction_payload });
 
     return (
       <View>

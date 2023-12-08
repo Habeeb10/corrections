@@ -8,6 +8,7 @@ export const getInformation = () => {
   return (dispatch) => {
     Network.getInformation()
       .then((result) => {
+        console.log("hkhkhkh", { result });
         dispatch({
           type: UPDATE_INFORMATION,
           image: result.fileLocation,
