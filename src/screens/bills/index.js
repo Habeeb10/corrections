@@ -589,9 +589,7 @@ class Bills extends Component {
                   key={index}
                   title={bill_package.name}
                   onPress={() => this.handleSelectedPackage(bill_package)}
-                  selected={
-                    this.state.biller_package?.name === bill_package.name
-                  }
+                  selected={this.state.bill_package?.name === bill_package.name}
                 />
               );
             })}

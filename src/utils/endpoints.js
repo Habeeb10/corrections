@@ -94,8 +94,9 @@ export const CREATE_PIN = CREDITVILLE_ONBOARDING + "/pin";
 export const COMPLETE_ONBOARDING =
   CREDITVILLE_ONBOARDING + "/customer/create/complete";
 export const GET_INFORMATION = CREDITVILLE_ONBOARDING + "/photo/image";
-export const FCMTOKEN =
-  CREDITVILLE_ONBOARDING + "/customer/fcm/update/{number}/{token}";
+export const FCMTOKEN = CREDITVILLE_ONBOARDING + "/customer/fcm/update";
+
+// export const GET_IMAGE = CREDITVILLE_ONBOARDING + "/photo/upload/banner";
 
 //savings
 

@@ -21,3 +21,21 @@ export const getInformation = () => {
       });
   };
 };
+
+export const getImage = () => {
+  return (dispatch) => {
+    Network.getImage()
+      .then((result) => {
+        console.log("habeeb", { result });
+        dispatch({
+          type: UPDATE_INFORMATION,
+          image: result.fileLocation,
+        });
+      })
+      .catch(() => {
+        dispatch({
+          type: UPDATE_INFORMATION_ERROR,
+        });
+      });
+  };
+};

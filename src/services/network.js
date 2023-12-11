@@ -261,6 +261,13 @@ export const authenticateUser = async (
 export const refreshToken = async (token) => {
   return makeApiCall(BASIC_AUTH, Endpoints.REFRESH_TOKEN, "post", { token });
 };
+export const getFcmTokenAndSave = async (phone_number, fcmToken) => {
+  return makeApiCall(
+    BEARER_AUTH,
+    `${Endpoints.FCMTOKEN}/${phone_number}/${fcmToken}`,
+    "post"
+  );
+};
 
 export const logoutUser = async () => {
   const user_data = store.getState().user.user_data;
@@ -592,13 +599,6 @@ export const getReferralActivitiesMatured = async (code) => {
     `${Endpoints.REFERRAL_ACTIVITIES}/${code}/MATURED`,
     "get"
   );
-};
-
-export const getFcmTokenAndSave = async (phoneNumber, token) => {
-  return makeApiCall(BEARER_AUTH, `${Endpoints.FCMTOKEN}`, "post", {
-    phoneNumber,
-    token,
-  });
 };
 
 export const doReferralTransfer = async (transfer_data) => {
@@ -1115,4 +1115,8 @@ export const getReceipt = async (transaction_id) => {
 
 export const getInformation = async () => {
   return makeApiCall(BASIC_AUTH, `${Endpoints.GET_INFORMATION}`, "get");
+};
+
+export const getImage = async () => {
+  return makeApiCall(BASIC_AUTH, `${Endpoints.GET_IMAGE}`, "get");
 };

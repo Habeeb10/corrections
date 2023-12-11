@@ -93,6 +93,7 @@ class SavingsDetail extends Component {
 
   render() {
     let { savings, archiving } = this.state;
+
     // Double Tap
     savings = this.props.savings.user_savings.find((s) => s.id === savings.id);
 

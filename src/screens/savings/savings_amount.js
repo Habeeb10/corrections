@@ -73,7 +73,7 @@ class SavingsAmount extends Component {
       finalizing: false,
       modalVisible: false,
       animationTrigger: false,
-      frequency: "daily",
+      sliderModalVisible: false,
     };
   }
 
@@ -104,8 +104,16 @@ class SavingsAmount extends Component {
     this.setState({ modalVisible: true });
   };
 
+  openSliderModal = () => {
+    this.setState({ sliderModalVisible: true });
+  };
+
   closeModal = () => {
     this.setState({ modalVisible: false });
+  };
+
+  closeSliderModal = () => {
+    this.setState({ sliderModalVisible: false });
   };
 
   hidePlanNameModal = () => {
@@ -660,24 +668,63 @@ class SavingsAmount extends Component {
                   {Dictionary.HOW_LONG_TO_SAVE}
                 </Text>
               </View>
-              <View style={FormStyle.formItem}>
-                <Text numberOfLines={1} style={styles.sliderValue}>
-                  {duration} {preferred_offer.tenor_period}
+              <View style={[styles.packageContainer]}>
+                <Text
+                  style={{
+                    ...Typography.FONT_REGULAR,
+                    fontSize: Mixins.scaleFont(14),
+                    lineHeight: Mixins.scaleSize(16),
+                    letterSpacing: Mixins.scaleSize(0.01),
+                    color: Colors.LIGHT_GREY,
+                    paddingTop: Mixins.scaleSize(5),
+                  }}
+                >
+                  Duration
                 </Text>
-                <Slider
-                  style={styles.slider}
-                  step={1}
-                  thumbStyle={styles.sliderThumb}
-                  trackStyle={styles.sliderTrack}
-                  thumbTintColor={Colors.CV_YELLOW}
-                  value={duration}
-                  minimumValue={+preferred_offer.min_tenor}
-                  maximumValue={+preferred_offer.max_tenor}
-                  minimumTrackTintColor={Colors.CV_YELLOW}
-                  maximumTrackTintColor={Colors.LIGHT_UNCHECKED_BG}
-                  onValueChange={this.handleDurationChange}
-                />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text
+                    style={{
+                      ...Typography.FONT_MEDIUM,
+                      fontSize: Mixins.scaleFont(14),
+                      color: "#28374C",
+                    }}
+                  >
+                    <Text numberOfLines={1} style={styles.sliderValue}>
+                      {duration} {preferred_offer.tenor_period}
+                    </Text>
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({ sliderModalVisible: true });
+                    }}
+                  >
+                    <MaterialIcons
+                      name={"keyboard-arrow-down"}
+                      size={Mixins.scaleSize(25)}
+                      color={"#8397B1"}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
+              <Slider
+                style={styles.slider}
+                step={1}
+                thumbStyle={styles.sliderThumb}
+                trackStyle={styles.sliderTrack}
+                thumbTintColor={Colors.CV_YELLOW}
+                value={duration}
+                minimumValue={+preferred_offer.min_tenor}
+                maximumValue={+preferred_offer.max_tenor}
+                minimumTrackTintColor={Colors.CV_YELLOW}
+                maximumTrackTintColor={Colors.LIGHT_UNCHECKED_BG}
+                onValueChange={this.handleDurationChange}
+              />
+
               <View style={FormStyle.formItem}>
                 <Text style={styles.duration}>
                   {Dictionary.NAME_YOUR_SAVINGS}
@@ -782,6 +829,59 @@ class SavingsAmount extends Component {
                 />
               );
             })}
+          </View>
+        </Modal>
+        <Modal
+          // transparent={true}
+          isVisible={this.state.sliderModalVisible}
+          animationIn={"slideInUp"}
+          backdropOpacity={0.5}
+          style={{ margin: 0, width: "100%", bottom: 0 }}
+          onBackdropPress={() => this.closeSliderModal()}
+        >
+          <View
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: Mixins.scaleSize(480),
+              borderTopLeftRadius: Mixins.scaleSize(10),
+              borderTopRightRadius: Mixins.scaleSize(10),
+              backgroundColor: "white",
+              bottom: 0,
+              paddingHorizontal: Mixins.scaleSize(18),
+              paddingTop: Mixins.scaleSize(18),
+            }}
+          >
+            <>
+              <Slider
+                style={styles.slider}
+                step={1}
+                thumbStyle={styles.sliderThumb}
+                trackStyle={styles.sliderTrack}
+                thumbTintColor={Colors.CV_YELLOW}
+                value={duration}
+                minimumValue={+preferred_offer.min_tenor}
+                maximumValue={+preferred_offer.max_tenor}
+                minimumTrackTintColor={Colors.CV_YELLOW}
+                maximumTrackTintColor={Colors.LIGHT_UNCHECKED_BG}
+                onValueChange={this.handleDurationChange}
+              />
+              <View>
+                <Text>jffkfkfkf</Text>
+              </View>
+            </>
+
+            {/* <FlatList
+              data={this.state.packages}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => {
+                
+                );
+              }}
+              contentContainerStyle={{
+                flexGrow: 1,
+              }}
+            /> */}
           </View>
         </Modal>
       </View>
@@ -903,7 +1003,7 @@ const styles = StyleSheet.create({
   sliderValue: {
     ...SharedStyle.normalText,
     ...Typography.FONT_BOLD,
-    fontSize: Mixins.scaleFont(20),
+    fontSize: Mixins.scaleFont(14),
     lineHeight: Mixins.scaleSize(23),
     textTransform: "capitalize",
     color: Colors.CV_BLUE,

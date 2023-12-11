@@ -1321,7 +1321,7 @@ const styles = StyleSheet.create({
   },
   walletBalance: {
     ...Typography.FONT_BOLD,
-    fontSize: Mixins.scaleFont(32),
+    fontSize: Mixins.scaleFont(20),
     lineHeight: Mixins.scaleSize(37),
     color: Colors.DARK_GREY,
   },

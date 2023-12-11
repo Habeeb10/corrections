@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
   },
   totalSavingsValue: {
     ...Typography.FONT_BOLD,
-    fontSize: Mixins.scaleFont(24),
+    fontSize: Mixins.scaleFont(20),
     // lineHeight: Mixins.scaleSize(33),
     // letterSpacing: Mixins.scaleSize(0.01),
     // color: Colors.WHITE,

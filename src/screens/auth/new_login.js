@@ -21,7 +21,6 @@ import { MainHeader } from "_organisms";
 import { PrimaryButton } from "_molecules";
 import { clearDeepLinkPath } from "_actions/settings_actions";
 import { AsyncStorage, Alert } from "react-native";
-import messaging from "@react-native-firebase/messaging";
 import { Network } from "_services";
 import {
   registerSessionListener,
@@ -92,12 +91,14 @@ class Login extends Component {
     }
   }
   componentDidUpdate(prevProps) {
-    if (!prevProps.isFocused && this.props.isFocused) {
+    if (this.props.information !== prevProps.information) {
       this.setState({
-        phone_number: this.props.user.user_data.phoneNumber,
+        image: this.props.information.image,
+        information: this.props.information.imageVisible,
       });
     }
   }
+
   getUserLocation = async () => {
     try {
       let { status } = await Location.requestPermissionsAsync();
@@ -345,15 +346,9 @@ class Login extends Component {
       }
 
       this.setState({ authenticating: true }, async () => {
-        Network.authenticateUser(
-          phone_number,
-          password,
-          latitude,
-          longitude,
-          fcmToken // Include FCM token in the authentication request
-        )
+        Network.authenticateUser(phone_number, password, latitude, longitude)
           .then((result) => {
-            console.log("Authentication Result:", result);
+            console.log("Authentication Result:", { result });
 
             this.setState(
               {
@@ -375,7 +370,55 @@ class Login extends Component {
                 Util.logEventData("onboarding_sign_in");
 
                 // Update FCM token for the user
-                Network.getFcmTokenAndSave(phone_number, fcmToken);
+                // Network.getFcmTokenAndSave({
+                //   phone_number: phone_number,
+                //   fcmToken: fcmToken,
+                // })
+                //   .then((response) => {
+                //     if (!response.ok) {
+                //       throw new Error(`HTTP error! Status: ${response.status}`);
+                //     }
+                //     return response.json();
+                //   })
+                //   .then((data) => {
+                //     // Handle successful response
+                //     console.log("ResponseHabeeb:", data);
+                //   })
+                //   .catch((error) => {
+                //     // Handle errors
+                //     console.error("Error:", error.message);
+                //   });
+
+                fetch(
+                  `https://creditvilleprelive.com/userservice/api/v1/customer/fcm/update/${phone_number}/${fcmToken}`,
+                  {
+                    method: "POST",
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                      "X-Mobile-OS": "android",
+                      apiKey: user_data.token,
+                    },
+                    body: JSON.stringify({
+                      phone_number: phone_number,
+                      fcmToken: fcmToken,
+                    }),
+                  }
+                )
+                  .then((response) => {
+                    if (!response.ok) {
+                      throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                  })
+                  .then((data) => {
+                    // Handle successful response
+                    console.log("ResponseHabeeb:", data);
+                  })
+                  .catch((error) => {
+                    // Handle errors
+                    console.error("Error:", error.message);
+                  });
               }
             );
           })

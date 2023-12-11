@@ -329,20 +329,32 @@ class App extends Component {
   }
 
   async checkStoragePermission() {
-    const status = await check(
+    const readStatus = await check(
       Platform.OS === "ios"
         ? PERMISSIONS.IOS.PHOTO_LIBRARY
         : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
     );
 
-    if (status !== RESULTS.GRANTED) {
-      const result = await request(
+    const writeStatus = await check(
+      Platform.OS === "ios"
+        ? PERMISSIONS.IOS.PHOTO_LIBRARY
+        : PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE
+    );
+
+    if (readStatus !== RESULTS.GRANTED || writeStatus !== RESULTS.GRANTED) {
+      const readResult = await request(
         Platform.OS === "ios"
           ? PERMISSIONS.IOS.PHOTO_LIBRARY
           : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
       );
 
-      if (result === RESULTS.GRANTED) {
+      const writeResult = await request(
+        Platform.OS === "ios"
+          ? PERMISSIONS.IOS.PHOTO_LIBRARY
+          : PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE
+      );
+
+      if (readResult === RESULTS.GRANTED && writeResult === RESULTS.GRANTED) {
         console.log("Storage permission granted!");
         // Handle granting as needed
       } else {
