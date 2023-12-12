@@ -513,6 +513,7 @@ class Dashboard extends Component {
               )}
             </TouchItem> */}
             <Lightbox
+              useNativeDriver={false} // Add this line
               activeProps={{
                 style: { flex: 1, resizeMode: "contain" },
               }}
@@ -1280,7 +1281,7 @@ const styles = StyleSheet.create({
     color: Colors.DARK_GREY,
     // flex: 1,
     marginRight: 3,
-    marginLeft: 0,
+    marginLeft: 5,
   },
   profileImage: {
     width: Mixins.scaleSize(30),
@@ -1288,7 +1289,7 @@ const styles = StyleSheet.create({
     borderRadius: Mixins.scaleSize(8),
     resizeMode: "cover",
     backgroundColor: Colors.TAB_BG,
-    ...Mixins.margin(0, 0, 10, 16), // Increase the bottom margin to 40\
+    ...Mixins.margin(0, 0, 0, 16), // Increase the bottom margin to 40\
   },
   badge: {
     position: "absolute",
@@ -1605,7 +1606,7 @@ const styles = StyleSheet.create({
   },
   tier: {
     width: Mixins.scaleSize(37),
-    height: Mixins.scaleSize(12),
+    height: Mixins.scaleSize(15),
     borderRadius: 5,
     // marginBottom: 16,
     // display: "flex",
