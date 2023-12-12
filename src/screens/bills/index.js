@@ -6,7 +6,7 @@ import {
   ImageBackground,
   View,
   Text,
-  Flatlist,
+  FlatList,
   TouchableOpacity,
   TextInput,
 } from "react-native";
@@ -529,70 +529,108 @@ class Bills extends Component {
           </View>
         </Modal>
         <Modal
-          // transparent={true}
           isVisible={this.state.billerModalVisible}
-          style={{ margin: 0, width: "100%", bottom: 0 }}
           animationIn={"slideInUp"}
           backdropOpacity={0.5}
+          style={{ margin: 0, width: "100%", bottom: 0 }}
           onBackdropPress={() => this.setState({ billerModalVisible: false })}
         >
           <View
+            // style={{
+            //   position: "absolute",
+            //   width: "100%",
+            //   top: Mixins.scaleSize(280),
+            //   borderTopLeftRadius: Mixins.scaleSize(10),
+            //   borderTopRightRadius: Mixins.scaleSize(10),
+            //   borderBottomLeftRadius: Mixins.scaleSize(10),
+            //   borderBottomRightRadius: Mixins.scaleSize(10),
+            //   backgroundColor: "white",
+            //   // flex: 1,
+            // }}
             style={{
               position: "absolute",
               width: "100%",
-              top: Mixins.scaleSize(280),
+              height: Mixins.scaleSize(480),
               borderTopLeftRadius: Mixins.scaleSize(10),
               borderTopRightRadius: Mixins.scaleSize(10),
-              borderBottomLeftRadius: Mixins.scaleSize(10),
-              borderBottomRightRadius: Mixins.scaleSize(10),
               backgroundColor: "white",
-              // flex: 1,
+              bottom: 0,
+              paddingHorizontal: Mixins.scaleSize(18),
+              paddingTop: Mixins.scaleSize(18),
             }}
           >
-            {this.state.billers.map((biller, index) => {
-              return (
+            <FlatList
+              data={this.state.billers}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item: biller, index }) => (
                 <SelectListItem
                   key={index}
                   title={biller.name}
-                  onPress={() => this.handleSelectedBller(biller)}
-                  selected={this.state.biller?.name == biller.name}
+                  onPress={() => this.handleSelectedBiller(biller)}
+                  selected={this.state.biller?.name === biller.name}
                 />
-              );
-            })}
+              )}
+              contentContainerStyle={{
+                flexGrow: 1,
+              }}
+              showsVerticalScrollIndicator={false} // Add this line
+            />
           </View>
         </Modal>
         <Modal
           // transparent={true}
+          // isVisible={this.state.packageModalVisible}
+          // style={{ margin: 0, width: "100%", bottom: 0 }}
+          // animationIn={"slideInUp"}
+          // backdropOpacity={0.5}
+          // onBackdropPress={() => this.setState({ packageModalVisible: false })}
           isVisible={this.state.packageModalVisible}
-          style={{ margin: 0, width: "100%", bottom: 0 }}
           animationIn={"slideInUp"}
           backdropOpacity={0.5}
+          style={{ margin: 0, width: "100%", bottom: 0 }}
           onBackdropPress={() => this.setState({ packageModalVisible: false })}
         >
           <View
+            // style={{
+            //   position: "absolute",
+            //   width: "100%",
+            //   top: Mixins.scaleSize(280),
+            //   borderTopLeftRadius: Mixins.scaleSize(10),
+            //   borderTopRightRadius: Mixins.scaleSize(10),
+            //   borderBottomLeftRadius: Mixins.scaleSize(10),
+            //   borderBottomRightRadius: Mixins.scaleSize(10),
+            //   backgroundColor: "white",
+            //   borderRadius: Mixins.scaleSize(10),
+            //   // flex: 1,
+            // }}
             style={{
               position: "absolute",
               width: "100%",
-              top: Mixins.scaleSize(280),
+              height: Mixins.scaleSize(480),
               borderTopLeftRadius: Mixins.scaleSize(10),
               borderTopRightRadius: Mixins.scaleSize(10),
-              borderBottomLeftRadius: Mixins.scaleSize(10),
-              borderBottomRightRadius: Mixins.scaleSize(10),
               backgroundColor: "white",
-              borderRadius: Mixins.scaleSize(10),
-              // flex: 1,
+              bottom: 0,
+              paddingHorizontal: Mixins.scaleSize(18),
+              paddingTop: Mixins.scaleSize(18),
             }}
           >
-            {this.state.packages.map((bill_package, index) => {
-              return (
+            <FlatList
+              data={this.state.packages}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item: bill_package, index }) => (
                 <SelectListItem
                   key={index}
                   title={bill_package.name}
                   onPress={() => this.handleSelectedPackage(bill_package)}
                   selected={this.state.bill_package?.name === bill_package.name}
                 />
-              );
-            })}
+              )}
+              contentContainerStyle={{
+                flexGrow: 1,
+              }}
+              showsVerticalScrollIndicator={false} // Add this line
+            />
           </View>
         </Modal>
       </View>
@@ -653,7 +691,8 @@ const styles = StyleSheet.create({
     paddingBottom: Mixins.scaleSize(65),
   },
   bottomPanel: {
-    backgroundColor: Colors.WHITE,
+    // backgroundColor: Colors.WHITE,
+    alignSelf: "center",
   },
 });
 

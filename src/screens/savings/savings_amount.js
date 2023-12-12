@@ -6,6 +6,7 @@ import {
   View,
   TouchableOpacity,
   Dimensions,
+  FlatList,
 } from "react-native";
 import Modal from "react-native-modal";
 import { withNavigationFocus } from "react-navigation";
@@ -51,6 +52,8 @@ class SavingsAmount extends Component {
       "{{max_amount}}",
       Util.formatAmount(preferred_offer.maximumAmount)
     );
+
+    console.log(preferred_offer, "gggg");
 
     this.state = {
       savings_product,
@@ -395,6 +398,16 @@ class SavingsAmount extends Component {
     this.setState({
       breakdown,
     });
+
+    const tenorPeriods =
+      frequency.slug === "monthly"
+        ? Array.from({ length: preferred_offer.max_tenor }, (_, i) =>
+            (i + preferred_offer.min_tenor).toString()
+          )
+        : Array.from({ length: preferred_offer.max_tenor * 30 }, (_, i) =>
+            (i + preferred_offer.min_tenor).toString()
+          );
+    this.setState({ tenorPeriods });
   };
 
   proRatedInterest = (amount_saved, interest_rate, duration_type) => {
@@ -520,6 +533,8 @@ class SavingsAmount extends Component {
 
   render() {
     let { saving_frequencies } = this.props.savings;
+    let months = ["3", "4 ", "5", "6 ", "7"];
+
     const opacity = this.state.animationTrigger
       ? this.fadeAnim.interpolate({
           inputRange: [0, 0.5, 1],
@@ -711,7 +726,7 @@ class SavingsAmount extends Component {
                   </TouchableOpacity>
                 </View>
               </View>
-              <Slider
+              {/* <Slider
                 style={styles.slider}
                 step={1}
                 thumbStyle={styles.sliderThumb}
@@ -723,7 +738,7 @@ class SavingsAmount extends Component {
                 minimumTrackTintColor={Colors.CV_YELLOW}
                 maximumTrackTintColor={Colors.LIGHT_UNCHECKED_BG}
                 onValueChange={this.handleDurationChange}
-              />
+              /> */}
 
               <View style={FormStyle.formItem}>
                 <Text style={styles.duration}>
@@ -832,7 +847,6 @@ class SavingsAmount extends Component {
           </View>
         </Modal>
         <Modal
-          // transparent={true}
           isVisible={this.state.sliderModalVisible}
           animationIn={"slideInUp"}
           backdropOpacity={0.5}
@@ -852,36 +866,28 @@ class SavingsAmount extends Component {
               paddingTop: Mixins.scaleSize(18),
             }}
           >
-            <>
-              <Slider
-                style={styles.slider}
-                step={1}
-                thumbStyle={styles.sliderThumb}
-                trackStyle={styles.sliderTrack}
-                thumbTintColor={Colors.CV_YELLOW}
-                value={duration}
-                minimumValue={+preferred_offer.min_tenor}
-                maximumValue={+preferred_offer.max_tenor}
-                minimumTrackTintColor={Colors.CV_YELLOW}
-                maximumTrackTintColor={Colors.LIGHT_UNCHECKED_BG}
-                onValueChange={this.handleDurationChange}
-              />
-              <View>
-                <Text>jffkfkfkf</Text>
-              </View>
-            </>
-
-            {/* <FlatList
-              data={this.state.packages}
+            <FlatList
+              data={this.state.tenorPeriods}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item, index }) => {
-                
-                );
-              }}
+              renderItem={({ item, index }) => (
+                <SelectListItem
+                  key={index}
+                  title={`${item} ${
+                    frequency.slug === "monthly" ? "months" : "days"
+                  }`}
+                  onPress={() => {
+                    this.handleDurationChange(item);
+                    this.setState({
+                      sliderModalVisible: false,
+                    });
+                  }}
+                />
+              )}
               contentContainerStyle={{
                 flexGrow: 1,
               }}
-            /> */}
+              showsVerticalScrollIndicator={false} // Add this line
+            />
           </View>
         </Modal>
       </View>

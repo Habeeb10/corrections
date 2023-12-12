@@ -1053,25 +1053,35 @@ class Data extends Component {
             }
           />
           <Modal
-            // transparent={true}
             isVisible={this.state.modalVisible}
-            style={{ margin: 0, width: "100%", bottom: 0 }}
             animationIn={"slideInUp"}
-            // backdropOpacity={0.5}
+            backdropOpacity={0.5}
+            style={{ margin: 0, width: "100%", bottom: 0 }}
             onBackdropPress={() => this.closeModal()}
           >
             <View
+              // style={{
+              //   position: "absolute",
+              //   width: "100%",
+              //   top: Mixins.scaleSize(280),
+              //   borderTopLeftRadius: Mixins.scaleSize(10),
+              //   borderTopRightRadius: Mixins.scaleSize(10),
+              //   borderBottomLeftRadius: Mixins.scaleSize(10),
+              //   borderBottomRightRadius: Mixins.scaleSize(10),
+              //   backgroundColor: "white",
+              //   borderRadius: Mixins.scaleSize(10),
+              //   // flex: 1,
+              // }}
               style={{
                 position: "absolute",
                 width: "100%",
-                top: Mixins.scaleSize(280),
+                height: Mixins.scaleSize(480),
                 borderTopLeftRadius: Mixins.scaleSize(10),
                 borderTopRightRadius: Mixins.scaleSize(10),
-                borderBottomLeftRadius: Mixins.scaleSize(10),
-                borderBottomRightRadius: Mixins.scaleSize(10),
                 backgroundColor: "white",
-                borderRadius: Mixins.scaleSize(10),
-                // flex: 1,
+                bottom: 0,
+                paddingHorizontal: Mixins.scaleSize(18),
+                paddingTop: Mixins.scaleSize(18),
               }}
             >
               <FlatList
@@ -1080,6 +1090,7 @@ class Data extends Component {
                 renderItem={({ item, index }) => {
                   return (
                     <SelectListItem
+                      key={index}
                       title={item.billerName}
                       onPress={() => {
                         this.handleSelectedPackage(item);
@@ -1092,6 +1103,7 @@ class Data extends Component {
                 contentContainerStyle={{
                   flexGrow: 1,
                 }}
+                showsVerticalScrollIndicator={false} // Add this line
               />
             </View>
           </Modal>

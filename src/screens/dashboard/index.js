@@ -69,6 +69,7 @@ import { Colors, Mixins, Typography, SharedStyle, FormStyle } from "_styles";
 import { TouchItem, ScrollView as _ScrollView } from "_atoms";
 import { ActionButton, PrimaryButton } from "_molecules";
 import TransactionReceipt from "_screens/shared/transaction_receipt";
+import Lightbox from "react-native-lightbox";
 
 import { Network } from "_services";
 let visible = false;
@@ -495,7 +496,7 @@ class Dashboard extends Component {
       >
         <View style={styles.header}>
           <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-            <TouchItem
+            {/* <TouchItem
               style={styles.navButton}
               onPress={() => this.navigateTo("Settings")}
             >
@@ -510,7 +511,22 @@ class Dashboard extends Component {
                   source={{ uri: user_data.photoLocation }}
                 />
               )}
-            </TouchItem>
+            </TouchItem> */}
+            <Lightbox
+              activeProps={{
+                style: { flex: 1, resizeMode: "contain" },
+              }}
+            >
+              <Image
+                style={styles.profileImage}
+                source={
+                  !user_data.photoLocation || user_data.photoLocation === ""
+                    ? require("../../assets/images/shared/profile.png")
+                    : { uri: user_data.photoLocation }
+                }
+              />
+            </Lightbox>
+
             <Text style={styles.navText} numberOfLines={1}>
               {greeting}
             </Text>
@@ -1272,7 +1288,7 @@ const styles = StyleSheet.create({
     borderRadius: Mixins.scaleSize(8),
     resizeMode: "cover",
     backgroundColor: Colors.TAB_BG,
-    ...Mixins.margin(0, 0, 0, 16), // Increase the bottom margin to 40\
+    ...Mixins.margin(0, 0, 10, 16), // Increase the bottom margin to 40\
   },
   badge: {
     position: "absolute",
@@ -1589,7 +1605,7 @@ const styles = StyleSheet.create({
   },
   tier: {
     width: Mixins.scaleSize(37),
-    height: Mixins.scaleSize(16),
+    height: Mixins.scaleSize(12),
     borderRadius: 5,
     // marginBottom: 16,
     // display: "flex",
