@@ -349,7 +349,7 @@ class Login extends Component {
       this.setState({ authenticating: true }, async () => {
         Network.authenticateUser(phone_number, password, latitude, longitude)
           .then((result) => {
-            console.log("Authentication Result:", { result });
+            // console.log("Authentication Result:", { result });
 
             this.setState(
               {
@@ -417,7 +417,7 @@ class Login extends Component {
                   })
                   .then((data) => {
                     // Handle successful response
-                    console.log("ResponseHabeeb:", data);
+                    // console.log("ResponseHabeeb:", data);
                   })
                   .catch((error) => {
                     // Handle errors

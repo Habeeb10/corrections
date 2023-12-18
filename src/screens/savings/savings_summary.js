@@ -688,8 +688,6 @@ class SavingsSummary extends Component {
               //  start_date: moment(end_date, 'DD/MM/YYYY').format('YYYY-MM-DD'),
             };
 
-            console.log({ payload });
-
             if (collection_mode && collection_mode.name == "automated") {
               payload.isCollectionAuto = true;
             } else if (collection_mode && collection_mode.name == "manual") {

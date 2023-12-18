@@ -91,7 +91,7 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
     const { user_data } = this.props.user;
-    console.log({ information: this.props.information });
+    // console.log({ information: this.props.information });
     this.state = {
       greeting: "",
       UserInactivityState: false,

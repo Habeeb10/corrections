@@ -161,7 +161,7 @@ class SavingsWithdrawal extends Component {
             //const withdrawalAction = savings.data_sources?.pecunia ? Network.withdrawSavings : Network.withdrawExternalSavings;
             Network.withdrawSavings(payload)
               .then((result) => {
-                console.log({ result });
+                // console.log({ result });
                 this.setState(
                   {
                     processing: false,
