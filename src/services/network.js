@@ -1118,5 +1118,5 @@ export const getInformation = async () => {
 };
 
 export const getImage = async () => {
-  return makeApiCall(BASIC_AUTH, `${Endpoints.GET_IMAGE}`, "get");
+  return makeApiCall(BASIC_AUTH, `${Endpoints.GET_IMAGE}?status=active`, "get");
 };

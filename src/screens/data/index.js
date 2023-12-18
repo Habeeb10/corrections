@@ -579,181 +579,97 @@ class Data extends Component {
       },
       () => {
         const { type } = this.state;
-        if (type === "airtime") {
-          let { amount, phone_number } = this.state;
-          let payload = {
-            phoneNumber: phone_number,
-            customerID: phone_number,
-            amount: amount,
-            accountID: this.props.user.user_data.nuban,
-            billType: "airtime",
-            pin,
-          };
 
-          Network.validatePIN(pin)
-            .then(() => {
-              Network.buyAirtime(payload)
-                .then((result) => {
+        let { phone_number, network, data_package } = this.state;
+        let payload = {
+          phoneNumber: phone_number,
+          customerID: phone_number,
+          accountID: this.props.user.user_data.nuban,
+          amount: data_package.amount,
+          networkType: network.value,
+          pin,
+          billType: "data",
+        };
+        payload.paymentCode = data_package.billerName;
+        Network.validatePIN(pin)
+          .then(() => {
+            let { phone_number, network, data_package } = this.state;
+            let payload = {
+              phoneNumber: phone_number,
+              customerID: phone_number,
+              accountID: this.props.user.user_data.nuban,
+              amount: data_package.amount,
+              networkType: network.value,
+              pin,
+              billType: "data",
+            };
+            payload.paymentCode = data_package.billerName;
+            this.props.addNotification({
+              id: randomId(),
+              is_read: false,
+              title: "Data subscription",
+              description: `You have successfully subscribed ${data_package.billerName} on ${phone_number} for NGN${data_package.amount}.`,
+              timestamp: moment().toString(),
+            });
+            Network.buyData(payload)
+              .then((result) => {
+                this.setState(
+                  {
+                    processing: false,
+                    auth_screen_visible: false,
+                  },
+                  () => {
+                    let success_message = Dictionary.BILL_PURCHASED;
+                    success_message = success_message
+                      .replace("%s", data_package.name)
+                      .replace("%s", phone_number);
+                    this.props.navigation.navigate("Success", {
+                      event_name: "transactions_successful_data",
+                      event_data: { transaction_id: result.data?.reference },
+                      success_message,
+                      transaction_data: {
+                        ...payload,
+                        ...result.data,
+                        transaction_date:
+                          result.data?.transaction_date ||
+                          moment().format("yyyy-MM-dd HH:mm:ss"),
+                      },
+                    });
+                  }
+                );
+              })
+              .catch((error) => {
+                if (
+                  error.message &&
+                  error.message.toLowerCase().includes("pin")
+                ) {
+                  this.setState({
+                    processing: false,
+                    pin_error: error.message || "Pin is invalid",
+                  });
+                } else {
                   this.setState(
                     {
                       processing: false,
                       auth_screen_visible: false,
                     },
                     () => {
-                      let success_message = Dictionary.AIRTIME_PURCHASED;
-                      success_message = success_message
-                        .replace("%s", phone_number)
-                        .replace("%s", Util.formatAmount(amount));
-                      this.props.navigation.navigate("Success", {
-                        event_name: "transactions_successful_airtime",
-                        event_data: {
-                          transaction_id: result.data?.reference || "",
-                        },
-                        success_message,
-                        transaction_data: {
-                          ...payload,
-                          ...result.data,
-                          transaction_date:
-                            result.data?.transaction_date ||
-                            moment().format("yyyy-MM-dd HH:mm:ss"),
-                        },
-                      });
-                      this.props.addNotification({
-                        id: randomId(),
-                        is_read: false,
-                        title: "Airtime recharge",
-                        description: `You have successfully recharged ${phone_number} with NGN${amount}.`,
-                        timestamp: moment().toString(),
+                      this.props.navigation.navigate("Error", {
+                        event_name: "transactions_failed_data",
+                        error_message:
+                          error.message || "Cannot perform transaction now",
                       });
                     }
                   );
-                })
-                .catch((error) => {
-                  if (
-                    error.message &&
-                    error.message.toLowerCase().includes("pin")
-                  ) {
-                    this.setState({
-                      processing: false,
-                      pin_error: error.message || "Pin is invalid",
-                    });
-                  } else {
-                    this.setState(
-                      {
-                        processing: false,
-                        auth_screen_visible: false,
-                      },
-                      () => {
-                        this.props.navigation.navigate("Error", {
-                          event_name: "transactions_failed_airtime",
-                          error_message:
-                            error.message ||
-                            "Could not perform transaction at this time.",
-                        });
-                      }
-                    );
-                  }
-                });
-            })
-            .catch((error) => {
-              this.setState({
-                processing: false,
-                pin_error: error.message,
+                }
               });
+          })
+          .catch((error) => {
+            this.setState({
+              processing: false,
+              pin_error: error.message,
             });
-        }
-        if (type === "data") {
-          let { phone_number, network, data_package } = this.state;
-          let payload = {
-            phoneNumber: phone_number,
-            customerID: phone_number,
-            accountID: this.props.user.user_data.nuban,
-            amount: data_package.amount,
-            networkType: network.value,
-            pin,
-            billType: "data",
-          };
-          payload.paymentCode = data_package.billerName;
-          Network.validatePIN(pin)
-            .then(() => {
-              let { phone_number, network, data_package } = this.state;
-              let payload = {
-                phoneNumber: phone_number,
-                customerID: phone_number,
-                accountID: this.props.user.user_data.nuban,
-                amount: data_package.amount,
-                networkType: network.value,
-                pin,
-                billType: "data",
-              };
-              payload.paymentCode = data_package.billerName;
-              this.props.addNotification({
-                id: randomId(),
-                is_read: false,
-                title: "Data subscription",
-                description: `You have successfully subscribed ${data_package.billerName} on ${phone_number} for NGN${data_package.amount}.`,
-                timestamp: moment().toString(),
-              });
-              Network.buyData(payload)
-                .then((result) => {
-                  this.setState(
-                    {
-                      processing: false,
-                      auth_screen_visible: false,
-                    },
-                    () => {
-                      let success_message = Dictionary.BILL_PURCHASED;
-                      success_message = success_message
-                        .replace("%s", data_package.name)
-                        .replace("%s", phone_number);
-                      this.props.navigation.navigate("Success", {
-                        event_name: "transactions_successful_data",
-                        event_data: { transaction_id: result.data?.reference },
-                        success_message,
-                        transaction_data: {
-                          ...payload,
-                          ...result.data,
-                          transaction_date:
-                            result.data?.transaction_date ||
-                            moment().format("yyyy-MM-dd HH:mm:ss"),
-                        },
-                      });
-                    }
-                  );
-                })
-                .catch((error) => {
-                  if (
-                    error.message &&
-                    error.message.toLowerCase().includes("pin")
-                  ) {
-                    this.setState({
-                      processing: false,
-                      pin_error: error.message || "Pin is invalid",
-                    });
-                  } else {
-                    this.setState(
-                      {
-                        processing: false,
-                        auth_screen_visible: false,
-                      },
-                      () => {
-                        this.props.navigation.navigate("Error", {
-                          event_name: "transactions_failed_data",
-                          error_message:
-                            error.message || "Cannot perform transaction now",
-                        });
-                      }
-                    );
-                  }
-                });
-            })
-            .catch((error) => {
-              this.setState({
-                processing: false,
-                pin_error: error.message,
-              });
-            });
-        }
+          });
       }
     );
   };
@@ -981,7 +897,7 @@ class Data extends Component {
                       phone_number_error: "",
                     })
                   }
-                  editable={false}
+                  editable={true}
                 />
                 <Text style={FormStyle.formError}>
                   {this.state.phone_number_error}

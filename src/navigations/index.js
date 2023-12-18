@@ -11,28 +11,30 @@ import {
   Image,
   Dimensions,
   PanResponder,
-  Linking
+  Linking,
 } from "react-native";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { connect } from "react-redux";
 import Modal from "react-native-modal";
 import analytics from "@react-native-firebase/analytics";
-import dynamicLinks from '@react-native-firebase/dynamic-links';
+import dynamicLinks from "@react-native-firebase/dynamic-links";
 import * as Icon from "@expo/vector-icons";
 
 import { hideToast } from "_actions/toast_actions";
 import { hideExitDialog } from "_actions/util_actions";
-import { getInformation } from "_actions/information_actions";
+import { getInformation, getImage } from "_actions/information_actions";
 import {
   hideSessionDialog,
   refreshUserToken,
   clearUserData,
   showScreenInactivityDialog,
   hideScreenInactivityDialog,
-  registerSessionListener
+  registerSessionListener,
 } from "_actions/user_actions";
 import {
-  setAppVersion,updatingApp,setDeepLinkPath
+  setAppVersion,
+  updatingApp,
+  setDeepLinkPath,
 } from "_actions/settings_actions";
 
 import NavLoader from "./nav_loader";
@@ -59,10 +61,10 @@ import { NavigatorService, Network } from "_services";
 
 import { TextInput } from "react-native-gesture-handler";
 
-import * as ExpoAuthentication from 'expo-local-authentication';
+import * as ExpoAuthentication from "expo-local-authentication";
 import codePush from "react-native-code-push";
 import moment from "moment";
-import Constants from 'expo-constants';
+import Constants from "expo-constants";
 
 import { codePushDeploymentKeys } from "../../index";
 
@@ -73,14 +75,14 @@ import AsyncStorage from "@react-native-community/async-storage";
 
 const MIN_BACKGROUND_DURATION_IN_MIN = 15;
 
-let count = 0
+let count = 0;
 
 const RootNavigator = createSwitchNavigator(
   {
-    Welcome: {screen: NavLoader, path: 'welcome'},
-    Tour: {screen: TourNavigator, path: 'tour'},
-    Auth: {screen: AuthNavigator, path: 'auth'},
-    App: {screen: AppNavigator, path: 'app'},
+    Welcome: { screen: NavLoader, path: "welcome" },
+    Tour: { screen: TourNavigator, path: "tour" },
+    Auth: { screen: AuthNavigator, path: "auth" },
+    App: { screen: AppNavigator, path: "app" },
   },
   {
     initialRouteName: "Welcome",
@@ -105,9 +107,9 @@ const authRoutesThatRequireToken = [
   "UploadID",
   "UploadUtility",
   "CreatePIN",
-]
+];
 
-const authRoutesThatDoesNotRequireToken = [  
+const authRoutesThatDoesNotRequireToken = [
   "ProductTour",
   "Login",
   "AuthorizeDevice",
@@ -118,18 +120,17 @@ const authRoutesThatDoesNotRequireToken = [
   "ForgotPasswordOTP",
   "ResetPassword",
   "CreateUser",
-  "Password"
+  "Password",
   //  "Dashboard"
-]
+];
 
 const authRoutes = [
-  ...authRoutesThatDoesNotRequireToken, 
-  ...authRoutesThatRequireToken
-]
+  ...authRoutesThatDoesNotRequireToken,
+  ...authRoutesThatRequireToken,
+];
 
-
-
-const prefix = /https:\/\/www.creditvillegroup.com\/|https:\/\/creditvillegroup.com\/|creditvillegroup:\/\/creditvillegroup\/|creditvillegroup:\/\//;
+const prefix =
+  /https:\/\/www.creditvillegroup.com\/|https:\/\/creditvillegroup.com\/|creditvillegroup:\/\/creditvillegroup\/|creditvillegroup:\/\//;
 class Navigator extends Component {
   state = {
     isActive: true,
@@ -137,12 +138,12 @@ class Navigator extends Component {
     timer: 200,
     timerPassword: "",
     hideTimerPassword: true,
-    timerPasswordError:"",
+    timerPasswordError: "",
     biometrics_supported: false,
     biometrics_enabled: false,
     is_biometrics_visible: false,
     currentScreen: "Login",
-    prevScreen:"Login",
+    prevScreen: "Login",
     showUpdatingScreen: false,
     lastBackgroundedTime: 0,
     appState: AppState.currentState,
@@ -152,121 +153,122 @@ class Navigator extends Component {
     //this.handleAppLinks()
     //DEEP LINKING
     this.getInitialURL();
-    Linking.addEventListener('url', this.handleDeepLink)
+    Linking.addEventListener("url", this.handleDeepLink);
     this.initializeBiometrics();
-    this.props.getInformation()
+    this.props.getInformation();
+
     // this.resetInactivityTimeout();
     // this.checkForOTAUpdate();
     // this.setCodePushVersionNumber();
-   // AppState.addEventListener("change", this.handleAppStateChange);
-    if(this.props.user.show_session_dialog) {
+    // AppState.addEventListener("change", this.handleAppStateChange);
+    if (this.props.user.show_session_dialog) {
       this.props.hideSessionDialog();
     }
   }
-  
 
-
-    getInitialURL = async () => {
+  getInitialURL = async () => {
     const url = await Linking.getInitialURL();
     if (url) {
-        setTimeout(() => {
-            this.handleDeepLink({ url });
-        }, 2000);
+      setTimeout(() => {
+        this.handleDeepLink({ url });
+      }, 2000);
     }
 
     return url;
-}
+  };
 
   handleAppLinks = async () => {
     await dynamicLinks()
       .getInitialLink()
       .then(async (link) => {
-        console.log("Pqewrererer", {link});
+        console.log("Pqewrererer", { link });
         if (link) {
-          const { url } = link
-          if (url.startsWith('https://dynamic.creditvillegroup.com/refer')) {
+          const { url } = link;
+          if (url.startsWith("https://dynamic.creditvillegroup.com/refer")) {
             const referral_code = link.url.split("/").pop();
             await AsyncStorage.setItem("referral_code", referral_code);
             return;
           }
-          const path = url.split(':/')[1]
-          const route = deeplinkRouteHandler(path)
-          const isAuthenticated = this.props.user.user_data.token
+          const path = url.split(":/")[1];
+          const route = deeplinkRouteHandler(path);
+          const isAuthenticated = this.props.user.user_data.token;
           if (isAuthenticated) {
-            NavigatorService.navigate(route)
-          }else{
-            this.props.setDeepLinkPath(route)
-            NavigatorService.navigate("Login")
+            NavigatorService.navigate(route);
+          } else {
+            this.props.setDeepLinkPath(route);
+            NavigatorService.navigate("Login");
           }
-        }else{
-          
+        } else {
         }
-    })
-  }
+      });
+  };
 
   panResponder = PanResponder.create({
     onStartShouldSetPanResponderCapture: () => {
-        this.resetInactivityTimeout()
+      this.resetInactivityTimeout();
     },
   });
 
   resetInactivityTimeout = () => {
     // this.props.user.session_timeout_ref
-    if(true){
-      clearTimeout(this.timerId)
-    //   // clearTimeout(this.navigationTimerId)
+    if (true) {
+      clearTimeout(this.timerId);
+      //   // clearTimeout(this.navigationTimerId)
       this.timerId = setTimeout(() => {
         // action after user has been detected idle
         // this.props.refreshUserToken();
-        this.props.showScreenInactivityDialog()
-      },  50000)
-    //   // }, this.props.user.user_data.expires_in * 1000)
+        this.props.showScreenInactivityDialog();
+      }, 50000);
+      //   // }, this.props.user.user_data.expires_in * 1000)
     }
-  }
+  };
 
   setCodePushVersionNumber = async () => {
     try {
-      const data = await codePush.getUpdateMetadata()
-      const label = data.label.substring(1)
-      this.props.setAppVersion({version_date: data.binaryModifiedTime, version_number: `${data.appVersion}.${label}`})
+      const data = await codePush.getUpdateMetadata();
+      const label = data.label.substring(1);
+      this.props.setAppVersion({
+        version_date: data.binaryModifiedTime,
+        version_number: `${data.appVersion}.${label}`,
+      });
     } catch (error) {
-      this.props.setAppVersion({version_number:`${Constants.nativeAppVersion}`})
+      this.props.setAppVersion({
+        version_number: `${Constants.nativeAppVersion}`,
+      });
     }
-  }
+  };
 
   handleDeepLink = async (event = null) => {
-      if (!event) return
-      const {url} = event
-      const path = url.split(':/')[1]
-      const isAuthenticated = this.props.user.user_data.token
-      const route = deeplinkRouteHandler(path)
-      if(path.includes("/creditville.page.link")) {
-        return;
-      } else if (isAuthenticated) {
-        NavigatorService.navigate(route)
-      }
-      else{
-        this.props.setDeepLinkPath(route)
-        NavigatorService.navigate("Login")
-      }
-  }
-
-  checkForOTAUpdate = async (state = true) => { 
-    try {
-    const update = await codePush.checkForUpdate(codePushDeploymentKeys)
-      if (update) {
-        this.props.updatingApp(true)
-      }
-      else{
-        this.props.updatingApp(false)
-      }
+    if (!event) return;
+    const { url } = event;
+    const path = url.split(":/")[1];
+    const isAuthenticated = this.props.user.user_data.token;
+    const route = deeplinkRouteHandler(path);
+    if (path.includes("/creditville.page.link")) {
+      return;
+    } else if (isAuthenticated) {
+      NavigatorService.navigate(route);
+    } else {
+      this.props.setDeepLinkPath(route);
+      NavigatorService.navigate("Login");
     }
-    catch (error) {
-      this.props.updatingApp(false)
-      console.log("KO SI ERROR9", error)}
-  }
+  };
 
-  handleAppStateChange = async nextAppState => {
+  checkForOTAUpdate = async (state = true) => {
+    try {
+      const update = await codePush.checkForUpdate(codePushDeploymentKeys);
+      if (update) {
+        this.props.updatingApp(true);
+      } else {
+        this.props.updatingApp(false);
+      }
+    } catch (error) {
+      this.props.updatingApp(false);
+      console.log("KO SI ERROR9", error);
+    }
+  };
+
+  handleAppStateChange = async (nextAppState) => {
     const { appState, lastBackgroundedTime } = this.state;
 
     // Try to run the CodePush sync whenever app comes to foreground
@@ -287,7 +289,6 @@ class Navigator extends Component {
         //   console.log("Update no dey boss",{update})
         //   this.props.updatingApp(false)
         // }
-
       }
     }
 
@@ -304,10 +305,10 @@ class Navigator extends Component {
   };
 
   componentWillUnmount() {
-    clearTimeout(this.timerId)
-    clearTimeout(this.navigationTimerId)
+    clearTimeout(this.timerId);
+    clearTimeout(this.navigationTimerId);
     //AppState.removeEventListener("change", this.handleAppStateChange);
-    Linking.removeEventListener('url', this.handleDeepLink);
+    Linking.removeEventListener("url", this.handleDeepLink);
   }
 
   // this.props.user.user_data.expires_in * 1000
@@ -315,88 +316,99 @@ class Navigator extends Component {
   handleLogin = (isBiometrics = false) => {
     if (isBiometrics) {
       ///this.props.refreshUserToken();
-      this.setState({timerPasswordError:"", timerPassword:""})
-      this.props.hideScreenInactivityDialog()
-    //  this.props.refreshUserToken();
-      this.resetInactivityTimeout()
+      this.setState({ timerPasswordError: "", timerPassword: "" });
+      this.props.hideScreenInactivityDialog();
+      //  this.props.refreshUserToken();
+      this.resetInactivityTimeout();
       return;
     }
     if (this.state.timerPassword.length < 1) return;
     if (this.state.timerPassword === this.props.user.user_pwd) {
-      this.setState({timerPasswordError:"", timerPassword:""})
-    //  this.props.refreshUserToken();
-      this.props.hideScreenInactivityDialog()
-      this.resetInactivityTimeout()
-    }else{
-      this.setState({timerPasswordError:"Invalid login details"})
+      this.setState({ timerPasswordError: "", timerPassword: "" });
+      //  this.props.refreshUserToken();
+      this.props.hideScreenInactivityDialog();
+      this.resetInactivityTimeout();
+    } else {
+      this.setState({ timerPasswordError: "Invalid login details" });
     }
-  }
-
+  };
 
   initializeBiometrics = async () => {
     this.showBiometricsDialog();
     let compatible = await ExpoAuthentication.hasHardwareAsync();
     if (!compatible) {
-        return;
+      return;
     }
     let isEnrolled = await ExpoAuthentication.isEnrolledAsync();
     if (!isEnrolled) {
-        console.log('Biometrics not set up on device... Please check OS settings.');
+      console.log(
+        "Biometrics not set up on device... Please check OS settings."
+      );
     } else {
-        this.setState({
-            biometrics_supported: true,
-            biometrics_enabled: this.props.settings.biometric_login && this.props.user.user_data.phoneNumber && this.props.user.user_pwd
-        }, () => {
-            if (this.state.biometrics_supported &&
-                this.state.biometrics_enabled && this.props.user.user_data.activated === 1) {
-                this.showBiometricsDialog();
-            }
-        });
+      this.setState(
+        {
+          biometrics_supported: true,
+          biometrics_enabled:
+            this.props.settings.biometric_login &&
+            this.props.user.user_data.phoneNumber &&
+            this.props.user.user_pwd,
+        },
+        () => {
+          if (
+            this.state.biometrics_supported &&
+            this.state.biometrics_enabled &&
+            this.props.user.user_data.activated === 1
+          ) {
+            this.showBiometricsDialog();
+          }
+        }
+      );
     }
-  }
-
-
+  };
 
   scanBiometrics = async () => {
     let result = await ExpoAuthentication.authenticateAsync({
-        promptMessage: Dictionary.CONFIRM_IDENTITY,
-        cancelLabel: Dictionary.USE_PASSWORD_BTN,
-        fallbackLabel: '',
-        disableDeviceFallback: true
+      promptMessage: Dictionary.CONFIRM_IDENTITY,
+      cancelLabel: Dictionary.USE_PASSWORD_BTN,
+      fallbackLabel: "",
+      disableDeviceFallback: true,
     });
 
     if (result.success) {
-        this.hideBiometricsDialog();
-        this.handleLogin(true);
+      this.hideBiometricsDialog();
+      this.handleLogin(true);
     } else {
-        this.hideBiometricsDialog();
+      this.hideBiometricsDialog();
     }
-}
+  };
 
   showBiometricsDialog = async () => {
     this.setState({
-        is_biometrics_visible: true
+      is_biometrics_visible: true,
     });
-  }
+  };
 
   hideBiometricsDialog = () => {
     ExpoAuthentication.cancelAuthenticate();
     // this.setState({
     //     is_biometrics_visible: false
     // });
-  }
+  };
 
-  handleLogOut = () => {    
-    Network.logoutUser().then((result) => {
+  handleLogOut = () => {
+    Network.logoutUser()
+      .then((result) => {
         if (result.status === 200) {
-            console.log("Logout successful")
-            // this.props.clearUserData();      
+          console.log("Logout successful");
+          // this.props.clearUserData();
         }
-    }).catch((e) => console.log("Logout error message", e))
-  }
+      })
+      .catch((e) => console.log("Logout error message", e));
+  };
 
   render() {
-    return <View style={{ flex: 1 }} {...this.panResponder.panHandlers}>
+    return (
+      <View style={{ flex: 1 }} {...this.panResponder.panHandlers}>
         <StatusBar statusBarStyle={this.props.util.statusBarStyle} />
         <OfflineNotice />
 
@@ -437,7 +449,11 @@ class Navigator extends Component {
                   margin: 5,
                 }}
               >
-                {`${Dictionary.HELLO} ${this.props.user.user_data.firstName ? this.props.user.user_data.firstName : "" } unlock the app to continue`}
+                {`${Dictionary.HELLO} ${
+                  this.props.user.user_data.firstName
+                    ? this.props.user.user_data.firstName
+                    : ""
+                } unlock the app to continue`}
               </Text>
               <View
                 style={[
@@ -451,53 +467,69 @@ class Navigator extends Component {
                     borderRadius: 5,
                     height: 60,
                     borderColor: Colors.LIGHT_GREY,
-                    borderWidth: 2, 
+                    borderWidth: 2,
                     borderWidth: Mixins.scaleSize(1),
                     borderRadius: Mixins.scaleSize(4),
                     borderColor: Colors.INPUT_BORDER,
-                    justifyContent:"space-between",
-                    flexDirection:"row"
+                    justifyContent: "space-between",
+                    flexDirection: "row",
                   }}
                 >
                   <TextInput
                     style={{
                       fontSize: Mixins.scaleFont(16),
                       color: Colors.DARK_GREY,
-                      flex:1
+                      flex: 1,
                     }}
                     placeholder="Password"
                     placeholderTextColor={Colors.LIGHT_GREY}
                     value={this.state.timerPassword}
-                    onChangeText={(value)=>this.setState({timerPassword:value})}
+                    onChangeText={(value) =>
+                      this.setState({ timerPassword: value })
+                    }
                     secureTextEntry={this.state.hideTimerPassword}
                   />
-                  <View style={{flexDirection:"row", alignItems:"center", height:"100%"}}>
-                  {true && (
-                  <TouchItem
-                    style={[
-                      // styles.secureToggle,
-                      {backgroundColor:"white", marginRight:10}
-                    ]}
-                    onPress={()=>{this.setState({hideTimerPassword:!this.state.hideTimerPassword})}}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      height: "100%",
+                    }}
                   >
-                    <Icon.Ionicons
-                      style={styles.secureToggleIcon}
-                      size={Mixins.scaleSize(25)}
-                      name={!this.state.hideTimerPassword ? "ios-eye-off" : "ios-eye"}
-                    />
-                  </TouchItem>
-                )}
-                {this.state.is_biometrics_visible && (
-                  <TouchItem
-                    style={[{backgroundColor:"white", marginRight:10}]}
-                    onPress={this.scanBiometrics}
-                  >
-                    <Image
-                      style={styles.fingerprintImage}
-                      source={require("../assets/images/shared/fingerprint.png")}
-                    />
-                  </TouchItem>
-                )}
+                    {true && (
+                      <TouchItem
+                        style={[
+                          // styles.secureToggle,
+                          { backgroundColor: "white", marginRight: 10 },
+                        ]}
+                        onPress={() => {
+                          this.setState({
+                            hideTimerPassword: !this.state.hideTimerPassword,
+                          });
+                        }}
+                      >
+                        <Icon.Ionicons
+                          style={styles.secureToggleIcon}
+                          size={Mixins.scaleSize(25)}
+                          name={
+                            !this.state.hideTimerPassword
+                              ? "ios-eye-off"
+                              : "ios-eye"
+                          }
+                        />
+                      </TouchItem>
+                    )}
+                    {this.state.is_biometrics_visible && (
+                      <TouchItem
+                        style={[{ backgroundColor: "white", marginRight: 10 }]}
+                        onPress={this.scanBiometrics}
+                      >
+                        <Image
+                          style={styles.fingerprintImage}
+                          source={require("../assets/images/shared/fingerprint.png")}
+                        />
+                      </TouchItem>
+                    )}
                   </View>
                 </View>
                 <View>
@@ -510,9 +542,8 @@ class Navigator extends Component {
                       borderRadius: 5,
                       marginTop: 20,
                     }}
-                    onPress={()=>{
-
-                      this.handleLogin()
+                    onPress={() => {
+                      this.handleLogin();
                     }}
                   >
                     <Text
@@ -539,17 +570,23 @@ class Navigator extends Component {
                     style={{backgroundColor:"RED"}}
                     editable={!false}
                   /> */}
-                
-                <Text style={FormStyle.formError}>{this.state.timerPasswordError}</Text>
+
+                <Text style={FormStyle.formError}>
+                  {this.state.timerPasswordError}
+                </Text>
               </View>
             </View>
             <View style={{ position: "absolute", bottom: 10, width: "100%" }}>
               <TouchableOpacity
-                style={{ fontSize: 18, fontWeight: "600", color: Colors.CV_YELLOW }}
+                style={{
+                  fontSize: 18,
+                  fontWeight: "600",
+                  color: Colors.CV_YELLOW,
+                }}
                 onPress={() => {
-                  this.setState({timerPasswordError:"", timerPassword:""})
-                  this.props.hideScreenInactivityDialog()
-                  clearTimeout(this.timerId)
+                  this.setState({ timerPasswordError: "", timerPassword: "" });
+                  this.props.hideScreenInactivityDialog();
+                  clearTimeout(this.timerId);
                   NavigatorService.navigate("Login");
                 }}
               >
@@ -577,7 +614,7 @@ class Navigator extends Component {
         />
         <View style={{ flex: 1 }}>
           <AppContainer
-            // enableURLHandling={false} 
+            // enableURLHandling={false}
             // uriPrefix={"/https?:\/\/creditvillegroup.com|https?:\/\/www.creditvillegroup.com|creditvillegroup.com|com.creditville:\//;"}
             screenProps={this.props.screenProps}
             ref={(navigatorRef) => {
@@ -586,11 +623,11 @@ class Navigator extends Component {
             onNavigationStateChange={async (prevState, currentState) => {
               const currentScreen = getCurrentRouteName(currentState);
               const prevScreen = getCurrentRouteName(prevState);
-              this.setState({currentScreen})
-              if (authRoutesThatDoesNotRequireToken.includes(currentScreen)){ 
-                this.props.hideScreenInactivityDialog()
-                clearTimeout(this.timerId)
-              }else{
+              this.setState({ currentScreen });
+              if (authRoutesThatDoesNotRequireToken.includes(currentScreen)) {
+                this.props.hideScreenInactivityDialog();
+                clearTimeout(this.timerId);
+              } else {
                 // this.navigationTimerId = setTimeout(() => {
                 //   this.props.refreshUserToken();
                 //   console.log("calling timer ", count++);
@@ -599,7 +636,7 @@ class Navigator extends Component {
                 // this.resetInactivityTimeout()
                 // this.navigationTimerId = this.props.refreshUserToken();
               }
-              this.setState({currentScreen})
+              this.setState({ currentScreen });
               if (prevScreen !== currentScreen) {
                 console.log(
                   "Navigation: " + prevScreen + "-> " + currentScreen
@@ -635,10 +672,13 @@ class Navigator extends Component {
                   <TouchItem
                     style={styles.button}
                     onPress={() => {
-                      this.setState({timerPasswordError:"", timerPassword:""})
-                      this.props.hideScreenInactivityDialog()
-                      clearTimeout(this.timerId)
-                      clearTimeout(this.timerId)
+                      this.setState({
+                        timerPasswordError: "",
+                        timerPassword: "",
+                      });
+                      this.props.hideScreenInactivityDialog();
+                      clearTimeout(this.timerId);
+                      clearTimeout(this.timerId);
                       this.props.clearUserData();
                       this.props.hideExitDialog();
                       NavigatorService.navigate("Login");
@@ -666,9 +706,10 @@ class Navigator extends Component {
               }}
             />
           )}
-         {this.props.settings.app_is_updating && <UpdatingScreen2 />}
+          {this.props.settings.app_is_updating && <UpdatingScreen2 />}
         </View>
       </View>
+    );
   }
 }
 
@@ -830,7 +871,8 @@ const mapDispatchToProps = {
   updatingApp,
   setDeepLinkPath,
   getInformation,
-  registerSessionListener
+  getImage,
+  registerSessionListener,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Navigator);

@@ -1,11 +1,13 @@
 import {
   UPDATE_INFORMATION,
   UPDATE_INFORMATION_ERROR,
+  UPDATE_BANNER_LIST,
 } from "../types/information";
 
 const initialState = {
   image: "",
-  imageVisible: false
+  bannerList: [],
+  imageVisible: false,
 };
 
 export default (state = initialState, action) => {
@@ -14,7 +16,15 @@ export default (state = initialState, action) => {
       return {
         ...state,
         image: action.image,
-        imageVisible: true
+        imageVisible: true,
+      };
+    }
+    case UPDATE_BANNER_LIST: {
+      // console.log({ action });
+      return {
+        ...state,
+        bannerList: action.bannerList,
+        imageVisible: true,
       };
     }
     case UPDATE_INFORMATION_ERROR: {

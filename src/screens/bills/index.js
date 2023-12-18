@@ -113,7 +113,7 @@ class Bills extends Component {
     }
   };
 
-  handleSelectedBller = (biller) => {
+  handleSelectedBiller = (biller) => {
     if (biller.billerCode != this.state.biller?.billerCode) {
       this.setState({
         biller,
@@ -463,15 +463,14 @@ class Bills extends Component {
               style={{ marginTop: 10 }}
             />
           </View>
-          <View style={[SharedStyle.bottomPanel, styles.bottomPanel]}>
-            <View style={FormStyle.formButton}>
-              <PrimaryButton
-                title={Dictionary.CONTINUE_BTN}
-                icon="arrow-right"
-                disabled={disabledButton}
-                onPress={this.handleTransactionAuthorization}
-              />
-            </View>
+        </View>
+        <View style={SharedStyle.bottomPanel}>
+          <View style={FormStyle.formButton}>
+            <PrimaryButton
+              title={Dictionary.CONTINUE_BTN}
+              icon="arrow-right"
+              onPress={this.handleTransactionAuthorization}
+            />
           </View>
         </View>
         {this.state.auth_screen_visible && (

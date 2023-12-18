@@ -176,7 +176,7 @@ class SavingsWithdrawal extends Component {
                         savings_id: savings.id,
                       },
                       success_message:
-                        result.data?.message || Dictionary.SAVINGS_WITHDRAW,
+                        result.data?.message || Dictionary.SAVINGS_WITHDRAWN,
                     });
                     this.props.addNotification({
                       id: randomId(),

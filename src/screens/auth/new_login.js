@@ -31,6 +31,7 @@ import {
   resetLoanApplicationData,
 } from "_actions/user_actions";
 import NotificationService from "../auth/fcmToken"; // Replace with the correct path
+import { getImage } from "_actions/information_actions";
 
 class Login extends Component {
   constructor(props) {
@@ -365,9 +366,12 @@ class Login extends Component {
                   this.props.clearUserPin();
                   this.props.resetLoanApplicationData();
                 }
+                this.props.getImage();
 
-                this.routeToPage(user_data);
-                Util.logEventData("onboarding_sign_in");
+                setTimeout(() => {
+                  this.routeToPage(user_data);
+                  Util.logEventData("onboarding_sign_in");
+                }, 1000);
 
                 // Update FCM token for the user
                 // Network.getFcmTokenAndSave({
@@ -477,37 +481,7 @@ class Login extends Component {
   render() {
     let can_show_biometrics =
       this.state.biometrics_supported && this.state.biometrics_enabled;
-    return this.state.information ? (
-      <Modal
-        isVisible={this.state.modal_visible}
-        swipeDirection="down"
-        onSwipeComplete={this.onCloseModal}
-        onBackButtonPress={this.onCloseModal}
-        animationInTiming={500}
-        animationOutTiming={800}
-        backdropTransitionInTiming={500}
-        backdropTransitionOutTiming={800}
-        useNativeDriver={true}
-        style={styles.modal}
-      >
-        <ImageBackground
-          style={styles.imageBackground}
-          imageStyle={{
-            resizeMode: "contain",
-            borderRadius: Mixins.scaleSize(8),
-          }}
-          source={{ uri: this.state.image }}
-        />
-
-        <TouchItem style={styles.icon} onPress={this.onCloseModal}>
-          <Icon.Feather
-            size={Mixins.scaleSize(30)}
-            style={{ color: Colors.PRIMARY_BLUE, textAlign: "center" }}
-            name="x"
-          />
-        </TouchItem>
-      </Modal>
-    ) : (
+    return (
       <View style={SharedStyle.mainContainer}>
         {this.state.is_system_upgrade ? (
           <MainHeader
@@ -888,6 +862,7 @@ const mapDispatchToProps = {
   storeUserData,
   storeUserPwd,
   clearUserPin,
+  getImage,
   resetLoanApplicationData,
 };
 
