@@ -3,7 +3,7 @@ import { BackHandler, StyleSheet, Text, View } from "react-native";
 import { withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
-import moment from 'moment';
+import moment from "moment";
 import * as Icon from "@expo/vector-icons";
 
 import { showToast } from "_actions/toast_actions";
@@ -11,7 +11,7 @@ import {
   registerSessionListener,
   storeUserData,
   storeUserPin,
-  getUserProfile
+  getUserProfile,
 } from "_actions/user_actions";
 
 import { Dictionary, Util, ResponseCodes } from "_utils";
@@ -31,13 +31,13 @@ class CreatePIN extends Component {
     pin_error: "",
     processing: false,
     secure_text: false,
-    confirm_secure_text: false
+    confirm_secure_text: false,
   };
 
   onChangePIN = (pin) => {
     this.setState({
       pin,
-      pin_error: ""
+      pin_error: "",
     });
   };
 
@@ -51,12 +51,13 @@ class CreatePIN extends Component {
 
   handleBackButton = () => {
     //BackHandler.exitApp();
-    const is_system_upgrade = this.props.navigation.getParam("is_system_upgrade");
+    const is_system_upgrade =
+      this.props.navigation.getParam("is_system_upgrade");
 
-    if(is_system_upgrade) {
+    if (is_system_upgrade) {
       //!this.state.processing && this.props.navigation.navigate("CreatePIN");
 
-      return true
+      return true;
     }
 
     if (this.props.isFocused) {
@@ -78,9 +79,7 @@ class CreatePIN extends Component {
     });
   };
 
-  validatePin = () => {
-
-  }
+  validatePin = () => {};
 
   handleSubmit = () => {
     const { navigation } = this.props;
@@ -90,7 +89,7 @@ class CreatePIN extends Component {
 
     if (!this.state.pin || this.state.pin.length != 4) {
       this.setState({
-        pin_error: Dictionary.ENTER_VALID_PIN
+        pin_error: Dictionary.ENTER_VALID_PIN,
       });
 
       return;
@@ -98,14 +97,16 @@ class CreatePIN extends Component {
 
     if (is_system_upgrade && this.state.pin !== this.state.confirm_pin) {
       this.setState({
-        pin_error: Dictionary.PIN_DO_NOT_MATCH
+        pin_error: Dictionary.PIN_DO_NOT_MATCH,
       });
 
-      return
+      return;
     }
 
     this.setState({ processing: true }, () => {
-      let date_of_birth= moment(bvn_data.dateOfBirth, "DD-mm-YYYY").format("YYYY-MM-DD");
+      let date_of_birth = moment(bvn_data.dateOfBirth, "DD-mm-YYYY").format(
+        "YYYY-MM-DD"
+      );
       Network.completeOnboarding(
         this.props.user.user_data.phoneNumber,
         date_of_birth,
@@ -117,33 +118,35 @@ class CreatePIN extends Component {
         this.state.pin
       )
         .then((result) => {
-          this.setState(
-            {
-              processing: false
-            },
-            () => {
-              if (result.resp.code == ResponseCodes.SUCCESS_CODE) {
-              } else {
+          console.log("habeebbbbb", result),
+            this.setState(
+              {
+                processing: false,
+              },
+              () => {
+                if (result.resp.code == ResponseCodes.SUCCESS_CODE) {
+                } else {
+                }
+                // this.props.registerSessionListener(result.data);
+                // this.props.storeUserData(result.data);
+                this.props.storeUserPin(this.state.pin);
+                Util.logEventData("onboarding_pin");
+                AppEventsLogger.logEvent("user_signed_up");
+                if (is_system_upgrade) {
+                  this.props.showToast(
+                    Dictionary.SYSTEM_UPGRADE_CREATE_PIN_SUCCESS,
+                    false
+                  );
+                  this.props.navigation.navigate("Password", {
+                    phone_number,
+                    is_system_upgrade: true,
+                  });
+                } else {
+                  this.props.showToast(Dictionary.CREATE_PIN_SUCCESS, false);
+                  this.props.navigation.navigate("Dashboard");
+                }
               }
-              // this.props.registerSessionListener(result.data);
-              // this.props.storeUserData(result.data);
-              this.props.storeUserPin(this.state.pin);
-              Util.logEventData("onboarding_pin");
-              AppEventsLogger.logEvent("user_signed_up");
-              if (is_system_upgrade) {
-                this.props.showToast(Dictionary.SYSTEM_UPGRADE_CREATE_PIN_SUCCESS, false);
-                this.props.navigation.navigate('Password', {
-                  phone_number,
-                  is_system_upgrade: true,
-                });
-                
-              } else {
-                this.props.showToast(Dictionary.CREATE_PIN_SUCCESS, false);
-                this.props.navigation.navigate("Dashboard");
-              }
-              
-            }
-          );
+            );
         })
         .catch((error) => {
           this.setState({ processing: false }, () =>
@@ -154,10 +157,11 @@ class CreatePIN extends Component {
   };
 
   render() {
-    const is_system_upgrade = this.props.navigation.getParam("is_system_upgrade");
+    const is_system_upgrade =
+      this.props.navigation.getParam("is_system_upgrade");
     return (
       <View style={SharedStyle.mainContainer}>
-         {is_system_upgrade ? (
+        {is_system_upgrade ? (
           <MainHeader
             backgroundStyle={{
               backgroundColor: Colors.WHITE,
@@ -304,7 +308,9 @@ class CreatePIN extends Component {
               <PrimaryButton
                 loading={this.state.processing}
                 disabled={this.props.processing}
-                title={is_system_upgrade ? Dictionary.RESET : Dictionary.CONTINUE_BTN}
+                title={
+                  is_system_upgrade ? Dictionary.RESET : Dictionary.CONTINUE_BTN
+                }
                 icon="arrow-right"
                 onPress={this.handleSubmit}
               />
@@ -318,15 +324,15 @@ class CreatePIN extends Component {
 
 const styles = StyleSheet.create({
   pinBox: {
-    marginRight: Mixins.scaleSize(17)
+    marginRight: Mixins.scaleSize(17),
   },
   pin_error: {
     textAlign: "center",
-    marginVertical: Mixins.scaleSize(10)
+    marginVertical: Mixins.scaleSize(10),
   },
   newPin: {
     paddingRight: Mixins.scaleSize(45),
-    marginBottom: Mixins.scaleSize(25)
+    marginBottom: Mixins.scaleSize(25),
   },
   pin: {
     fontWeight: "700",
@@ -352,7 +358,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user
+    user: state.user,
   };
 };
 
@@ -361,7 +367,7 @@ const mapDispatchToProps = {
   registerSessionListener,
   storeUserData,
   storeUserPin,
-  getUserProfile
+  getUserProfile,
 };
 
 export default connect(

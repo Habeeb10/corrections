@@ -148,11 +148,9 @@ export const TRANSFER_BENEFICIARIES =
 export const ADD_TRANSFER_BENEFICIARIES =
   CREDITVILLE_ONBOARDING + "/customer/beneficiary/add";
 export const REFERRAL_ACTIVITIES = CREDITVILLE_SAVINGS + "/referral";
-
 export const NOTIFICATIONS = SETTINGS + "/notification";
 export const STORE_NOTIFICATION_TOKEN = NOTIFICATIONS + "/token";
 export const GET_USER_NOTIFICATIONS = NOTIFICATIONS + "/device";
-
 export const GET_SAVINGS_PRODUCTS = SAVINGS + "/allplan";
 export const ARCHIVE_SAVINGS = SAVINGS + "/status";
 export const GET_CUSTOMER_SAVINGS = SAVINGS + "/all";

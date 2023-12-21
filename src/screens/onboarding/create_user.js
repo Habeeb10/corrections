@@ -12,7 +12,7 @@ import { storeUserData, storeUserPwd } from "_actions/user_actions";
 import { getDocuments } from "_actions/document_actions";
 
 import { Dictionary, Util } from "_utils";
-import { Colors, Mixins, SharedStyle, FormStyle,Typography } from "_styles";
+import { Colors, Mixins, SharedStyle, FormStyle, Typography } from "_styles";
 import { SubHeader, ScrollView, FloatingLabelInput, TouchItem } from "_atoms";
 import { MainHeader } from "_organisms";
 import { PrimaryButton, PasswordCriteria } from "_molecules";
@@ -34,7 +34,7 @@ class CreateUser extends Component {
       email: "",
       first_name: "",
       last_name: "",
-     // last_name: bvn_data.lastName,
+      // last_name: bvn_data.lastName,
       middle_name: "",
       referral_code: "",
       latitude: "",
@@ -46,13 +46,13 @@ class CreateUser extends Component {
       is_uppercase_error: true,
       is_lowercase_error: true,
       is_symbol_error: true,
-      gender_error:"",
-      gender:"",
+      gender_error: "",
+      gender: "",
       processing: false,
       email_error: "",
       last_name_error: "",
       first_name_error: "",
-      referral_code_error: ""
+      referral_code_error: "",
     };
   }
 
@@ -66,7 +66,7 @@ class CreateUser extends Component {
       referral_regex.test(referral_code)
     ) {
       this.setState({
-        referral_code: referral_code.trim()
+        referral_code: referral_code.trim(),
       });
     }
     this.getUserLocation();
@@ -89,14 +89,14 @@ class CreateUser extends Component {
     if (status === "granted") {
       try {
         let location = await Location.getCurrentPositionAsync({
-          enableHighAccuracy: true
+          enableHighAccuracy: true,
         });
         if (!location) {
           location = await Location.getLastKnownPositionAsync();
         }
         this.setState({
           latitude: location.coords.latitude + "",
-          longitude: location.coords.longitude + ""
+          longitude: location.coords.longitude + "",
         });
       } catch (error) {
         this.setState({ processing: false }, () => {
@@ -119,14 +119,14 @@ class CreateUser extends Component {
 
   toggleSecureText = () => {
     this.setState({
-      secure_text: !this.state.secure_text
+      secure_text: !this.state.secure_text,
     });
   };
 
   onChangePassword = (password) => {
     this.setState(
       {
-        password
+        password,
       },
       () => this.validate()
     );
@@ -166,12 +166,12 @@ class CreateUser extends Component {
       is_uppercase_error,
       is_lowercase_error,
       is_symbol_error,
-      valid_password
+      valid_password,
     });
   };
 
   validFields = () => {
-    const { referral_code, first_name, last_name,gender } = this.state;
+    const { referral_code, first_name, last_name, gender } = this.state;
     let validity = true;
 
     // if (!!referral_code && referral_code.length !== 6) {
@@ -208,7 +208,7 @@ class CreateUser extends Component {
 
     if (!this.state.email || !Util.isValidEmail(this.state.email)) {
       this.setState({
-        email_error: Dictionary.ENTER_VALID_EMAIL
+        email_error: Dictionary.ENTER_VALID_EMAIL,
       });
 
       return;
@@ -224,18 +224,18 @@ class CreateUser extends Component {
     let {
       first_name,
       last_name,
-gender,
+      gender,
       middle_name,
       referral_code,
       latitude,
-      longitude
+      longitude,
     } = this.state;
     if (__DEV__) {
       latitude = "6.465422";
       longitude = "3.406448";
     }
     this.setState({ processing: true }, () => {
-     let phone_number = this.props.user.user_data.phone_number;
+      let phone_number = this.props.user.user_data.phone_number;
       let password = this.props.user.user_pwd;
 
       Network.createCustomer(
@@ -251,24 +251,24 @@ gender,
         longitude
       )
         .then((result) => {
-          this.setState(
-            {
-              processing: false
-            },
-            () => {
-              let user_data = {
-                ...result.customerDetails,
-                token: result.token
-              };
+          console.log("habeebbbbb", result),
+            this.setState(
+              {
+                processing: false,
+              },
+              () => {
+                let user_data = {
+                  ...result.customerDetails,
+                  token: result.token,
+                };
 
-
-              // user_data.session_id = result.session_id;
-              this.props.storeUserData(user_data);
-              // this.props.storeUserPwd(password);
-              // this.props.getDocuments();
-              this.props.navigation.navigate("EnterBVN");
-            }
-          );
+                // user_data.session_id = result.session_id;
+                this.props.storeUserData(user_data);
+                // this.props.storeUserPwd(password);
+                // this.props.getDocuments();
+                this.props.navigation.navigate("EnterBVN");
+              }
+            );
         })
         .catch((error) => {
           this.setState({ processing: false }, () =>
@@ -278,9 +278,9 @@ gender,
     });
   };
 
-  presetGender=(gender)=>{
-    this.setState({gender})
-  }
+  presetGender = (gender) => {
+    this.setState({ gender });
+  };
 
   render() {
     return (
@@ -392,15 +392,13 @@ gender,
                 onChangeText={(text) =>
                   this.setState({
                     email: text,
-                    email_error: ""
+                    email_error: "",
                   })
                 }
                 editable={!this.state.processing}
               />
               <Text style={FormStyle.formError}>{this.state.email_error}</Text>
             </View>
-
-          
           </View>
 
           <View style={SharedStyle.bottomPanel}>
@@ -424,63 +422,63 @@ const styles = StyleSheet.create({
   secureToggle: {
     ...Mixins.padding(15),
     position: "absolute",
-    right: 0
+    right: 0,
   },
   secureToggleIcon: {
-    color: Colors.CV_YELLOW
+    color: Colors.CV_YELLOW,
   },
   criteria: {
     ...Mixins.margin(30, 16, 30, 16),
-    paddingBottom: Mixins.scaleSize(20)
+    paddingBottom: Mixins.scaleSize(20),
   },
   presets: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: Mixins.scaleSize(8),
     borderWidth: Mixins.scaleSize(1),
     borderRadius: Mixins.scaleSize(4),
-    borderColor: Colors.INPUT_BORDER
-},
-preset: {
+    borderColor: Colors.INPUT_BORDER,
+  },
+  preset: {
     ...Mixins.padding(16, 8, 16, 8),
     marginRight: Mixins.scaleSize(16),
     borderBottomWidth: Mixins.scaleSize(2),
-    borderBottomColor: 'transparent'
-},
-activePreset: {
-    borderBottomColor: Colors.CV_YELLOW
-},
-presetText: {
+    borderBottomColor: "transparent",
+  },
+  activePreset: {
+    borderBottomColor: Colors.CV_YELLOW,
+  },
+  presetText: {
     ...Typography.FONT_REGULAR,
     fontSize: Mixins.scaleFont(14),
     lineHeight: Mixins.scaleSize(16),
     letterSpacing: Mixins.scaleSize(0.01),
-    color: Colors.CV_BLUE
-},
-activePresetText: {
+    color: Colors.CV_BLUE,
+  },
+  activePresetText: {
     ...Typography.FONT_MEDIUM,
-    color: Colors.CV_YELLOW
-},
-presetLabel: {
+    color: Colors.CV_YELLOW,
+  },
+  presetLabel: {
     ...Typography.FONT_REGULAR,
     fontSize: Mixins.scaleFont(14),
     lineHeight: Mixins.scaleSize(16),
     letterSpacing: Mixins.scaleSize(0.01),
-    color: Colors.LIGHT_GREY
-},
-gender: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-},
-halfColumn: {
-    width: '45%'
-},
+    color: Colors.LIGHT_GREY,
+  },
+  gender: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  halfColumn: {
+    width: "45%",
+  },
 });
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user
+    user: state.user,
   };
 };
 
@@ -488,7 +486,7 @@ const mapDispatchToProps = {
   showToast,
   storeUserData,
   storeUserPwd,
-  getDocuments
+  getDocuments,
 };
 
 export default connect(

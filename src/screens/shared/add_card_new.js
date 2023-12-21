@@ -139,7 +139,7 @@ class AddCard extends Component {
   verifyCard = (result) => {
     this.setState({ processing: true }, () => {
       this.setState({ verifyCount: 1 });
-      
+
       Network.verifyAddCard(result.reference)
         .then((restData) => {
           // if(restData.responseCode==ResponseCodes.SUCCESS_CODE){
