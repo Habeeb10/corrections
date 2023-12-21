@@ -108,6 +108,7 @@ class Dashboard extends Component {
       bannerActive: true,
       // isProfileModalVisible: false,
       imageModalVisible: false,
+      showImage: true,
     };
 
     if (user_data.phone_hash) {
@@ -512,16 +513,15 @@ class Dashboard extends Component {
         ? Dictionary.RECENT_TRANSACTIONS
         : `0 ${Dictionary.RECENT_TRANSACTIONS}`;
 
-    if (this.props.user.loading_profile || this.state.bannerActive) {
-      const banners = this.state?.information?.bannerList
-        ?.slice(0, 5)
-        .map((imageObj, index) => {
-          return {
-            key: index,
-            ...imageObj,
-          };
-        });
-
+    const banners = this.state?.information?.bannerList
+      ?.slice(0, 5)
+      .map((imageObj, index) => {
+        return {
+          key: index,
+          ...imageObj,
+        };
+      });
+    if (this.state.showImage) {
       return (
         <View
           style={[
@@ -533,14 +533,16 @@ class Dashboard extends Component {
             <>
               <Banners
                 finish={() => {
-                  this.setState({ bannerActive: false });
+                  // Set the flag to false once the image is displayed
+                  this.setState({ showImage: false });
                 }}
                 banners={banners}
               />
               <TouchItem
                 style={styles.icon}
                 onPress={() => {
-                  this.setState({ bannerActive: false });
+                  // Set the flag to false if the user closes the image
+                  this.setState({ showImage: false });
                   banners?.finish && banners.finish();
                 }}
               >
@@ -557,6 +559,7 @@ class Dashboard extends Component {
         </View>
       );
     }
+
     return (
       <ScrollView
         style={SharedStyle.mainContainer}
