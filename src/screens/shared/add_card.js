@@ -126,7 +126,7 @@ class AddCard extends Component {
   verifyCard = (result) => {
     Network.verifyAddCard(result.reference)
       .then((restData) => {
-        console.log("habeebTest", { result });
+        // console.log("habeebTest", { result });
 
         // if(restData.responseCode==ResponseCodes.SUCCESS_CODE){
         // console.log("verifyAddCard",restData)

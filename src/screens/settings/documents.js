@@ -194,7 +194,7 @@ class Documents extends Component {
   };
   handleItemPress = (item) => {
     this.setState({ selectedDocument: item }); // Store the selected document
-    console.log("ggjgjgjggj", this.state.selectedDocument);
+    // console.log("ggjgjgjggj", this.state.selectedDocument);
     this.openModal();
   };
 
@@ -223,14 +223,14 @@ class Documents extends Component {
                 : document.status.toLowerCase();
               const disabled =
                 statusText === "pending" ||
-                statusText === "reject" ||
+                statusText === "Reject" ||
                 statusText === "approved";
               return (
                 <TouchItem
                   key={document.id}
                   style={styles.documentItem}
                   onPress={() => {
-                    console.log(document.status, "jjjj");
+                    // console.log(document.status, "jjjj");
 
                     this.openModal();
                     this.setState({
@@ -256,14 +256,14 @@ class Documents extends Component {
                         {document.status}
                       </Text>
                     )}
-                    {!disabled && (
+                    {/* {!disabled && (
                       <Icon.SimpleLineIcons
                         color={Colors.LIGHT_GREY}
                         name="arrow-right"
                         size={Mixins.scaleSize(15)}
                         style={{ marginLeft: Mixins.scaleSize(10) }}
                       />
-                    )}
+                    )} */}
                   </View>
                 </TouchItem>
               );
@@ -297,7 +297,7 @@ class Documents extends Component {
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
-                marginBottom: Mixins.scaleSize(25),
+                marginBottom: Mixins.scaleSize(10),
               }}
             >
               <Text
@@ -315,7 +315,7 @@ class Documents extends Component {
               </Text>
             </View>
             {statusText === "rejected" && (
-              <View style={{ ...Mixins.margin(20, 0, 15, 0) }}>
+              <View style={{ marginBottom: Mixins.scaleSize(10) }}>
                 <Text
                   style={{
                     ...Typography.FONT_MEDIUM,
@@ -329,10 +329,10 @@ class Documents extends Component {
                   style={{
                     ...Typography.FONT_REGULAR,
                     fontSize: Mixins.scaleFont(14),
-                    color: "#28374C",
+                    color: Colors.CV_BLUE,
                   }}
                 >
-                  Inconsistent Data
+                  {document?.comment}
                 </Text>
               </View>
             )}
@@ -349,7 +349,7 @@ class Documents extends Component {
                   borderStyle: "dashed",
                   borderColor: Colors.GREY,
                   borderWidth: 2,
-                  ...Mixins.margin(20, 0, 0, 0),
+                  // ...Mixins.margin(20, 0, 0, 0),
                   flexDirection: "row",
                   alignSelf: "center",
                   paddingHorizontal: 6,
