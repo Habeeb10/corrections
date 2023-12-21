@@ -539,7 +539,7 @@ class Dashboard extends Component {
                 banners={banners}
               />
               <TouchItem
-                style={styles.icon}
+                style={styles.bannericon}
                 onPress={() => {
                   // Set the flag to false if the user closes the image
                   this.setState({ showImage: false });
@@ -1750,6 +1750,19 @@ const styles = StyleSheet.create({
     ...Typography.FONT_BOLD,
   },
   icon: {
+    alignSelf: "center",
+    // display: "flex",
+    justifyContent: "center",
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    borderColor: "white",
+    backgroundColor: "#DCDCDC",
+    opacity: 0.7,
+    marginBottom: 50,
+    alignItems: "center",
+  },
+  bannericon: {
     alignSelf: "center",
     display: "flex",
     justifyContent: "center",
