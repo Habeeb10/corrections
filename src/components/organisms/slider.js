@@ -237,8 +237,8 @@ const Banners = (props) => {
           <Image
             style={[styles.imageBackground]}
             imageStyle={{
-              resizeMode: "cover",
-              borderRadius: Mixins.scaleSize(8),
+              resizeMode: "contain",
+              borderRadius: 50,
             }}
             source={{ uri: item.url }}
           />
@@ -296,23 +296,11 @@ const Banners = (props) => {
 };
 
 const styles = StyleSheet.create({
-  icon: {
-    alignSelf: "center",
-    display: "flex",
-    justifyContent: "center",
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    borderColor: "white",
-    backgroundColor: "#DCDCDC",
-    opacity: 0.7,
-    marginTop: Mixins.scaleSize(30),
-  },
   imageBackground: {
-    // flex: 1,
-    width: 314,
-    height: 650,
-    marginTop: Mixins.scaleSize(20),
+    flex: 1,
+    width: "90%",
+    height: "100%",
+    marginTop: Mixins.scaleSize(10),
   },
 
   slide: {
@@ -327,17 +315,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: Mixins.scaleSize(25),
+    marginTop: Mixins.scaleSize(30),
+    // marginBottom: Mixins.scaleSize(30),
   },
+
   indicatorTouchable: {
+    marginBottom: 50,
     marginHorizontal: 4,
   },
-  dot: {
-    width: 20,
-    height: 10,
-    borderRadius: 6,
-    backgroundColor: "gray",
-  },
+  // dot: {
+  //   width: 8,
+  //   height: 8,
+  //   borderRadius: 6,
+  //   backgroundColor: "gray",
+  // },
 
   notActive: {
     width: 8,

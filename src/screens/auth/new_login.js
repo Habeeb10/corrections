@@ -31,7 +31,7 @@ import {
   resetLoanApplicationData,
 } from "_actions/user_actions";
 import NotificationService from "../auth/fcmToken"; // Replace with the correct path
-import { getImage } from "_actions/information_actions";
+// import { getImage } from "_actions/information_actions";
 
 class Login extends Component {
   constructor(props) {
@@ -45,8 +45,8 @@ class Login extends Component {
       phone_number_error: "",
       processing: false,
       isFocused: false,
-      image: this.props.information.image,
-      information: this.props.information.imageVisible,
+      // image: this.props.information.image,
+      // information: this.props.information.imageVisible,
       modal_visible: true,
       password_error: "",
       longitude: "",
@@ -91,14 +91,14 @@ class Login extends Component {
       this.unsubscribe();
     }
   }
-  componentDidUpdate(prevProps) {
-    if (this.props.information !== prevProps.information) {
-      this.setState({
-        image: this.props.information.image,
-        information: this.props.information.imageVisible,
-      });
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   if (this.props.information !== prevProps.information) {
+  //     this.setState({
+  //       image: this.props.information.image,
+  //       information: this.props.information.imageVisible,
+  //     });
+  //   }
+  // }
 
   getUserLocation = async () => {
     try {
@@ -475,7 +475,7 @@ class Login extends Component {
   onCloseModal = () => {
     this.setState({
       modal_visible: false,
-      information: false,
+      // information: false,
     });
   };
   render() {
@@ -848,7 +848,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
   user: state.user,
   settings: state.settings,
-  information: state.information,
+  // information: state.information,
 });
 
 const mapDispatchToProps = {

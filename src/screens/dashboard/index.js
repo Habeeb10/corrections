@@ -513,22 +513,17 @@ class Dashboard extends Component {
         ? Dictionary.RECENT_TRANSACTIONS
         : `0 ${Dictionary.RECENT_TRANSACTIONS}`;
 
-    const banners = this.state?.information?.bannerList
-      ?.slice(0, 5)
-      .map((imageObj, index) => {
+    const banners = this.state?.information?.bannerList?.map(
+      (imageObj, index) => {
         return {
           key: index,
           ...imageObj,
         };
-      });
+      }
+    );
     if (this.state.showImage) {
       return (
-        <View
-          style={[
-            SharedStyle.mainContainer,
-            { alignItems: "center", justifyContent: "center", flex: 1 },
-          ]}
-        >
+        <View style={[SharedStyle.mainContainer, styles.backdrop]}>
           {banners?.length ? (
             <>
               <Banners
@@ -543,7 +538,7 @@ class Dashboard extends Component {
                 onPress={() => {
                   // Set the flag to false if the user closes the image
                   this.setState({ showImage: false });
-                  banners?.finish && banners.finish();
+                  // banners?.finish && banners.finish();
                 }}
               >
                 <Icon.Feather
@@ -1407,6 +1402,10 @@ class Dashboard extends Component {
 }
 
 const styles = StyleSheet.create({
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.6)", // Adjust the opacity as needed
+  },
   profileView: {
     width: 200,
     height: 200,
@@ -1768,11 +1767,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 50,
     height: 50,
+    marginTop: 7,
     borderRadius: 50,
     borderColor: "white",
     backgroundColor: "#DCDCDC",
     opacity: 0.7,
-    marginBottom: 50,
+    marginBottom: 30,
   },
   copyButton: {
     flexDirection: "row",

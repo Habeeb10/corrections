@@ -157,7 +157,7 @@ class UploadDocument extends Component {
               this.props.getUserProfile();
               this.handleBackButton();
               this.props.showToast(result.message, false);
-              // this.props.getDocuments();
+              this.props.getDocuments();
             }
           );
         })
@@ -177,7 +177,7 @@ class UploadDocument extends Component {
               this.props.getUserProfile();
               this.handleBackButton();
               this.props.showToast(result.message, false);
-              // this.props.getDocuments();
+              this.props.getDocuments();
             }
           );
         })
