@@ -116,6 +116,13 @@ const makeApiCall = async (
   body = {},
   additional_headers = {}
 ) => {
+  console.log("RESULT", {
+    with_basic_auth,
+    url,
+    method,
+    body,
+    additional_headers,
+  });
   return new Promise(function (resolve, reject) {
     apiCall(with_basic_auth, url, method, body, additional_headers)
       .then((result) => {
@@ -262,11 +269,9 @@ export const refreshToken = async (token) => {
   return makeApiCall(BASIC_AUTH, Endpoints.REFRESH_TOKEN, "post", { token });
 };
 export const getFcmTokenAndSave = async (phone_number, fcmToken) => {
-  return makeApiCall(
-    BEARER_AUTH,
-    `${Endpoints.FCMTOKEN}/${phone_number}/${fcmToken}`,
-    "post"
-  );
+  const url = `${Endpoints.FCM_TOKEN}/${phone_number}/${fcmToken}`;
+  console.log({ url });
+  return makeApiCall(BEARER_AUTH, url, "post");
 };
 
 export const logoutUser = async () => {

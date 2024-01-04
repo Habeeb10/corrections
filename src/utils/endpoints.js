@@ -4,7 +4,6 @@ import { environment } from "./env";
 const UTILITY = env().utility + "/v2";
 
 // UTILITY
-// export const CHECK_BVN = UTILITY + '/util/verify/bvn';
 export const UPLOAD_FILE = UTILITY + "/util/upload/photo?tenant=creditville";
 export const BANK_OPTIONS = UTILITY + "/util/codes/fetch/bank";
 
@@ -13,17 +12,6 @@ const PECUNIA2 = "";
 
 const BILL_BASE_URL = "http://13.127.17.141:8081/api/v1/flw";
 const NIPS_BASE_URL = "http://13.127.17.141:8081/api/v1";
-//const NIPS_BASE_URL="http://13.127.17.141:8081/api/v1/nibspay";
-
-//dev
-//CREDITVILLE
-//export const CREDITVILLE_ONBOARDING = env().creditVille + '/userservice/api/v1';
-// export const CREDITVILLE_SAVINGS = env().creditVille + '/savingsservice/api/v1';
-
-//uat
-
-// export const CREDITVILLE_ONBOARDING = env().creditVille + `${environment === 'uat' ? '/user/api/v1' : '/userservice/api/v1'}`;
-// export const CREDITVILLE_SAVINGS = env().creditVille +`${environment === 'uat' ? '/savings/api/v1' : '/savingsservice/api/v1'}`;
 
 //prod
 export const CREDITVILLE_ONBOARDING =
@@ -94,8 +82,7 @@ export const CREATE_PIN = CREDITVILLE_ONBOARDING + "/pin";
 export const COMPLETE_ONBOARDING =
   CREDITVILLE_ONBOARDING + "/customer/create/complete";
 // export const GET_INFORMATION = CREDITVILLE_ONBOARDING + "/photo/image";
-export const FCMTOKEN = CREDITVILLE_ONBOARDING + "/customer/fcm/update";
-
+export const FCM_TOKEN = CREDITVILLE_ONBOARDING + "/customer/fcm/update";
 export const GET_IMAGE = CREDITVILLE_ONBOARDING + "/photo/banner";
 
 //savings
@@ -113,7 +100,6 @@ export const CREATE_PASSWORD = ONBOARD + "/password";
 export const ADD_EMAIL = ONBOARD + "/email";
 //export const CREATE_PIN = ONBOARD + '/pin';
 export const SAVE_PHOTO = ONBOARD + "/photo";
-
 export const AUTHENTICATE = AUTH + "/login";
 export const REFRESH_TOKEN = AUTH + "/refresh-token";
 export const DEVICE_ACTIVATION = AUTH + "/device";
