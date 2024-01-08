@@ -116,13 +116,13 @@ const makeApiCall = async (
   body = {},
   additional_headers = {}
 ) => {
-  console.log("RESULT", {
-    with_basic_auth,
-    url,
-    method,
-    body,
-    additional_headers,
-  });
+  // console.log("RESULT", {
+  //   with_basic_auth,
+  //   url,
+  //   method,
+  //   body,
+  //   additional_headers,
+  // });
   return new Promise(function (resolve, reject) {
     apiCall(with_basic_auth, url, method, body, additional_headers)
       .then((result) => {

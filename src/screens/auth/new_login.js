@@ -7,7 +7,10 @@ import {
   TouchableOpacity,
   ImageBackground,
   ActivityIndicator,
+  Image,
 } from "react-native";
+import { PrimaryButton, PasswordCriteria, ActionButton } from "_molecules";
+
 import { withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
 import * as Icon from "@expo/vector-icons";
@@ -18,7 +21,6 @@ import { Dictionary, Util, ResponseCodes } from "_utils";
 import { SharedStyle, FormStyle, Mixins, Colors, Typography } from "_styles";
 import { SubHeader, ScrollView, FloatingLabelInput, TouchItem } from "_atoms";
 import { MainHeader } from "_organisms";
-import { PrimaryButton } from "_molecules";
 import { clearDeepLinkPath } from "_actions/settings_actions";
 import { AsyncStorage, Alert } from "react-native";
 import { Network } from "_services";
@@ -31,6 +33,8 @@ import {
   resetLoanApplicationData,
 } from "_actions/user_actions";
 import NotificationService from "../auth/fcmToken"; // Replace with the correct path
+import * as ExpoAuthentication from "expo-local-authentication";
+
 // import { getImage } from "_actions/information_actions";
 
 class Login extends Component {
@@ -188,6 +192,7 @@ class Login extends Component {
       is_biometrics_visible: true,
     });
   };
+
   scanBiometrics = async () => {
     let result = await ExpoAuthentication.authenticateAsync({
       promptMessage: Dictionary.CONFIRM_IDENTITY,
@@ -203,6 +208,7 @@ class Login extends Component {
       this.hideBiometricsDialog();
     }
   };
+
   hideBiometricsDialog = () => {
     ExpoAuthentication.cancelAuthenticate();
     this.setState({
@@ -320,132 +326,225 @@ class Login extends Component {
         password = this.props.user.user_pwd;
       }
 
-      // Register for push notifications and obtain FCM token
-      const fcmToken =
-        await this.notificationService.registerForPushNotifications();
-
-      console.log("Current FCM Token:", fcmToken);
-
-      // Add FCM token to the authentication request
-      let previous_user = this.props.user.user_data.phoneNumber;
-
-      // Check if the locally stored FCM token is different from the current one
+      // Check if the locally stored FCM token is available
       try {
         const storedFcmToken = await AsyncStorage.getItem("fcmToken");
         console.log("Stored FCM Token:", storedFcmToken);
 
-        if (storedFcmToken !== fcmToken) {
-          // Save the new FCM token locally
-          await AsyncStorage.setItem("fcmToken", fcmToken);
-          console.log("New FCM Token saved locally:", fcmToken);
+        // Register for push notifications and obtain FCM token
+        const fcmToken =
+          await this.notificationService.registerForPushNotifications();
+
+        console.log("Current FCM Token:", fcmToken);
+
+        // Add FCM token to the authentication request
+        let previous_user = this.props.user.user_data.phoneNumber;
+
+        if (storedFcmToken) {
+          // If the user already has a stored FCM token, compare with the new one
+          if (storedFcmToken !== fcmToken) {
+            // Save the new FCM token locally
+            await AsyncStorage.setItem("fcmToken", fcmToken);
+            console.log("New FCM Token saved locally:", fcmToken);
+
+            // Continue with the authentication process
+            this.setState({ authenticating: true }, async () => {
+              Network.authenticateUser(
+                phone_number,
+                password,
+                latitude,
+                longitude
+              )
+                .then(async (result) => {
+                  this.setState(
+                    {
+                      authenticating: false,
+                      password: "",
+                    },
+                    async () => {
+                      let user_data = {
+                        ...result,
+                        activated: "",
+                        stage_id: "",
+                      };
+                      user_data.phoneNumber = phone_number;
+                      this.props.storeUserData(user_data);
+                      this.props.storeUserPwd(password);
+
+                      if (phone_number !== previous_user) {
+                        this.props.clearUserPin();
+                        this.props.resetLoanApplicationData();
+                      }
+
+                      setTimeout(async () => {
+                        this.routeToPage(user_data);
+                        Util.logEventData("onboarding_sign_in");
+                        // Update FCM token on the server
+                        Network.getFcmTokenAndSave(phone_number, fcmToken)
+                          .then((data) => {
+                            // Handle successful response
+                            console.log("FCM token response:", data);
+                          })
+                          .catch((error) => {
+                            // Handle errors
+                            console.error("Error:", error.message);
+                          });
+                      }, 1000);
+                    }
+                  );
+                })
+                .catch((error) => {
+                  this.setState(
+                    {
+                      authenticating: false,
+                    },
+                    () => {
+                      if (error.http_status === 412) {
+                        this.props.showToastNav(error.message, {
+                          action: this.handleAuthorizeDevice,
+                          actionText: Dictionary.AUTHORIZE_DEVICE_BTN,
+                        });
+                      } else {
+                        this.props.showToast(error.message);
+                      }
+                    }
+                  );
+                });
+            });
+          } else {
+            // If the stored token is the same as the current one, proceed with the existing token
+            this.setState({ authenticating: true }, async () => {
+              Network.authenticateUser(
+                phone_number,
+                password,
+                latitude,
+                longitude
+              )
+                .then(async (result) => {
+                  this.setState(
+                    {
+                      authenticating: false,
+                      password: "",
+                    },
+                    async () => {
+                      let user_data = {
+                        ...result,
+                        activated: "",
+                        stage_id: "",
+                      };
+                      user_data.phoneNumber = phone_number;
+                      this.props.storeUserData(user_data);
+                      this.props.storeUserPwd(password);
+
+                      if (phone_number !== previous_user) {
+                        this.props.clearUserPin();
+                        this.props.resetLoanApplicationData();
+                      }
+
+                      setTimeout(async () => {
+                        this.routeToPage(user_data);
+                        Util.logEventData("onboarding_sign_in");
+                      }, 1000);
+                    }
+                  );
+                })
+                .catch((error) => {
+                  this.setState(
+                    {
+                      authenticating: false,
+                    },
+                    () => {
+                      if (error.http_status === 412) {
+                        this.props.showToastNav(error.message, {
+                          action: this.handleAuthorizeDevice,
+                          actionText: Dictionary.AUTHORIZE_DEVICE_BTN,
+                        });
+                      } else {
+                        this.props.showToast(error.message);
+                      }
+                    }
+                  );
+                });
+            });
+          }
         } else {
-          console.log("Stored FCM Token is the same as the current one.");
+          // If there is no stored token, generate a new one and proceed with the new token
+          await AsyncStorage.setItem("fcmToken", fcmToken);
+          console.log("FCM Token saved locally:", fcmToken);
+
+          // Continue with the authentication process
+          this.setState({ authenticating: true }, async () => {
+            Network.authenticateUser(
+              phone_number,
+              password,
+              latitude,
+              longitude
+            )
+              .then(async (result) => {
+                this.setState(
+                  {
+                    authenticating: false,
+                    password: "",
+                  },
+                  async () => {
+                    let user_data = { ...result, activated: "", stage_id: "" };
+                    user_data.phoneNumber = phone_number;
+                    this.props.storeUserData(user_data);
+                    this.props.storeUserPwd(password);
+
+                    if (phone_number !== previous_user) {
+                      this.props.clearUserPin();
+                      this.props.resetLoanApplicationData();
+                    }
+
+                    setTimeout(async () => {
+                      this.routeToPage(user_data);
+                      Util.logEventData("onboarding_sign_in");
+
+                      console.log({
+                        phone_number: phone_number,
+                        fcmToken: fcmToken,
+                      });
+                      // Update FCM token on the server
+                      Network.getFcmTokenAndSave(phone_number, fcmToken)
+                        .then((data) => {
+                          // Handle successful response
+                          console.log("FCM token response:", data);
+                        })
+                        .catch((error) => {
+                          // Handle errors
+                          console.error("Error:", error.message);
+                        });
+                    }, 1000);
+                  }
+                );
+              })
+              .catch((error) => {
+                this.setState(
+                  {
+                    authenticating: false,
+                  },
+                  () => {
+                    if (error.http_status === 412) {
+                      this.props.showToastNav(error.message, {
+                        action: this.handleAuthorizeDevice,
+                        actionText: Dictionary.AUTHORIZE_DEVICE_BTN,
+                      });
+                    } else {
+                      this.props.showToast(error.message);
+                    }
+                  }
+                );
+              });
+          });
         }
       } catch (storageError) {
         console.error("Error accessing AsyncStorage:", storageError);
         // Handle the error appropriately, such as showing a message to the user
       }
-
-      this.setState({ authenticating: true }, async () => {
-        Network.authenticateUser(phone_number, password, latitude, longitude)
-          .then((result) => {
-            // console.log("Authentication Result:", { result });
-
-            this.setState(
-              {
-                authenticating: false,
-                password: "",
-              },
-              () => {
-                let user_data = { ...result, activated: "", stage_id: "" };
-                user_data.phoneNumber = phone_number;
-                this.props.storeUserData(user_data);
-                this.props.storeUserPwd(password);
-
-                if (phone_number !== previous_user) {
-                  this.props.clearUserPin();
-                  this.props.resetLoanApplicationData();
-                }
-                this.props.getImage();
-
-                setTimeout(() => {
-                  this.routeToPage(user_data);
-                  Util.logEventData("onboarding_sign_in");
-                }, 1000);
-
-                // Update FCM token for the user
-                // Network.getFcmTokenAndSave({
-                //   phone_number: phone_number,
-                //   fcmToken: fcmToken,
-                // })
-                //   .then((response) => {
-                //     if (!response.ok) {
-                //       throw new Error(`HTTP error! Status: ${response.status}`);
-                //     }
-                //     return response.json();
-                //   })
-                //   .then((data) => {
-                //     // Handle successful response
-                //     console.log("ResponseHabeeb:", data);
-                //   })
-                //   .catch((error) => {
-                //     // Handle errors
-                //     console.error("Error:", error.message);
-                //   });
-
-                fetch(
-                  `https://creditvilleprelive.com/userservice/api/v1/customer/fcm/update/${phone_number}/${fcmToken}`,
-                  {
-                    method: "POST",
-                    headers: {
-                      Accept: "application/json",
-                      "Content-Type": "application/json",
-                      "X-Mobile-OS": "android",
-                      apiKey: user_data.token,
-                    },
-                    body: JSON.stringify({
-                      phone_number: phone_number,
-                      fcmToken: fcmToken,
-                    }),
-                  }
-                )
-                  .then((response) => {
-                    if (!response.ok) {
-                      throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                  })
-                  .then((data) => {
-                    // Handle successful response
-                    // console.log("ResponseHabeeb:", data);
-                  })
-                  .catch((error) => {
-                    // Handle errors
-                    console.error("Error:", error.message);
-                  });
-              }
-            );
-          })
-          .catch((error) => {
-            this.setState(
-              {
-                authenticating: false,
-              },
-              () => {
-                if (error.http_status === 412) {
-                  this.props.showToastNav(error.message, {
-                    action: this.handleAuthorizeDevice,
-                    actionText: Dictionary.AUTHORIZE_DEVICE_BTN,
-                  });
-                } else {
-                  this.props.showToast(error.message);
-                }
-              }
-            );
-          });
-      });
     }
   };
+
   validFields = () => {
     let isValid = true;
     if (!Util.isValidPhone(this.state.phone_number)) {
@@ -548,8 +647,7 @@ class Login extends Component {
               <Text style={[FormStyle.formError]}>
                 {this.state.phone_number_error}
               </Text>
-
-              <View style={{ marginTop: 30 }}>
+              <View style={[FormStyle.formItem, { marginTop: 30 }]}>
                 <FloatingLabelInput
                   style={{
                     paddingRight: can_show_biometrics
@@ -602,8 +700,23 @@ class Login extends Component {
                 <Text style={FormStyle.formError}>
                   {this.state.password_error}
                 </Text>
+
+                <View style={styles.forgotpassword}>
+                  {this.state.passwordProcessing ? (
+                    <ActivityIndicator color={Colors.PRIMARY_BLUE} />
+                  ) : (
+                    <TouchItem
+                      disabled={this.state.passwordProcessing}
+                      onPress={this.forgotPassword}
+                    >
+                      <Text style={styles.forgotPasswordText}>
+                        {Dictionary.FORGOT_PASSWORD_BTN}
+                      </Text>
+                    </TouchItem>
+                  )}
+                </View>
               </View>
-              <View style={styles.forgotpassword}>
+              {/* <View style={styles.forgotpassword}>
                 {this.state.passwordProcessing ? (
                   <ActivityIndicator color={Colors.PRIMARY_BLUE} />
                 ) : (
@@ -616,7 +729,7 @@ class Login extends Component {
                     </Text>
                   </TouchItem>
                 )}
-              </View>
+              </View> */}
             </View>
 
             <View style={styles.signup}>
@@ -862,7 +975,7 @@ const mapDispatchToProps = {
   storeUserData,
   storeUserPwd,
   clearUserPin,
-  getImage,
+  // getImage,
   resetLoanApplicationData,
 };
 
@@ -871,6 +984,40 @@ export default connect(
   mapDispatchToProps
 )(withNavigationFocus(Login));
 
+// try {
+//   const response = await fetch(
+//     `https://creditvilleprelive.com/userservice/api/v1/customer/fcm/update/${phone_number}/${fcmToken}`,
+//     {
+//       method: "POST",
+//       headers: {
+//         Accept: "application/json",
+//         "Content-Type": "application/json",
+//         "X-Mobile-OS": "android",
+//         apiKey: user_data.token,
+//       },
+//       body: JSON.stringify({
+//         phone_number: phone_number,
+//         fcmToken: fcmToken,
+//       }),
+//     }
+//   );
+
+//   if (!response.ok) {
+//     throw new Error(
+//       `HTTP error! Status: ${response.status}`
+//     );
+//   }
+
+//   const data = await response.json();
+//   console.log("FCM Token update response:", data, {
+//     fcmToken,
+//   });
+// } catch (error) {
+//   console.error(
+//     "Error updating FCM Token on server:",
+//     error.message
+//   );
+// }
 //placeholder={Dictionary.PHONE_NUMBER_LABEL}
 //placeholderTextColor={Colors.CV_BLUE}
 {

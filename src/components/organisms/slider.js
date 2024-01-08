@@ -218,26 +218,14 @@ const Banners = (props) => {
   const flatListRef = React.useRef(null);
   const { width, height } = Dimensions.get("window");
 
-  // console.log({ height });
-
-  // const handleNext = () => {
-  //   if (currentIndex < props.banners.length - 1) {
-  //     setCurrentIndex(currentIndex + 1);
-  //     flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
-  //   } else {
-  //     props.finish();
-  //   }
-  // };
-
   const RenderItem = ({ item }) => {
-    // console.log({ item });
     return (
       <View>
         <View style={[styles.slide, { width }]}>
           <Image
             style={[styles.imageBackground]}
             imageStyle={{
-              resizeMode: "contain",
+              resizeMode: "cover",
               borderRadius: 50,
             }}
             source={{ uri: item.url }}
@@ -297,43 +285,33 @@ const Banners = (props) => {
 
 const styles = StyleSheet.create({
   imageBackground: {
-    flex: 1,
     width: "90%",
-    height: "100%",
+    height: "90%",
     marginTop: Mixins.scaleSize(10),
   },
 
   slide: {
     alignItems: "center",
-    // width: "100%",
     flex: 1,
-    // width: "90%",
-    // height: "90%",
   },
 
   indicatorContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: Mixins.scaleSize(30),
-    // marginBottom: Mixins.scaleSize(30),
+    position: "absolute",
+    bottom: 90,
   },
 
   indicatorTouchable: {
-    marginBottom: 50,
+    // marginBottom: Mixins.scaleSize(10),
     marginHorizontal: 4,
   },
-  // dot: {
-  //   width: 8,
-  //   height: 8,
-  //   borderRadius: 6,
-  //   backgroundColor: "gray",
-  // },
 
   notActive: {
     width: 8,
     height: 8,
-    backgroundColor: "#DCDCDC",
+    backgroundColor: "grey",
     borderRadius: 6,
   },
 
@@ -341,7 +319,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 10,
     borderRadius: 6,
-    backgroundColor: "gray",
+    backgroundColor: "#DCDCDC",
   },
 });
 

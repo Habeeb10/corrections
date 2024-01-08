@@ -138,10 +138,10 @@ class Dashboard extends Component {
 
     // Get banners if unable to fetch from the login page
     if (!this.state.information.bannerList?.length) {
-      console.log({ bannerList: this.state.information.bannerList });
+      // console.log({ bannerList: this.state.information.bannerList });
       this.props.getImage();
     }
-    console.log({ information: this.state.information });
+    // console.log({ information: this.state.information });
     // this.initializePushNotifications();
 
     // this.props.getDropdownOptions();
@@ -308,7 +308,7 @@ class Dashboard extends Component {
       .asString();
     console.log("dsddpubs", publicKey);
     RNPaystack.init({
-      //publicKey: "pk_test_32e272bc5dcac5d9593787d9c713af4ba5eab1f5"
+      // publicKey: "pk_test_32e272bc5dcac5d9593787d9c713af4ba5eab1f5",
       publicKey: "pk_live_fed2ad4e9922a1226b5b6db113ddfc062a732a3f",
     });
   };
@@ -521,36 +521,37 @@ class Dashboard extends Component {
         };
       }
     );
+
     if (this.state.showImage) {
+      // console.log({ banners }); // Add this line
+
       return (
-        <View style={[SharedStyle.mainContainer, styles.backdrop]}>
-          {banners?.length ? (
-            <>
+        <View style={SharedStyle.mainContainer}>
+          <View style={styles.backdrop}>
+            {banners?.length ? (
               <Banners
                 finish={() => {
                   // Set the flag to false once the image is displayed
-                  this.setState({ showImage: false });
                 }}
                 banners={banners}
               />
-              <TouchItem
-                style={styles.bannericon}
-                onPress={() => {
-                  // Set the flag to false if the user closes the image
-                  this.setState({ showImage: false });
-                  // banners?.finish && banners.finish();
-                }}
-              >
-                <Icon.Feather
-                  size={Mixins.scaleSize(30)}
-                  style={{ color: Colors.PRIMARY_BLUE, textAlign: "center" }}
-                  name="x"
-                />
-              </TouchItem>
-            </>
-          ) : (
-            <ActivityIndicator />
-          )}
+            ) : (
+              <ActivityIndicator />
+            )}
+          </View>
+          <View style={styles.bannericonContainer}>
+            <TouchItem
+              onPress={() => {
+                this.setState({ showImage: false });
+              }}
+            >
+              <Icon.Feather
+                size={Mixins.scaleSize(30)}
+                style={{ color: Colors.PRIMARY_BLUE, textAlign: "center" }}
+                name="x"
+              />
+            </TouchItem>
+          </View>
         </View>
       );
     }
@@ -1402,9 +1403,22 @@ class Dashboard extends Component {
 }
 
 const styles = StyleSheet.create({
+  bannericonContainer: {
+    position: "absolute",
+    alignSelf: "center",
+    justifyContent: "center",
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    borderColor: "white",
+    backgroundColor: "#DCDCDC",
+    opacity: 0.7,
+    bottom: 15,
+  },
+
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.6)", // Adjust the opacity as needed
+    backgroundColor: "rgba(0, 0, 0, 0.3)", // Adjust the opacity as needed
   },
   profileView: {
     width: 200,
@@ -1761,19 +1775,7 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     alignItems: "center",
   },
-  bannericon: {
-    alignSelf: "center",
-    display: "flex",
-    justifyContent: "center",
-    width: 50,
-    height: 50,
-    marginTop: 7,
-    borderRadius: 50,
-    borderColor: "white",
-    backgroundColor: "#DCDCDC",
-    opacity: 0.7,
-    marginBottom: 30,
-  },
+
   copyButton: {
     flexDirection: "row",
     alignItems: "center",

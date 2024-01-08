@@ -414,21 +414,21 @@ class Data extends Component {
     this.closeModal();
   };
 
-  changeType = (type) => {
-    this.setState({ type, animationTrigger: true }, () => {
-      this.animate();
-    });
-  };
+  // changeType = (type) => {
+  //   this.setState({ type, animationTrigger: true }, () => {
+  //     this.animate();
+  //   });
+  // };
 
-  animate = () => {
-    this.fadeAnim.setValue(0);
-    Animated.timing(this.fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start();
-  };
+  // animate = () => {
+  //   this.fadeAnim.setValue(0);
+  //   Animated.timing(this.fadeAnim, {
+  //     toValue: 1,
+  //     duration: 1000,
+  //     easing: Easing.linear,
+  //     useNativeDriver: true,
+  //   }).start();
+  // };
 
   componentDidMount() {
     BackHandler.addEventListener("hardwareBackPress", this.handleBackButton);
@@ -578,8 +578,6 @@ class Data extends Component {
         processing: true,
       },
       () => {
-        const { type } = this.state;
-
         let { phone_number, network, data_package } = this.state;
         let payload = {
           phoneNumber: phone_number,
@@ -871,7 +869,7 @@ class Data extends Component {
                   editable={false}
                 />
                 <Text style={FormStyle.formError}>
-                  {this.state.phone_number_error}
+                  {this.state.wallet_data_error}
                 </Text>
                 <Text style={SharedStyle.balanceLabel}>
                   {Dictionary.BALANCE}{" "}

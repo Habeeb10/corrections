@@ -200,7 +200,7 @@ class AddCard extends Component {
       "https://creditvilleapp.com/main/successful-fund-request";
 
     const { url, title } = state;
-    console.log("state", state);
+    console.log({ state });
     if (!url) return;
 
     if (url.includes(callback_url) || title === "C Money") {
@@ -219,7 +219,7 @@ class AddCard extends Component {
 
   render() {
     const payload = this.props.navigation.getParam("payload");
-
+    console.log({ payload });
     return (
       <View style={SharedStyle.mainContainer}>
         <MainHeader

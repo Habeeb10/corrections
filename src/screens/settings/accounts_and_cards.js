@@ -106,7 +106,9 @@ class AccountsAndCards extends Component {
   };
 
   handleCardDeletion = () => {
-    Network.deleteUserCard(this.state.delete_id)
+    Network.deleteUserCard(this.state.delete_id);
+    console
+      .log(result)
       .then(() => {
         this.cancelDelete();
         this.props.showToast(Dictionary.CARD_DELETED, false);
@@ -195,7 +197,7 @@ class AccountsAndCards extends Component {
                   <TouchItem
                     style={styles.summaryButton}
                     onPress={() => this.addCard()}
-                    //onPress={() => this.props.navigation.navigate('AddCard')}
+                    // onPress={() => this.props.navigation.navigate('AddCard')}
                   >
                     <Icon.SimpleLineIcons
                       size={Mixins.scaleSize(18)}
