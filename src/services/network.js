@@ -270,7 +270,7 @@ export const refreshToken = async (token) => {
 };
 export const getFcmTokenAndSave = async (phone_number, fcmToken) => {
   const url = `${Endpoints.FCM_TOKEN}/${phone_number}/${fcmToken}`;
-  console.log({ url });
+  // console.log({ url });
   return makeApiCall(BEARER_AUTH, url, "post");
 };
 

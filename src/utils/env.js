@@ -1,4 +1,4 @@
-export let environment = "prelive";
+export let environment = "prod";
 
 export default () => {
   if (environment === "prod") {

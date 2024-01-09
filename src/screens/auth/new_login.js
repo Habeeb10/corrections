@@ -329,13 +329,13 @@ class Login extends Component {
       // Check if the locally stored FCM token is available
       try {
         const storedFcmToken = await AsyncStorage.getItem("fcmToken");
-        console.log("Stored FCM Token:", storedFcmToken);
+        // console.log("Stored FCM Token:", storedFcmToken);
 
         // Register for push notifications and obtain FCM token
         const fcmToken =
           await this.notificationService.registerForPushNotifications();
 
-        console.log("Current FCM Token:", fcmToken);
+        // console.log("Current FCM Token:", fcmToken);
 
         // Add FCM token to the authentication request
         let previous_user = this.props.user.user_data.phoneNumber;
@@ -345,7 +345,7 @@ class Login extends Component {
           if (storedFcmToken !== fcmToken) {
             // Save the new FCM token locally
             await AsyncStorage.setItem("fcmToken", fcmToken);
-            console.log("New FCM Token saved locally:", fcmToken);
+            // console.log("New FCM Token saved locally:", fcmToken);
 
             // Continue with the authentication process
             this.setState({ authenticating: true }, async () => {
@@ -383,7 +383,7 @@ class Login extends Component {
                         Network.getFcmTokenAndSave(phone_number, fcmToken)
                           .then((data) => {
                             // Handle successful response
-                            console.log("FCM token response:", data);
+                            // console.log("FCM token response:", data);
                           })
                           .catch((error) => {
                             // Handle errors
@@ -470,7 +470,7 @@ class Login extends Component {
         } else {
           // If there is no stored token, generate a new one and proceed with the new token
           await AsyncStorage.setItem("fcmToken", fcmToken);
-          console.log("FCM Token saved locally:", fcmToken);
+          // console.log("FCM Token saved locally:", fcmToken);
 
           // Continue with the authentication process
           this.setState({ authenticating: true }, async () => {
@@ -501,15 +501,15 @@ class Login extends Component {
                       this.routeToPage(user_data);
                       Util.logEventData("onboarding_sign_in");
 
-                      console.log({
-                        phone_number: phone_number,
-                        fcmToken: fcmToken,
-                      });
+                      // console.log({
+                      //   phone_number: phone_number,
+                      //   fcmToken: fcmToken,
+                      // });
                       // Update FCM token on the server
                       Network.getFcmTokenAndSave(phone_number, fcmToken)
                         .then((data) => {
                           // Handle successful response
-                          console.log("FCM token response:", data);
+                          // console.log("FCM token response:", data);
                         })
                         .catch((error) => {
                           // Handle errors

@@ -306,7 +306,7 @@ class Dashboard extends Component {
     let publicKey = remoteConfig()
       .getValue(`paystack_key_${env().target}`)
       .asString();
-    console.log("dsddpubs", publicKey);
+    // console.log("dsddpubs", publicKey);
     RNPaystack.init({
       // publicKey: "pk_test_32e272bc5dcac5d9593787d9c713af4ba5eab1f5",
       publicKey: "pk_live_fed2ad4e9922a1226b5b6db113ddfc062a732a3f",
@@ -339,10 +339,10 @@ class Dashboard extends Component {
       await firebase.messaging().registerDeviceForRemoteMessages();
       let fcm_token = await messaging().getToken();
       if (fcm_token) {
-        console.log("Firebase Token:", fcm_token);
+        // console.log("Firebase Token:", fcm_token);
         Network.registerFcmToken(fcm_token)
           .then(() => {
-            console.log("FCM token registered successfully", fcm_token);
+            // console.log("FCM token registered successfully", fcm_token);
             this.openForegroundListener();
           })
           .catch((error) => {
@@ -496,7 +496,7 @@ class Dashboard extends Component {
         total_savings = Util.formatAmount(total_savings);
       }
     } catch (error) {
-      console.log(JSON.stringify(error, null, 4));
+      // console.log(JSON.stringify(error, null, 4));
     }
 
     let notifications = this.props.notifications?.user_notifications ?? [];
