@@ -266,7 +266,7 @@ class CreateUser extends Component {
                 this.props.storeUserData(user_data);
                 // this.props.storeUserPwd(password);
                 // this.props.getDocuments();
-                this.props.navigation.navigate("EnterBVN");
+                this.props.navigation.navigate("Onboarding");
               }
             );
         })

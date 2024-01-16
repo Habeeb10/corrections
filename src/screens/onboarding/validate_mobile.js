@@ -25,7 +25,8 @@ class ValidateMobile extends Component {
 
     const { navigation } = this.props;
     const phone_number = navigation.getParam("phone_number") ?? "";
-    const is_system_upgrade = navigation.getParam("is_system_upgrade")||false;
+    const is_system_upgrade = navigation.getParam("is_system_upgrade") || false;
+    const bvn_data = navigation.getParam("bvn_data");
 
     this.state = {
       is_system_upgrade,
@@ -37,6 +38,7 @@ class ValidateMobile extends Component {
       until: 60,
       validating: false,
       resending: false,
+      bvn_data,
     };
   }
 
@@ -150,35 +152,35 @@ class ValidateMobile extends Component {
               validating: false,
             },
             () => {
-              if(!this.state.is_system_upgrade){
-
+              if (!this.state.is_system_upgrade) {
                 this.props.navigation.navigate("CreatePassword", {
                   phone_number: this.state.phone_number,
                   //confirmation_id: validationData.data.confirmation_id
                 });
-
-                
-              }else{
-                this.props.showToast(Dictionary.SYSTEM_UPGRADE_VERIFYPHONE, false);
-                this.props.navigation.navigate("EnterBVN", {
+              } else {
+                this.props.showToast(
+                  Dictionary.SYSTEM_UPGRADE_VERIFYPHONE,
+                  false
+                );
+                this.props.navigation.navigate("UploadID", {
                   is_system_upgrade: this.state.is_system_upgrade,
                   phone_number: this.state.phone_number,
-                  otp: this.state.otp
+                  otp: this.state.otp,
+                  bvn_data: this.state.bvn_data,
+                  //EnterBVN//
                   //confirmation_id: validationData.data.confirmation_id
                 });
               }
-
-             
             }
           );
         })
         .catch((error) => {
           this.setState({ validating: false }, () =>
-          // this.props.navigation.navigate("EnterBVN", {
-          //   is_system_upgrade: this.state.is_system_upgrade,
-          //   //confirmation_id: validationData.data.confirmation_id
-          // })
-             this.props.showToast(error.message)
+            // this.props.navigation.navigate("EnterBVN", {
+            //   is_system_upgrade: this.state.is_system_upgrade,
+            //   //confirmation_id: validationData.data.confirmation_id
+            // })
+            this.props.showToast(error.message)
           );
         });
     });

@@ -7,11 +7,11 @@ import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import CountDown from "react-native-countdown-component";
 import { showToast } from "_actions/toast_actions";
 
-import { Dictionary, Util,ResponseCodes } from "_utils";
-import { Mixins, SharedStyle, FormStyle,Colors } from "_styles";
+import { Dictionary, Util, ResponseCodes } from "_utils";
+import { Mixins, SharedStyle, FormStyle, Colors } from "_styles";
 import { SubHeader, ScrollView, FloatingLabelInput, TouchItem } from "_atoms";
 import { MainHeader } from "_organisms";
-import { PrimaryButton, _DateTimePicker ,ActionButton} from "_molecules";
+import { PrimaryButton, _DateTimePicker, ActionButton } from "_molecules";
 
 import { Network } from "_services";
 
@@ -21,7 +21,7 @@ class ValidateBVN extends Component {
 
     const { navigation } = this.props;
     const bvn_data = navigation.getParam("bvn_data");
-    const is_system_upgrade = navigation.getParam("is_system_upgrade")||false;
+    const is_system_upgrade = navigation.getParam("is_system_upgrade") || false;
     const phone_number = navigation.getParam("phone_number") ?? "";
 
     let header_text = Dictionary.SIGN_UP_VALIDATE_BVN_HEADER;
@@ -105,33 +105,47 @@ class ValidateBVN extends Component {
   setSelectedDate = (date) => {
     this.setState({
       date_of_birth: moment(date).format("DD/MM/YYYY"),
+      // date_of_birth: moment(date).format("YYYY-MM-DD"),
       date_of_birth_error: "",
     });
   };
+
+  // setSelectedDate = (date) => {
+  //   // const formattedDate = moment(date).format("YYYY-MM-DD");
+  //   date_of_birth: moment(date).format("DD/MM/YYYY"),
+  //     this.setState({
+  //       date_of_birth: formattedDate,
+  //       date_of_birth_error: "",
+  //     });
+  // };
 
   closeDatePicker = () => {
     this.toggleSelectDate(false);
   };
 
   onChangeOTP = (otp) => {
-    this.setState({
+    this.setState(
+      {
         otp,
-        otpError: ''
-    }, () => {
+        otpError: "",
+      },
+      () => {
         if (this.state.otp.length === 6) {
-            this.handleSubmit();
+          this.handleSubmit();
         }
-    })
-}
+      }
+    );
+  };
 
   handleSubmit = () => {
     const { navigation } = this.props;
     //const otp = navigation.getParam("otp") ?? "";
 
     if (this.validFields()) {
-        
       this.setState({ validating: true }, () => {
-        const phoneVal = Util.stripFirstZeroInPhone(this.state.bvn_data.phoneNumber);
+        const phoneVal = Util.stripFirstZeroInPhone(
+          this.state.bvn_data.phoneNumber
+        );
         Network.validateOTP(
           phoneVal,
           this.state.otp,
@@ -139,43 +153,48 @@ class ValidateBVN extends Component {
           ResponseCodes.OTP_NOTIFICATION_TYPE.SMS,
           this.state.is_system_upgrade && this.state.phone_number
         )
-        .then((validationData) => {
-          Network.validateBVN(
-            this.state.bvn_data.bvn,
-            this.state.bvn_data.phoneNumber,
-            moment(this.state.date_of_birth, "DD/MM/YYYY").format("DD-MMM-YYYY"),
-            this.state.otp
-          )
-            .then(() => {
-              this.setState({ validating: false }, () => {
-                if (this.state.is_system_upgrade) {
-                  this.props.navigation.navigate("SystemUpgradeAlmostDone", {
-                    bvn_data: this.state.bvn_data,
-                    phone_number: this.state.phone_number,
-                    otp: this.state.otp
-                  });
-                } else {
-                  this.props.navigation.navigate("UploadID", {
-                    bvn_data: this.state.bvn_data,
-                  });
-                }
-                
-                // this.props.navigation.navigate('EnterEmail');
-                Util.logEventData("onboarding_bvn");
+          .then((validationData) => {
+            Network.validateBVN(
+              this.state.bvn_data.bvn,
+              this.state.bvn_data.phoneNumber,
+              moment(this.state.date_of_birth, "DD/MM/YYYY").format(
+                "DD/MM/YYYY"
+              ),
+              this.state.otp
+
+              // "YYYY-MM-DD"
+            )
+              .then(() => {
+                this.setState({ validating: false }, () => {
+                  if (this.state.is_system_upgrade) {
+                    this.props.navigation.navigate("SystemUpgradeAlmostDone", {
+                      bvn_data: this.state.bvn_data,
+                      phone_number: this.state.phone_number,
+                      otp: this.state.otp,
+                    });
+                  } else {
+                    this.props.navigation.navigate("EnterMobile", {
+                      // bvn_data: this.state.bvn_data,
+                    });
+
+                    // UploadID;
+                  }
+
+                  // this.props.navigation.navigate('EnterEmail');
+                  Util.logEventData("onboarding_bvn");
+                });
+              })
+              .catch((error) => {
+                this.setState({ validating: false }, () => {
+                  this.props.showToast(error.message);
+                });
               });
-            })
-            .catch((error) => {
-              this.setState({ validating: false }, () => {
-                this.props.showToast(error.message);
-              });
-            });
-        })
-        .catch((error) => {
-          this.setState({ validating: false }, () =>
-            this.props.showToast(error.message)
-          );
-        });
-        
+          })
+          .catch((error) => {
+            this.setState({ validating: false }, () =>
+              this.props.showToast(error.message)
+            );
+          });
       });
     }
   };
@@ -187,9 +206,9 @@ class ValidateBVN extends Component {
       this.setState({ last_5_error: Dictionary.REQUIRED_FIELD });
     }
 
-    if(this.state.otp=="" || this.state.otp.length<6){
-        is_valid = false;
-        this.setState({ otpError: Dictionary.OTP_EMPTY_ERROR });
+    if (this.state.otp == "" || this.state.otp.length < 6) {
+      is_valid = false;
+      this.setState({ otpError: Dictionary.OTP_EMPTY_ERROR });
     }
 
     if (!this.state.date_of_birth) {
@@ -210,7 +229,9 @@ class ValidateBVN extends Component {
 
   handleResendOTP = () => {
     this.setState({ resending: true }, () => {
-      let phoneVal = Util.stripFirstZeroInPhone(this.state.bvn_data.phoneNumber);
+      let phoneVal = Util.stripFirstZeroInPhone(
+        this.state.bvn_data.phoneNumber
+      );
       Network.requestOtp(
         phoneVal,
         ResponseCodes.OTP_TYPE.REG,
@@ -254,7 +275,6 @@ class ValidateBVN extends Component {
               { marginBottom: Mixins.scaleSize(50) },
             ]}
           >
-            
             {this.state.render_last_5_view && (
               <View>
                 <View style={FormStyle.formItem}>
@@ -306,7 +326,9 @@ class ValidateBVN extends Component {
             </View>
 
             <View style={FormStyle.formItem}>
-              <Text style={FormStyle.inputLabel}>{Dictionary.ENTER_OTP_BVN}</Text>
+              <Text style={FormStyle.inputLabel}>
+                {Dictionary.ENTER_OTP_BVN}
+              </Text>
             </View>
             <View style={FormStyle.formItem}>
               <SmoothPinCodeInput
@@ -381,7 +403,7 @@ class ValidateBVN extends Component {
             show={this.state.show_date_picker}
             value={this.state.date_of_birth}
             defaultValue={this.state.eighteen_years_ago}
-          //  mini={this.state.eighteen_years_ago}
+            //  mini={this.state.eighteen_years_ago}
             maximumDate={this.state.eighteen_years_ago}
             onChange={this.prcessSelectedDate}
             onClose={this.closeDatePicker}

@@ -569,7 +569,8 @@ class Login extends Component {
     }
   };
   loadSignUp = () => {
-    this.props.navigation.navigate("EnterMobile");
+    this.props.navigation.navigate("EnterBVN");
+    // EnterMobile
   };
   onCloseModal = () => {
     this.setState({
